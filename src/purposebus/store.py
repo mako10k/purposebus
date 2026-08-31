@@ -435,7 +435,12 @@ class Store:
                     entity_id=agent_id,
                     event_type="registered",
                     at=at,
-                    details={"kind": kind, "capabilities": capabilities},
+                    details={
+                        "kind": kind,
+                        "capabilities": capabilities,
+                        "actor_type": "agent",
+                        "actor_id": agent_id,
+                    },
                 )
         except sqlite3.IntegrityError as exc:
             raise Conflict(f"agent already exists in this Partition: {agent_id}") from exc
@@ -709,8 +714,35 @@ class Store:
             self.get_agent(owner_id)
             return owner_id
         if owner_type == "instance":
-            return self._instance_row(owner_id)["agent_id"]
+            instance = self._instance_row(owner_id)
+            if instance["lifecycle_state"] != "active":
+                raise Conflict(f"acting instance is stopped: {owner_id}")
+            return instance["agent_id"]
         raise InvalidInput(f"invalid owner type: {owner_type}")
+
+    def _authorize_owner(
+        self,
+        owner_type: str,
+        owner_id: str,
+        actor_type: str,
+        actor_id: str,
+    ) -> str | None:
+        owner_agent_id = self._owner_agent(owner_type, owner_id)
+        if actor_type == "agent":
+            self.get_agent(actor_id)
+            actor_agent_id = actor_id
+            actor_instance_id = None
+        elif actor_type == "instance":
+            actor = self._instance_row(actor_id)
+            if actor["lifecycle_state"] != "active":
+                raise Conflict(f"acting instance is stopped: {actor_id}")
+            actor_agent_id = actor["agent_id"]
+            actor_instance_id = actor_id
+        else:
+            raise InvalidInput(f"invalid actor type: {actor_type}")
+        if actor_agent_id != owner_agent_id:
+            raise Conflict("acting identity does not own this resource")
+        return actor_instance_id
 
     def add_subscription(
         self,
@@ -768,17 +800,22 @@ class Store:
                     (at,),
                 ).fetchall()
                 for retained in retained_rows:
-                    if topic_matches(topic_filter, retained["topic"]) and schema_compatible(schema_id, retained["schema_id"]):
-                        connection.execute(
-                            """
-                            INSERT OR IGNORE INTO deliveries(
-                                delivery_id, message_id, subscription_id, state, created_at, updated_at
-                            ) VALUES (?, ?, ?, 'queued', ?, ?)
-                            """,
-                            (new_id("del"), retained["message_id"], subscription_id, at, at),
-                        )
-                        if connection.execute("SELECT changes()").fetchone()[0]:
-                            delivery_count += 1
+                    if not topic_matches(topic_filter, retained["topic"]):
+                        continue
+                    if not schema_compatible(schema_id, retained["schema_id"]):
+                        continue
+                    if kind == "request" and retained["correlation_id"] != correlation_id:
+                        continue
+                    connection.execute(
+                        """
+                        INSERT OR IGNORE INTO deliveries(
+                            delivery_id, message_id, subscription_id, state, created_at, updated_at
+                        ) VALUES (?, ?, ?, 'queued', ?, ?)
+                        """,
+                        (new_id("del"), retained["message_id"], subscription_id, at, at),
+                    )
+                    if connection.execute("SELECT changes()").fetchone()[0]:
+                        delivery_count += 1
                 if kind == "request" and delivery_count:
                     connection.execute(
                         "UPDATE subscriptions SET request_state='response_available', updated_at=? WHERE subscription_id=?",
@@ -790,7 +827,14 @@ class Store:
                     entity_id=subscription_id,
                     event_type="created",
                     at=at,
-                    details={"owner_type": owner_type, "owner_id": owner_id, "retained_deliveries": delivery_count},
+                    actor_instance_id=owner_id if owner_type == "instance" else None,
+                    details={
+                        "owner_type": owner_type,
+                        "owner_id": owner_id,
+                        "actor_type": owner_type,
+                        "actor_id": owner_id,
+                        "retained_deliveries": delivery_count,
+                    },
                 )
         except sqlite3.IntegrityError as exc:
             raise Conflict(f"{kind} already exists: {subscription_id}") from exc
@@ -813,8 +857,18 @@ class Store:
             rows = self.connection.execute("SELECT * FROM subscriptions ORDER BY subscription_id").fetchall()
         return [_project_subscription(dict(row), iso(now)) for row in rows]
 
-    def change_subscription(self, subscription_id: str, action: str, now: datetime) -> dict:
+    def change_subscription(
+        self,
+        subscription_id: str,
+        action: str,
+        actor_type: str,
+        actor_id: str,
+        now: datetime,
+    ) -> dict:
         row = self.get_subscription(subscription_id, now)
+        actor_instance_id = self._authorize_owner(
+            row["owner_type"], row["owner_id"], actor_type, actor_id
+        )
         if action == "pause":
             if row["effective_state"] != "active":
                 raise Conflict(f"only an active subscription can be paused: {subscription_id}")
@@ -847,6 +901,7 @@ class Store:
                     [subscription_id],
                     at=at,
                     reason="subscription_cancelled",
+                    actor_instance_id=actor_instance_id,
                 )
             self._event(
                 connection,
@@ -854,6 +909,8 @@ class Store:
                 entity_id=subscription_id,
                 event_type={"pause": "paused", "resume": "resumed", "cancel": "cancelled"}[action],
                 at=at,
+                actor_instance_id=actor_instance_id,
+                details={"actor_type": actor_type, "actor_id": actor_id},
             )
         return self.get_subscription(subscription_id, now)
 
@@ -888,7 +945,13 @@ class Store:
                     entity_id=offer_id,
                     event_type="created",
                     at=at,
-                    details={"owner_type": owner_type, "owner_id": owner_id},
+                    actor_instance_id=owner_id if owner_type == "instance" else None,
+                    details={
+                        "owner_type": owner_type,
+                        "owner_id": owner_id,
+                        "actor_type": owner_type,
+                        "actor_id": owner_id,
+                    },
                 )
         except sqlite3.IntegrityError as exc:
             raise Conflict(f"offer already exists: {offer_id}") from exc
@@ -904,8 +967,18 @@ class Store:
         rows = self.connection.execute("SELECT * FROM offers ORDER BY offer_id").fetchall()
         return [_project_offer(dict(row), iso(now)) for row in rows]
 
-    def change_offer(self, offer_id: str, action: str, now: datetime) -> dict:
+    def change_offer(
+        self,
+        offer_id: str,
+        action: str,
+        actor_type: str,
+        actor_id: str,
+        now: datetime,
+    ) -> dict:
         row = self.get_offer(offer_id, now)
+        actor_instance_id = self._authorize_owner(
+            row["owner_type"], row["owner_id"], actor_type, actor_id
+        )
         if action == "pause":
             if row["effective_state"] != "active":
                 raise Conflict(f"only an active offer can be paused: {offer_id}")
@@ -929,6 +1002,8 @@ class Store:
                 entity_id=offer_id,
                 event_type={"pause": "paused", "resume": "resumed", "cancel": "cancelled"}[action],
                 at=at,
+                actor_instance_id=actor_instance_id,
+                details={"actor_type": actor_type, "actor_id": actor_id},
             )
         return self.get_offer(offer_id, now)
 
@@ -938,7 +1013,6 @@ class Store:
         return self._instance_row(owner_id)["agent_id"]
 
     def matches(self, now: datetime) -> dict:
-        now_text = iso(now)
         subscriptions = [
             item
             for item in self.list_subscriptions(now)
@@ -955,9 +1029,15 @@ class Store:
         matched_subscription_ids = set()
         for subscription in subscriptions:
             for offer in offers:
-                if not filters_overlap(subscription["topic_filter"], offer["topic_filter"]):
+                topic_overlap = filters_overlap(
+                    subscription["topic_filter"], offer["topic_filter"]
+                )
+                schemas_match = schema_compatible(
+                    subscription["schema_id"], offer["schema_id"]
+                )
+                if not topic_overlap:
                     continue
-                if not schema_compatible(subscription["schema_id"], offer["schema_id"]):
+                if not schemas_match:
                     continue
                 if offer["owner_type"] == "instance":
                     candidates = [by_instance.get(offer["owner_id"])]
@@ -966,14 +1046,47 @@ class Store:
                 live_instances = sorted(
                     item["instance_id"] for item in candidates if item and item["liveness"] == "alive"
                 )
+                candidate_instances = [
+                    {
+                        "instance_id": item["instance_id"],
+                        "liveness": item["liveness"],
+                        "liveness_reason": item["liveness_reason"],
+                        "activity": item["activity"],
+                    }
+                    for item in sorted(
+                        (item for item in candidates if item), key=lambda item: item["instance_id"]
+                    )
+                ]
                 pairs.append(
                     {
                         "subscription_id": subscription["subscription_id"],
                         "subscription_kind": subscription["kind"],
+                        "subscription_owner_type": subscription["owner_type"],
+                        "subscription_owner_id": subscription["owner_id"],
+                        "subscriber_agent_id": self._owner_agent(
+                            subscription["owner_type"], subscription["owner_id"]
+                        ),
+                        "subscription_purpose": subscription["purpose"],
+                        "subscription_topic_filter": subscription["topic_filter"],
+                        "subscription_schema_id": subscription["schema_id"],
+                        "subscription_expires_at": subscription["expires_at"],
+                        "correlation_id": subscription["correlation_id"],
                         "offer_id": offer["offer_id"],
+                        "offer_owner_type": offer["owner_type"],
+                        "offer_owner_id": offer["owner_id"],
                         "provider_agent_id": self._owner_agent(offer["owner_type"], offer["owner_id"]),
+                        "offer_purpose": offer["purpose"],
+                        "offer_topic_filter": offer["topic_filter"],
+                        "offer_schema_id": offer["schema_id"],
+                        "offer_expires_at": offer["expires_at"],
                         "live_instance_ids": live_instances,
+                        "candidate_instances": candidate_instances,
                         "provider_live": bool(live_instances),
+                        "availability": "live" if live_instances else "no_live_instance",
+                        "facts": {
+                            "topic_filters_overlap": topic_overlap,
+                            "schemas_compatible": schemas_match,
+                        },
                         "reason": "topic filters overlap and declared schemas are compatible",
                     }
                 )
@@ -981,16 +1094,68 @@ class Store:
         unmet = []
         for subscription in subscriptions:
             if subscription["subscription_id"] not in matched_subscription_ids:
+                candidates = []
+                for offer in offers:
+                    topic_overlap = filters_overlap(
+                        subscription["topic_filter"], offer["topic_filter"]
+                    )
+                    schemas_match = schema_compatible(
+                        subscription["schema_id"], offer["schema_id"]
+                    )
+                    mismatch_reasons = []
+                    if not topic_overlap:
+                        mismatch_reasons.append("topic_filter_mismatch")
+                    if not schemas_match:
+                        mismatch_reasons.append("schema_mismatch")
+                    candidates.append(
+                        {
+                            "offer_id": offer["offer_id"],
+                            "provider_agent_id": self._owner_agent(
+                                offer["owner_type"], offer["owner_id"]
+                            ),
+                            "offer_purpose": offer["purpose"],
+                            "offer_topic_filter": offer["topic_filter"],
+                            "offer_schema_id": offer["schema_id"],
+                            "facts": {
+                                "topic_filters_overlap": topic_overlap,
+                                "schemas_compatible": schemas_match,
+                            },
+                            "mismatch_reasons": mismatch_reasons,
+                        }
+                    )
+                if not offers:
+                    classification = "no_active_offer"
+                    reason = "no active Offer exists in this Partition"
+                elif any(item["facts"]["topic_filters_overlap"] for item in candidates):
+                    classification = "schema_mismatch"
+                    reason = "overlapping Offers declare an incompatible schema"
+                else:
+                    classification = "topic_filter_mismatch"
+                    reason = "active Offers have no overlapping topic filter"
                 unmet.append(
                     {
                         "subscription_id": subscription["subscription_id"],
                         "kind": subscription["kind"],
+                        "owner_type": subscription["owner_type"],
+                        "owner_id": subscription["owner_id"],
+                        "subscriber_agent_id": self._owner_agent(
+                            subscription["owner_type"], subscription["owner_id"]
+                        ),
+                        "purpose": subscription["purpose"],
                         "topic_filter": subscription["topic_filter"],
                         "schema_id": subscription["schema_id"],
-                        "reason": "no active Offer has an overlapping topic filter and compatible schema",
+                        "expires_at": subscription["expires_at"],
+                        "correlation_id": subscription["correlation_id"],
+                        "classification": classification,
+                        "reason": reason,
+                        "candidates": candidates,
                     }
                 )
-        return {"matches": pairs, "unmet": unmet}
+        return {
+            "matches": pairs,
+            "unavailable": [pair for pair in pairs if not pair["provider_live"]],
+            "unmet": unmet,
+        }
 
     def _is_advertised(
         self,
@@ -1108,6 +1273,11 @@ class Store:
                 if not topic_matches(subscription["topic_filter"], topic):
                     continue
                 if not schema_compatible(subscription["schema_id"], schema_id):
+                    continue
+                if (
+                    subscription["kind"] == "request"
+                    and subscription["correlation_id"] != correlation_id
+                ):
                     continue
                 connection.execute(
                     """
@@ -1345,8 +1515,13 @@ class Store:
                     break
         return selected
 
-    def ack(self, delivery_id: str, instance_id: str, now: datetime) -> dict:
-        instance = self._instance_row(instance_id)
+    def ack(
+        self,
+        delivery_id: str,
+        actor_type: str,
+        actor_id: str,
+        now: datetime,
+    ) -> dict:
         at = iso(now)
         with self.transaction() as connection:
             row = connection.execute(
@@ -1360,14 +1535,42 @@ class Store:
             ).fetchone()
             if row is None:
                 raise NotFound(f"delivery not found: {delivery_id}")
-            if not self._delivery_owned_by(row, instance):
-                raise Conflict("delivery is not owned by the acting Instance or its Agent")
+            if actor_type == "instance":
+                instance = self._instance_row(actor_id)
+                if instance["lifecycle_state"] != "active":
+                    raise Conflict(f"acting instance is stopped: {actor_id}")
+                if not self._delivery_owned_by(row, instance):
+                    raise Conflict("delivery is not owned by the acting Instance or its Agent")
+                actor_instance_id = actor_id
+            elif actor_type == "agent":
+                self.get_agent(actor_id)
+                if row["owner_type"] != "agent" or row["owner_id"] != actor_id:
+                    raise Conflict("direct Agent acknowledgement requires an Agent-owned Delivery")
+                actor_instance_id = None
+            else:
+                raise InvalidInput(f"invalid actor type: {actor_type}")
             if row["state"] == "acked":
                 return {"delivery_id": delivery_id, "state": "acked", "acked_at": row["acked_at"], "deduplicated": True}
-            if row["state"] != "leased" or row["leased_by_instance_id"] != instance_id:
+            if actor_type == "instance" and (
+                row["state"] != "leased" or row["leased_by_instance_id"] != actor_id
+            ):
                 raise Conflict("delivery must be leased by the acting Instance before acknowledgement")
+            if (
+                actor_type == "agent"
+                and row["state"] == "leased"
+                and row["lease_until"]
+                and row["lease_until"] > at
+            ):
+                raise Conflict("direct Agent acknowledgement cannot take an active Instance lease")
+            if row["state"] not in {"queued", "leased"}:
+                raise Conflict(f"delivery cannot be acknowledged from state {row['state']!r}")
             connection.execute(
-                "UPDATE deliveries SET state='acked', acked_at=?, updated_at=? WHERE delivery_id=?",
+                """
+                UPDATE deliveries
+                SET state='acked', leased_by_instance_id=NULL, lease_until=NULL,
+                    acked_at=?, updated_at=?
+                WHERE delivery_id=?
+                """,
                 (at, at, delivery_id),
             )
             if row["subscription_kind"] == "request":
@@ -1384,7 +1587,7 @@ class Store:
                     [row["subscription_id"]],
                     at=at,
                     reason="request_fulfilled",
-                    actor_instance_id=instance_id,
+                    actor_instance_id=actor_instance_id,
                 )
             self._event(
                 connection,
@@ -1392,8 +1595,12 @@ class Store:
                 entity_id=delivery_id,
                 event_type="acked",
                 at=at,
-                actor_instance_id=instance_id,
-                details={"subscription_id": row["subscription_id"]},
+                actor_instance_id=actor_instance_id,
+                details={
+                    "subscription_id": row["subscription_id"],
+                    "actor_type": actor_type,
+                    "actor_id": actor_id,
+                },
             )
         return {"delivery_id": delivery_id, "state": "acked", "acked_at": at, "deduplicated": False}
 
@@ -1536,7 +1743,25 @@ class Store:
                 {
                     "kind": "consider_request",
                     "entity_id": pair["subscription_id"],
-                    "reason": "the Request matches an active Offer owned by this Instance or Agent",
+                    "reason": (
+                        f"request purpose {pair['subscription_purpose']!r} matches offer purpose "
+                        f"{pair['offer_purpose']!r}; topic filters overlap, schemas are compatible, "
+                        f"and provider availability is {pair['availability']}"
+                    ),
+                    "requester_agent_id": pair["subscriber_agent_id"],
+                    "request_purpose": pair["subscription_purpose"],
+                    "request_topic_filter": pair["subscription_topic_filter"],
+                    "request_schema_id": pair["subscription_schema_id"],
+                    "request_expires_at": pair["subscription_expires_at"],
+                    "request_correlation_id": pair["correlation_id"],
+                    "offer_id": pair["offer_id"],
+                    "provider_agent_id": pair["provider_agent_id"],
+                    "offer_purpose": pair["offer_purpose"],
+                    "offer_topic_filter": pair["offer_topic_filter"],
+                    "offer_schema_id": pair["offer_schema_id"],
+                    "provider_live": pair["provider_live"],
+                    "live_instance_ids": pair["live_instance_ids"],
+                    "facts": pair["facts"],
                     "command": f"purposebus request show {pair['subscription_id']}",
                 }
             )

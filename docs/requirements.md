@@ -180,6 +180,12 @@ acknowledging an accepted matching Delivery transitions it to `fulfilled`.
 Acknowledgement MUST remain explicit unless the caller requested documented
 auto-ack behavior.
 
+For a Request, correlation is a delivery constraint rather than descriptive
+metadata: a Message MUST create a Delivery for that Request only when the
+Message correlation identity exactly equals the Request correlation identity.
+An absent or different correlation identity MUST NOT change the Request state.
+This rule applies equally to ordinary and retained Messages.
+
 ### FR-009: Publication
 
 An Instance MUST be able to publish a Message with a concrete topic, non-empty
@@ -188,6 +194,11 @@ purpose, and one of:
 - an inline UTF-8 payload;
 - an inline JSON payload; or
 - an opaque artifact reference with optional digest.
+
+Artifact digests are metadata for opaque references only. Supplying a digest
+with either inline payload form MUST fail as invalid input. PurposeBus treats a
+reference and its digest as opaque strings and MUST NOT resolve the reference,
+inspect the referenced data, or infer authority from either value.
 
 Inline payloads MUST be bounded to at most 64 KiB in the MVP. A Message SHOULD
 carry a schema identifier and MAY carry correlation, causation, expiry,
@@ -225,6 +236,12 @@ Acknowledgement MUST name an exact Delivery and owning Instance or Agent. It
 MUST be idempotent for the same Delivery. After process or PurposeBus restart, all
 successfully committed, unexpired, unacknowledged Deliveries MUST remain
 recoverable.
+
+An Instance may acknowledge a Delivery only after that exact Instance leased
+it. A stable Agent may directly acknowledge a queued or lease-expired Delivery
+owned by that Agent, so an offline human mailbox does not require fabricating a
+live Instance. Direct Agent acknowledgement MUST NOT steal a current Instance
+lease or acknowledge an Instance-owned Delivery.
 
 ### FR-013: Retained information
 
@@ -298,6 +315,8 @@ help route.
 Every inspection and workflow command needed by an Agent MUST support
 machine-readable JSON with an explicit schema identity and schema version. The
 same semantic distinctions MUST be preserved in human and JSON output.
+Global context and output options MUST be accepted before or after a subcommand,
+including the documented `purposebus next --format json` form.
 
 ### CLI-004: Output discipline
 
@@ -311,6 +330,16 @@ failure without requiring diagnostic-string parsing.
 Commands MUST expose the resolved Partition and acting Agent or Instance in
 JSON. Mutating commands MUST fail when the acting identity is absent or
 ambiguous; they MUST NOT select an arbitrary live Instance.
+
+`init`, `agent register`, and `instance start` are bootstrap operations. `init`
+has no acting identity; registration and start explicitly act as the identity
+being created. A Subscription, Request, or Offer owner acts when creating that
+record. Instance heartbeat and stop are self-actions by the named Instance.
+All other mutations MUST name exactly one `--agent` or `--instance` actor as
+applicable. An Agent and its Instances form one ownership family for lifecycle
+changes, but direct Delivery acknowledgement follows the narrower FR-012 rules.
+Read-only commands expose a null actor unless an Instance is explicitly named
+as navigation context.
 
 ### CLI-006: Read-only status
 

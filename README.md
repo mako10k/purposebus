@@ -42,8 +42,10 @@ purposebus poll --instance consumer-1 --wait 5s
 purposebus ack DELIVERY_ID --instance consumer-1
 ```
 
-Use `--format json` for versioned `purposebus.*.v1` documents. If a publish response is
-lost, do not blindly resend. Resolve the result first:
+Use `--format json` before or after a subcommand for versioned
+`purposebus.*.v1` documents. Each document exposes the resolved Partition and
+the explicit acting identity, or `null` for an operator-style read. If a
+publish response is lost, do not blindly resend. Resolve the result first:
 
 ```sh
 purposebus --format json message list --producer producer-1 --idempotency-key build-42
@@ -51,7 +53,13 @@ purposebus --format json message list --producer producer-1 --idempotency-key bu
 
 Raw secrets must not be placed in payloads. An opaque artifact reference is
 transported as metadata only; PurposeBus never resolves it or grants authority to read
-it.
+it. `--artifact-digest` is valid only together with `--reference`.
+
+Lifecycle changes name their actor explicitly, for example
+`purposebus subscription pause SUBSCRIPTION_ID --agent AGENT_ID`. An Agent-owned
+queued or lease-expired Delivery can be acknowledged without inventing a live
+Instance by using `purposebus ack DELIVERY_ID --agent AGENT_ID`; an active
+Instance lease cannot be taken this way.
 
 ## Requirements baseline
 

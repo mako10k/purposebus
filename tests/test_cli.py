@@ -189,9 +189,17 @@ class PurposeBusCliTest(unittest.TestCase):
             "off1",
         )
         result = self.run_purposebus(self.project_a, "match")["result"]
-        self.assertEqual(result["matches"][0]["subscription_id"], "sub1")
-        self.assertTrue(result["matches"][0]["provider_live"])
+        match = result["matches"][0]
+        self.assertEqual(match["subscription_id"], "sub1")
+        self.assertEqual(match["subscriber_agent_id"], "requester")
+        self.assertEqual(match["subscription_purpose"], "validate build")
+        self.assertEqual(match["offer_purpose"], "provide test results")
+        self.assertTrue(match["facts"]["topic_filters_overlap"])
+        self.assertTrue(match["facts"]["schemas_compatible"])
+        self.assertTrue(match["provider_live"])
         self.assertEqual([item["subscription_id"] for item in result["unmet"]], ["sub2"])
+        self.assertEqual(result["unmet"][0]["classification"], "topic_filter_mismatch")
+        self.assertIn("topic_filter_mismatch", result["unmet"][0]["candidates"][0]["mismatch_reasons"])
 
     def test_durable_fanout_ack_and_idempotency(self):
         self.bootstrap_three()
@@ -472,6 +480,113 @@ class PurposeBusCliTest(unittest.TestCase):
         )["result"]
         self.assertEqual(acknowledged["state"], "acked")
 
+    def test_human_agent_can_inspect_and_ack_offline_mailbox_directly(self):
+        self.init()
+        self.register("producer")
+        self.register("operator", kind="human")
+        self.start("producer", "producer1")
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "notice/operator",
+            "--agent",
+            "operator",
+            "--purpose",
+            "receive notice while offline",
+            "--id",
+            "humanbox",
+        )
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "notice/operator",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "notify operator",
+            "--text",
+            "ready",
+        )
+        delivery = self.run_purposebus(self.project_a, "delivery", "list")["result"][0]
+        message = self.run_purposebus(
+            self.project_a, "message", "show", delivery["message_id"], "--include-payload"
+        )["result"]
+        self.assertEqual(message["payload"], "ready")
+        denied = self.run_purposebus(
+            self.project_a, "ack", delivery["delivery_id"], "--agent", "producer", expected=5
+        )
+        self.assertEqual(denied["error"], "conflict")
+        acknowledged = self.run_purposebus(
+            self.project_a, "ack", delivery["delivery_id"], "--agent", "operator"
+        )
+        self.assertEqual(acknowledged["actor"], {"type": "agent", "id": "operator"})
+        duplicate = self.run_purposebus(
+            self.project_a, "ack", delivery["delivery_id"], "--agent", "operator"
+        )["result"]
+        self.assertTrue(duplicate["deduplicated"])
+
+    def test_direct_agent_ack_does_not_steal_active_instance_lease(self):
+        start = "2026-08-31T00:00:00Z"
+        self.init(at=start)
+        self.register("producer", at=start)
+        self.register("operator", kind="human", at=start)
+        self.start("producer", "producer1", at=start)
+        self.start("operator", "operator1", at=start)
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "notice/operator",
+            "--agent",
+            "operator",
+            "--purpose",
+            "receive notice",
+            "--id",
+            "humanbox",
+            at=start,
+        )
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "notice/operator",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "notify operator",
+            "--text",
+            "ready",
+            at=start,
+        )
+        delivery = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "operator1",
+            "--lease",
+            "10s",
+            at=start,
+        )["result"][0]
+        denied = self.run_purposebus(
+            self.project_a,
+            "ack",
+            delivery["delivery_id"],
+            "--agent",
+            "operator",
+            at="2026-08-31T00:00:05Z",
+            expected=5,
+        )
+        self.assertEqual(denied["error"], "conflict")
+        acknowledged = self.run_purposebus(
+            self.project_a,
+            "ack",
+            delivery["delivery_id"],
+            "--agent",
+            "operator",
+            at="2026-08-31T00:00:11Z",
+        )["result"]
+        self.assertEqual(acknowledged["state"], "acked")
+
     def test_ephemeral_subscription_requires_instance_and_stops_with_it(self):
         self.init()
         self.register("consumer")
@@ -630,6 +745,13 @@ class PurposeBusCliTest(unittest.TestCase):
         self.assertEqual(schema_version, "99")
         self.assertIsNone(offer_table)
 
+    def test_corrupt_sqlite_state_fails_closed(self):
+        initialized = self.init()
+        database = Path(initialized["partition"]["database"])
+        database.write_bytes(b"not a sqlite database")
+        result = self.run_purposebus(self.project_a, "status", expected=5)
+        self.assertIn(result["error"], {"conflict", "storage_failure"})
+
     def test_parser_errors_follow_requested_json_format(self):
         result = subprocess.run(
             [sys.executable, "-m", "purposebus", "--format", "json", "--not-a-command"],
@@ -644,6 +766,372 @@ class PurposeBusCliTest(unittest.TestCase):
         document = json.loads(result.stderr)
         self.assertEqual(document["schema"], "purposebus.error.v1")
         self.assertEqual(document["error"], "invalid_input")
+
+    def test_json_status_is_deterministic_at_a_fixed_time(self):
+        fixed = "2026-08-31T00:00:00Z"
+        self.init(at=fixed)
+        self.register("agent-a", at=fixed)
+        command = self.command(self.project_a, "status", at=fixed)
+        first = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            env=self.environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        second = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            env=self.environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        self.assertEqual(first.returncode, 0, msg=first.stderr)
+        self.assertEqual(second.returncode, 0, msg=second.stderr)
+        self.assertEqual(first.stdout, second.stdout)
+
+    def test_global_options_are_accepted_after_nested_subcommands(self):
+        self.init(at="2026-08-31T00:00:00Z")
+        self.register("provider", at="2026-08-31T00:00:00Z")
+        self.start("provider", "provider1", at="2026-08-31T00:00:00Z")
+        command = [
+            sys.executable,
+            "-m",
+            "purposebus",
+            "next",
+            "--instance",
+            "provider1",
+            "--partition",
+            str(self.project_a),
+            "--state-dir",
+            str(self.state),
+            "--at",
+            "2026-08-31T00:00:01Z",
+            "--format",
+            "json",
+        ]
+        result = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            env=self.environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        document = json.loads(result.stdout)
+        self.assertEqual(document["schema"], "purposebus.next.v1")
+        self.assertEqual(document["actor"], {"type": "instance", "id": "provider1"})
+
+    def test_mutations_expose_actor_and_enforce_owner_family(self):
+        initialized = self.init()
+        self.assertIsNone(initialized["actor"])
+        registered = self.run_purposebus(
+            self.project_a,
+            "agent",
+            "register",
+            "alice",
+            "--kind",
+            "ai",
+            "--description",
+            "alice description",
+        )
+        self.assertEqual(registered["actor"], {"type": "agent", "id": "alice"})
+        self.register("carol")
+        started = self.run_purposebus(
+            self.project_a,
+            "instance",
+            "start",
+            "alice",
+            "--id",
+            "alice1",
+            "--objective",
+            "alice objective",
+        )
+        self.assertEqual(started["actor"], {"type": "instance", "id": "alice1"})
+        self.start("carol", "carol1")
+        added = self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "owned/value",
+            "--instance",
+            "alice1",
+            "--purpose",
+            "own a value",
+            "--id",
+            "owned1",
+        )
+        self.assertEqual(added["actor"], {"type": "instance", "id": "alice1"})
+        missing = self.run_purposebus(
+            self.project_a, "subscription", "pause", "owned1", expected=2
+        )
+        self.assertEqual(missing["error"], "invalid_input")
+        ambiguous = self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "pause",
+            "owned1",
+            "--agent",
+            "alice",
+            "--instance",
+            "alice1",
+            expected=2,
+        )
+        self.assertEqual(ambiguous["error"], "invalid_input")
+        denied = self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "pause",
+            "owned1",
+            "--instance",
+            "carol1",
+            expected=5,
+        )
+        self.assertEqual(denied["error"], "conflict")
+        paused = self.run_purposebus(
+            self.project_a, "subscription", "pause", "owned1", "--agent", "alice"
+        )
+        self.assertEqual(paused["actor"], {"type": "agent", "id": "alice"})
+        self.run_purposebus(
+            self.project_a, "subscription", "resume", "owned1", "--instance", "alice1"
+        )
+        self.run_purposebus(self.project_a, "instance", "stop", "alice1")
+        stopped = self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "cancel",
+            "owned1",
+            "--instance",
+            "alice1",
+            expected=5,
+        )
+        self.assertEqual(stopped["error"], "conflict")
+
+    def test_request_delivery_requires_exact_correlation(self):
+        self.init()
+        self.register("requester")
+        self.register("provider")
+        self.start("requester", "requester1")
+        self.start("provider", "provider1")
+        request = self.run_purposebus(
+            self.project_a,
+            "request",
+            "create",
+            "answer/value",
+            "--instance",
+            "requester1",
+            "--purpose",
+            "need the exact response",
+            "--schema",
+            "answer.v1",
+            "--correlation-id",
+            "corr-exact",
+            "--id",
+            "request1",
+        )["result"]
+        self.assertEqual(request["correlation_id"], "corr-exact")
+        for correlation in (None, "corr-other"):
+            arguments = [
+                "publish",
+                "answer/value",
+                "--instance",
+                "provider1",
+                "--purpose",
+                "respond",
+                "--text",
+                "not accepted",
+            ]
+            if correlation:
+                arguments.extend(["--correlation-id", correlation])
+            publication = self.run_purposebus(self.project_a, *arguments)["result"]
+            self.assertEqual(publication["delivery_count"], 0)
+            state = self.run_purposebus(self.project_a, "request", "show", "request1")["result"]
+            self.assertEqual(state["effective_request_state"], "open")
+        wrong_schema = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "answer/value",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "respond with wrong schema",
+            "--text",
+            "not accepted",
+            "--schema",
+            "answer.v2",
+            "--correlation-id",
+            "corr-exact",
+        )["result"]
+        self.assertEqual(wrong_schema["delivery_count"], 0)
+        accepted = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "answer/value",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "respond",
+            "--text",
+            "accepted",
+            "--schema",
+            "answer.v1",
+            "--correlation-id",
+            "corr-exact",
+        )["result"]
+        self.assertEqual(accepted["delivery_count"], 1)
+        state = self.run_purposebus(self.project_a, "request", "show", "request1")["result"]
+        self.assertEqual(state["effective_request_state"], "response_available")
+
+    def test_retained_request_correlation_and_artifact_digest_rules(self):
+        self.init()
+        self.register("requester")
+        self.register("provider")
+        self.start("requester", "requester1")
+        self.start("provider", "provider1")
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "answer/retained",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "retain unrelated answer",
+            "--text",
+            "wrong",
+            "--correlation-id",
+            "corr-wrong",
+            "--retain",
+        )
+        request = self.run_purposebus(
+            self.project_a,
+            "request",
+            "create",
+            "answer/retained",
+            "--instance",
+            "requester1",
+            "--purpose",
+            "need retained answer",
+            "--correlation-id",
+            "corr-right",
+            "--id",
+            "retained-request",
+        )["result"]
+        self.assertEqual(request["effective_request_state"], "open")
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "answer/retained",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "retain correlated answer",
+            "--text",
+            "right",
+            "--correlation-id",
+            "corr-right-2",
+            "--retain",
+        )
+        retained_match = self.run_purposebus(
+            self.project_a,
+            "request",
+            "create",
+            "answer/retained",
+            "--instance",
+            "requester1",
+            "--purpose",
+            "need matching retained answer",
+            "--correlation-id",
+            "corr-right-2",
+            "--id",
+            "retained-request-2",
+        )["result"]
+        self.assertEqual(retained_match["effective_request_state"], "response_available")
+        invalid = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "artifact/value",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "invalid digest placement",
+            "--text",
+            "inline",
+            "--artifact-digest",
+            "sha256:abc",
+            expected=2,
+        )
+        self.assertEqual(invalid["error"], "invalid_input")
+        reference = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "artifact/value",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "valid opaque artifact",
+            "--reference",
+            "artifact://build/42",
+            "--artifact-digest",
+            "sha256:abc",
+        )["result"]
+        shown = self.run_purposebus(
+            self.project_a, "message", "show", reference["message_id"]
+        )["result"]
+        self.assertEqual(shown["artifact_digest"], "sha256:abc")
+
+    def test_expired_request_rejects_a_late_correlated_response(self):
+        start = "2026-08-31T00:00:00Z"
+        self.init(at=start)
+        self.register("requester", at=start)
+        self.register("provider", at=start)
+        self.start("requester", "requester1", at=start)
+        self.start("provider", "provider1", at=start)
+        self.run_purposebus(
+            self.project_a,
+            "request",
+            "create",
+            "answer/late",
+            "--instance",
+            "requester1",
+            "--purpose",
+            "need a timely response",
+            "--correlation-id",
+            "corr-late",
+            "--expires-in",
+            "1s",
+            "--id",
+            "late-request",
+            at=start,
+        )
+        publication = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "answer/late",
+            "--instance",
+            "provider1",
+            "--purpose",
+            "late response",
+            "--text",
+            "too late",
+            "--correlation-id",
+            "corr-late",
+            at="2026-08-31T00:00:02Z",
+        )["result"]
+        self.assertEqual(publication["delivery_count"], 0)
+        request = self.run_purposebus(
+            self.project_a,
+            "request",
+            "show",
+            "late-request",
+            at="2026-08-31T00:00:02Z",
+        )["result"]
+        self.assertEqual(request["effective_request_state"], "expired")
 
     def test_partition_isolation_and_private_permissions(self):
         first = self.init(self.project_a)
@@ -705,6 +1193,32 @@ class PurposeBusCliTest(unittest.TestCase):
             for state_file in partition_dir.iterdir():
                 if state_file.is_file():
                     self.assertEqual(stat.S_IMODE(state_file.stat().st_mode), 0o600)
+
+    def test_payload_and_query_bounds_fail_as_invalid_input(self):
+        self.init()
+        self.register("producer")
+        self.start("producer", "producer1")
+        oversized = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "bounded/payload",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "exercise payload bound",
+            "--text",
+            "x" * (64 * 1024 + 1),
+            expected=2,
+        )
+        self.assertEqual(oversized["error"], "invalid_input")
+        poll_bound = self.run_purposebus(
+            self.project_a, "poll", "--instance", "producer1", "--limit", "0", expected=2
+        )
+        self.assertEqual(poll_bound["error"], "invalid_input")
+        event_bound = self.run_purposebus(
+            self.project_a, "events", "--limit", "0", expected=2
+        )
+        self.assertEqual(event_bound["error"], "invalid_input")
 
     def test_human_and_json_registry_views(self):
         self.init()

@@ -91,7 +91,9 @@ a false wait.
 
 1. H registers a durable Subscription and then has no live Instance.
 2. P publishes a matching Message.
-3. Later, H starts an interactive Instance, polls, reads, and acknowledges it.
+3. Later, H inspects the queued Delivery and Message through read-only commands.
+4. H acknowledges the exact Delivery directly as the owning Agent, without
+   claiming that a live process exists.
 
 **Effect check:** H receives the Message without being falsely reported alive or
 dead while no process evidence exists.

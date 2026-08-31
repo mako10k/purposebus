@@ -1,6 +1,6 @@
 # Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
 project PURPOSEBUS_ROADMAP:
-  version 6
+  version 7
   title "PurposeBus MVP to 1.0.0 roadmap"
   description "Current and future roadmap from the executable local prototype through the PurposeBus 1.0.0 release, including Codex Plugin integration. The MVP phase is detailed from verified implementation gaps. Post-MVP version numbers, scope, and estimates are provisional and must be replanned from real multi-agent trial evidence. The Codex Plugin begins as a repo-distributed, skill-first adapter over the public PurposeBus CLI; an MCP server or broader surface support requires measured evidence and a later accepted decision. This PERT is planning evidence only and does not authorize commits, pushes, Issues, plugin installation, marketplace changes, submissions, tags, releases, deployments, or other external writes."
   as_of 2026-08-31
@@ -9,6 +9,17 @@ project PURPOSEBUS_ROADMAP:
   goal_owner user
   dag_owner user
 
+
+milestone_acceptance_migration GRAMMAR_7_BASELINE:
+  model 1
+  repository git:sha1:0493c64da79663409f157d2f1696caf649432325:index:750df64a73d4d6421bfaadf9c8402e0ef118b0e8
+  path "plans/purposebus-roadmap.pert"
+  object_format sha1
+  head 0493c64da79663409f157d2f1696caf649432325
+  blob 750df64a73d4d6421bfaadf9c8402e0ef118b0e8
+  source_digest sha256:6344e89200ee09bcef6fae67bff99fee99fb6f86dd16e0adbb86c3da6b628f54
+  candidate_digest sha256:bb16ded37ec65a2c06a81328ffe209703b390f5b0192619118a993335a1e9fe0
+  grandfathered LOCAL_PROTOTYPE
 milestone LOCAL_PROTOTYPE:
   title "Executable local prototype available"
   state reached
@@ -82,6 +93,7 @@ task T_MVP_FREEZE_CONTRACT LOCAL_PROTOTYPE -> MVP_CONTRACT_FROZEN:
     optimistic 0.5d
     most_likely 1d
     pessimistic 2d
+  status done
   priority 100
   requires:
     CODEX 1
@@ -95,6 +107,7 @@ task T_MVP_EXPLICIT_CONTEXT MVP_CONTRACT_FROZEN -> MVP_CONTEXT_FIXED:
     optimistic 1d
     most_likely 2d
     pessimistic 4d
+  status done
   priority 95
   requires:
     CODEX 1
@@ -107,6 +120,7 @@ task T_MVP_REQUEST_ROUTING MVP_CONTEXT_FIXED -> MVP_REQUEST_ROUTING_FIXED:
     optimistic 1d
     most_likely 2d
     pessimistic 4d
+  status done
   priority 90
   requires:
     CODEX 1
@@ -119,6 +133,7 @@ task T_MVP_NAVIGATION MVP_REQUEST_ROUTING_FIXED -> MVP_NAVIGATION_FIXED:
     optimistic 1d
     most_likely 2d
     pessimistic 3d
+  status done
   priority 85
   requires:
     CODEX 1
@@ -131,6 +146,7 @@ task T_MVP_ACCEPTANCE MVP_NAVIGATION_FIXED -> MVP_ACCEPTANCE_READY:
     optimistic 1d
     most_likely 3d
     pessimistic 5d
+  status done
   priority 80
   requires:
     CODEX 1
@@ -308,3 +324,86 @@ task T_V1_PLUGIN_PACKAGE V0_9_RC_ACCEPTED -> V1_PLUGIN_PACKAGE_READY:
     CODEX 1
     REVIEW 1
   source "V0_9_RC_ACCEPTED; OpenAI Plugin packaging and testing guidance; provisional"
+
+work_event WE-d3c8e46d64b8e9e2ab6a7b26ced595c5bfb5dc94d2ad2e3384d2f2f4fa339f7f:
+  model 1
+  task T_MVP_FREEZE_CONTRACT
+  kind start
+  occurred_at 2026-08-31T18:02:35+09:00
+  planned_value 13/12d
+
+work_event WE-f767d7e3d112488e6bf3f7d84b4d2edbc2301d8cc3134cc021de6a286babe10c:
+  model 1
+  task T_MVP_FREEZE_CONTRACT
+  kind finish
+  occurred_at 2026-08-31T18:27:00+09:00
+
+work_event WE-433e1d24b1c75b88a895150bd3c3255c86d83f00a0becdecd461be69df159606:
+  model 1
+  task T_MVP_EXPLICIT_CONTEXT
+  kind start
+  occurred_at 2026-08-31T18:28:00+09:00
+  planned_value 13/6d
+
+work_event WE-3f91dc5fcfc9c1d558761b978a7ae9ee4da52b57cf08817ff8bcf0e87a19f1f9:
+  model 1
+  task T_MVP_EXPLICIT_CONTEXT
+  kind finish
+  occurred_at 2026-08-31T18:29:00+09:00
+
+work_event WE-88610e5f4dcafe102dc759b46d3d738606a9045a68400c790abeff3ef1249096:
+  model 1
+  task T_MVP_REQUEST_ROUTING
+  kind start
+  occurred_at 2026-08-31T18:30:00+09:00
+  planned_value 13/6d
+
+work_event WE-f843874be21e34c0a78729f80ad9978cb582541ee57f8359ae81b174744b3937:
+  model 1
+  task T_MVP_REQUEST_ROUTING
+  kind finish
+  occurred_at 2026-08-31T18:31:00+09:00
+
+work_event WE-c22687b519349855cb7171c78aae885c0672b9f25d236589dd9a3a6bb6fc934d:
+  model 1
+  task T_MVP_NAVIGATION
+  kind start
+  occurred_at 2026-08-31T18:32:00+09:00
+  planned_value 2d
+
+work_event WE-fe2fc0fa2752514c35ddb5bb6c434ffe912cb15f7594f8449f1c5bc9b7af7c82:
+  model 1
+  task T_MVP_NAVIGATION
+  kind finish
+  occurred_at 2026-08-31T18:33:00+09:00
+
+work_event WE-9b69ccf9b872f834ff3293ecc9234e7a9f4eb00cf960186084b1fd202106e9f2:
+  model 1
+  task T_MVP_ACCEPTANCE
+  kind start
+  occurred_at 2026-08-31T18:34:00+09:00
+  planned_value 3d
+
+work_event WE-ad5189ac355e517463ac2945a3327bcdcf1afbf3f148c3e258ebafcde0e208f9:
+  model 1
+  task T_MVP_ACCEPTANCE
+  kind finish
+  occurred_at 2026-08-31T18:45:00+09:00
+
+milestone_criterion_set MVP_OWNER_ACCEPTANCE:
+  milestone MVP_0_1_ACCEPTED
+  revision R1
+  commitment sha256:de2fb917bbd80e1c87e9c83c0155355e59e924de55f88c4e88a42a6edc9ab739
+  criterion OWNER_ACCEPTANCE required owner "Owner accepts the bounded MVP contract and evidence"
+
+milestone_criterion_set RC_OWNER_ACCEPTANCE:
+  milestone V0_9_RC_ACCEPTED
+  revision R1
+  commitment sha256:404c5bd7c1005c4637752cfebebd85c94f099270cf49c5626b0f5481aa02edc6
+  criterion OWNER_ACCEPTANCE required owner "Owner accepts the release-candidate contract known limitations and evidence"
+
+milestone_criterion_set V1_RELEASE_AUTHORIZATION:
+  milestone V1_RELEASE_AUTHORIZED
+  revision R1
+  commitment sha256:843d6c367a436c29c9d46208ec8d85a5864fe4659193d10e57d65d5d604575d5
+  criterion EXPLICIT_AUTHORIZATION required owner "Owner authorizes exact candidates destinations refs artifacts and maximum external writes"

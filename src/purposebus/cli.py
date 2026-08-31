@@ -104,6 +104,12 @@ def _owner_arguments(parser: argparse.ArgumentParser) -> None:
     group.add_argument("--instance", dest="owner_instance")
 
 
+def _actor_arguments(parser: argparse.ArgumentParser) -> None:
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--agent", dest="actor_agent")
+    group.add_argument("--instance", dest="actor_instance")
+
+
 def _owner(args) -> tuple[str, str]:
     if getattr(args, "owner_agent", None):
         return "agent", validate_identifier(args.owner_agent, "Agent ID")
@@ -173,6 +179,7 @@ def build_parser() -> Parser:
     for action in ("pause", "resume", "cancel"):
         action_parser = subscription_commands.add_parser(action, help=f"{action} one Subscription")
         action_parser.add_argument("subscription_id")
+        _actor_arguments(action_parser)
 
     offer = commands.add_parser("offer", help="manage current publishable declarations")
     offer_commands = offer.add_subparsers(dest="offer_command", required=True)
@@ -189,6 +196,7 @@ def build_parser() -> Parser:
     for action in ("pause", "resume", "cancel"):
         action_parser = offer_commands.add_parser(action, help=f"{action} one Offer")
         action_parser.add_argument("offer_id")
+        _actor_arguments(action_parser)
 
     request = commands.add_parser("request", help="manage one-shot expiring information needs")
     request_commands = request.add_subparsers(dest="request_command", required=True)
@@ -206,6 +214,7 @@ def build_parser() -> Parser:
     request_show.add_argument("request_id")
     request_cancel = request_commands.add_parser("cancel", help="cancel one Request")
     request_cancel.add_argument("request_id")
+    _actor_arguments(request_cancel)
 
     publish = commands.add_parser("publish", help="publish one Message")
     publish.add_argument("topic")
@@ -241,7 +250,7 @@ def build_parser() -> Parser:
 
     ack = commands.add_parser("ack", help="acknowledge one leased Delivery")
     ack.add_argument("delivery_id")
-    ack.add_argument("--instance", required=True)
+    _actor_arguments(ack)
 
     commands.add_parser("match", help="show matching Offers and unmet demand")
     commands.add_parser("status", help="show Partition and Instance status")
@@ -282,8 +291,8 @@ def _human_lines(value, indent=0):
         yield f"{prefix}{value}"
 
 
-def emit(args, schema: str, result, partition=None) -> None:
-    document = {"schema": schema, "result": result}
+def emit(args, schema: str, result, partition=None, actor=None) -> None:
+    document = {"schema": schema, "actor": actor, "result": result}
     if partition is not None:
         document["partition"] = partition.as_dict()
     if args.format == "json":
@@ -312,6 +321,72 @@ def _nonempty(value: str, label: str) -> str:
     if not value.strip():
         raise InvalidInput(f"{label} must not be empty")
     return value
+
+
+def _actor(args) -> tuple[str, str]:
+    if getattr(args, "actor_agent", None):
+        return "agent", validate_identifier(args.actor_agent, "Agent ID")
+    return "instance", validate_identifier(args.actor_instance, "Instance ID")
+
+
+def _identity(identity_type: str, identity_id: str) -> dict:
+    return {"type": identity_type, "id": identity_id}
+
+
+def _output_actor(args, result) -> dict | None:
+    if args.command == "agent" and args.agent_command == "register":
+        return _identity("agent", result["agent_id"])
+    if args.command == "instance":
+        if args.instance_command == "start":
+            return _identity("instance", result["instance_id"])
+        if args.instance_command in {"heartbeat", "stop"}:
+            return _identity("instance", args.instance_id)
+    if args.command in {"subscription", "offer"}:
+        subcommand = getattr(args, f"{args.command}_command")
+        if subcommand == "add":
+            owner_type, owner_id = _owner(args)
+            return _identity(owner_type, owner_id)
+        if subcommand in {"pause", "resume", "cancel"}:
+            actor_type, actor_id = _actor(args)
+            return _identity(actor_type, actor_id)
+    if args.command == "request":
+        if args.request_command == "create":
+            owner_type, owner_id = _owner(args)
+            return _identity(owner_type, owner_id)
+        if args.request_command == "cancel":
+            actor_type, actor_id = _actor(args)
+            return _identity(actor_type, actor_id)
+    if args.command in {"publish", "poll", "next"}:
+        return _identity("instance", args.instance)
+    if args.command == "ack":
+        actor_type, actor_id = _actor(args)
+        return _identity(actor_type, actor_id)
+    return None
+
+
+def _normalize_global_options(argv: list[str]) -> list[str]:
+    """Allow root context options on either side of a nested subcommand."""
+    value_options = {"--partition", "--state-dir", "--format", "--at"}
+    global_arguments: list[str] = []
+    command_arguments: list[str] = []
+    index = 0
+    while index < len(argv):
+        value = argv[index]
+        option = value.split("=", 1)[0]
+        if option in value_options:
+            global_arguments.append(value)
+            if "=" not in value:
+                if index + 1 >= len(argv):
+                    global_arguments.append("")
+                else:
+                    index += 1
+                    global_arguments.append(argv[index])
+        elif value == "--version":
+            global_arguments.append(value)
+        else:
+            command_arguments.append(value)
+        index += 1
+    return global_arguments + command_arguments
 
 
 def _read_store(partition) -> Store:
@@ -384,7 +459,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
     now = parse_time(args.at)
 
     if args.command == "help":
-        return "purposebus.help.v1", {"topic": args.topic, "text": HELP_TOPICS[args.topic]}, None
+        return "purposebus.help.v1", {"topic": args.topic, "text": HELP_TOPICS[args.topic]}, partition
     if args.command == "init":
         store, created = Store.initialize(partition, now)
         try:
@@ -471,10 +546,13 @@ def dispatch(args) -> tuple[str, object, object | None]:
                 )
             return "purposebus.subscription-add.v1", result, partition
         if args.subscription_command in {"pause", "resume", "cancel"}:
+            actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
                 result = store.change_subscription(
                     validate_identifier(args.subscription_id, "Subscription ID"),
                     args.subscription_command,
+                    actor_type,
+                    actor_id,
                     now,
                 )
             return f"purposebus.subscription-{args.subscription_command}.v1", result, partition
@@ -505,9 +583,14 @@ def dispatch(args) -> tuple[str, object, object | None]:
                 )
             return "purposebus.offer-add.v1", result, partition
         if args.offer_command in {"pause", "resume", "cancel"}:
+            actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
                 result = store.change_offer(
-                    validate_identifier(args.offer_id, "Offer ID"), args.offer_command, now
+                    validate_identifier(args.offer_id, "Offer ID"),
+                    args.offer_command,
+                    actor_type,
+                    actor_id,
+                    now,
                 )
             return f"purposebus.offer-{args.offer_command}.v1", result, partition
         with _read_store(partition) as store:
@@ -555,9 +638,14 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     result = request
             return "purposebus.request-create.v1", result, partition
         if args.request_command == "cancel":
+            actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
                 result = store.change_subscription(
-                    validate_identifier(args.request_id, "Request ID"), "cancel", now
+                    validate_identifier(args.request_id, "Request ID"),
+                    "cancel",
+                    actor_type,
+                    actor_id,
+                    now,
                 )
             return "purposebus.request-cancel.v1", result, partition
         with _read_store(partition) as store:
@@ -579,6 +667,8 @@ def dispatch(args) -> tuple[str, object, object | None]:
         else:
             payload_kind = "reference"
             payload_text = args.reference
+        if args.artifact_digest is not None and payload_kind != "reference":
+            raise InvalidInput("--artifact-digest requires --reference")
         validate_inline(payload_text)
         with _write_store(partition) as store:
             result = store.publish(
@@ -637,10 +727,12 @@ def dispatch(args) -> tuple[str, object, object | None]:
         return "purposebus.poll.v1", result, partition
 
     if args.command == "ack":
+        actor_type, actor_id = _actor(args)
         with _write_store(partition) as store:
             result = store.ack(
                 validate_identifier(args.delivery_id, "Delivery ID"),
-                validate_identifier(args.instance, "Instance ID"),
+                actor_type,
+                actor_id,
                 now,
             )
         return "purposebus.ack.v1", result, partition
@@ -685,12 +777,12 @@ def main(argv=None) -> int:
     )
     args = argparse.Namespace(format="json" if requested_json else "human")
     try:
-        args = parser.parse_args(effective_argv)
+        args = parser.parse_args(_normalize_global_options(effective_argv))
         schema, result, partition = dispatch(args)
         if args.command == "help" and args.format == "human":
             print(result["text"].rstrip())
         else:
-            emit(args, schema, result, partition)
+            emit(args, schema, result, partition, _output_actor(args, result))
         return 0
     except PurposeBusError as exc:
         emit_error(args, exc)

@@ -1,0 +1,1 @@
+{"schema":"sealgraph/recovery/v1","operation_id":"f8ac67ad97fe245421f8cdd540dc057a","state":"COMMITTED","kind":"seal","transitions":[{"ref":"evidence/purposebus-mvp-acceptance","before":null,"after":"eyJzY2hlbWEiOiJzZWFsZ3JhcGgvcmVmL3YxIiwiaGVhZCI6IjAwZTI1MjA2N2M3MTE1NTBlNTg0NWQ5MzI4YjhmYTA0YzQ3NjRiZmMxZTQ5NzQ0NWJkYzE0OGU3Y2FhMTNkNDgiLCJ0YWdzIjpbXX0="}]}

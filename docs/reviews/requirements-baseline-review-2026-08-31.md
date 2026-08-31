@@ -110,3 +110,39 @@ The baseline does not choose the implementation architecture. A successful
 prototype must produce evidence for waiting visibility, durable restart
 recovery, concurrency, and practical operator value before daemon, transport,
 or performance decisions are promoted to requirements.
+
+## MVP contract addendum
+
+The remaining MVP ambiguities were resolved on 2026-08-31 before candidate
+acceptance:
+
+- Request correlation is an exact delivery constraint for ordinary and
+  retained Messages.
+- Artifact digests apply only to opaque reference payloads.
+- Lifecycle changes require one explicit actor and enforce Agent-family
+  ownership; bootstrap self-creation remains explicit.
+- An Agent may directly acknowledge its queued or lease-expired Agent-owned
+  Delivery, but may not steal an active Instance lease or acknowledge an
+  Instance-owned Delivery.
+- Global context and output options are accepted before or after subcommands,
+  and JSON output carries resolved Partition and actor context.
+
+These decisions narrow behavior inside the existing same-host, same-user MVP;
+they do not add authentication, delegation, scheduling, remote transport, or
+authority to execute matched work. Negative tests cover missing, ambiguous,
+stopped, and non-owner actors; absent and mismatched correlation; schema and
+expiry rejection; retained correlation; active-lease protection; and invalid
+digest placement. The condition-to-test mapping is recorded separately in
+`docs/mvp-acceptance.md`.
+
+Reviewed addendum SHA-256 values:
+
+| File | SHA-256 |
+| --- | --- |
+| `docs/requirements.md` | `47465078e15ca9f6b24d2f1ee3e330e689bd0ac0c5601245f5efeeaa9f4ea9db` |
+| `docs/use-cases.md` | `95bb0985a7b144bd4a2e5cb9641fb354c6367bea73409db4204c8977c5e9d50b` |
+| `docs/implementation-status.md` | `96b84abc62495d14b44291b800f2ec7bcb3c127c39cfdfd6a0c746c845a66f30` |
+| `docs/mvp-acceptance.md` | `54e297e0b86f62c831e5c417521b706d1f3ce73fecbb966835bb29116e624f05` |
+
+The addendum is consistent with the original intent and invariants and is
+ready to serve as candidate evidence. Owner acceptance remains a separate gate.
