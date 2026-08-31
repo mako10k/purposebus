@@ -1,0 +1,20 @@
+{
+  "name": "purposebus-local",
+  "interface": {
+    "displayName": "PurposeBus Local"
+  },
+  "plugins": [
+    {
+      "name": "purposebus",
+      "source": {
+        "source": "local",
+        "path": "./plugins/purposebus"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

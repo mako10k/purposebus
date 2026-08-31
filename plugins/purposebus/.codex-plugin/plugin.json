@@ -1,0 +1,26 @@
+{
+  "name": "purposebus",
+  "version": "0.1.0",
+  "description": "Coordinate local human and AI agents through the PurposeBus CLI.",
+  "author": {
+    "name": "Makoto Katsumata",
+    "url": "https://github.com/mako10k"
+  },
+  "homepage": "https://github.com/mako10k/purposebus",
+  "repository": "https://github.com/mako10k/purposebus",
+  "keywords": ["agents", "coordination", "local-first", "purposebus"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "PurposeBus",
+    "shortDescription": "Coordinate agents in a local PurposeBus Partition.",
+    "longDescription": "Discover agents, inspect purpose-aware work, and perform explicitly requested coordination through the public PurposeBus CLI.",
+    "developerName": "Makoto Katsumata",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Show PurposeBus status and explain the next work.",
+      "Find matching PurposeBus offers for this repository.",
+      "Help me send an explicit PurposeBus request."
+    ]
+  }
+}

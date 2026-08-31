@@ -1,0 +1,3 @@
+interface:
+  display_name: "PurposeBus"
+  short_description: "Coordinate local agents through PurposeBus"

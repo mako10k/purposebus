@@ -276,7 +276,7 @@ task T_CODEX_PLUGIN_CONTRACT MVP_0_1_ACCEPTED -> CODEX_PLUGIN_CONTRACT_FROZEN:
     optimistic 0.5d
     most_likely 1d
     pessimistic 2d
-  status planned
+  status done
   priority 75
   requires:
     CODEX 1
@@ -290,7 +290,7 @@ task T_CODEX_PLUGIN_PROTOTYPE CODEX_PLUGIN_CONTRACT_FROZEN -> CODEX_PLUGIN_LOCAL
     optimistic 1d
     most_likely 2d
     pessimistic 4d
-  status planned
+  status active
   priority 72
   requires:
     CODEX 1

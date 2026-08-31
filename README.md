@@ -94,6 +94,19 @@ stale-state warnings without authorizing unrelated work.
 The direct SQLite architecture, verified behavior, and remaining experiment
 frontier are recorded in [the implementation status](docs/implementation-status.md).
 
+## Codex Plugin prototype
+
+The repository includes a local, Skill-first Codex Plugin under
+`plugins/purposebus/` and a repo marketplace at
+`.agents/plugins/marketplace.json`. The Plugin uses only the public
+`purposebus` CLI and does not access SQLite or add an MCP server. Its supported
+surfaces, identity and permission rules, installation boundary, and validation
+status are defined in [the Codex Plugin contract](docs/codex-plugin.md).
+
+Creating the repository package does not install or publish the Plugin. A new
+Codex or ChatGPT desktop session is required after a separately authorized
+local installation.
+
 ## Development checks
 
 ```sh
