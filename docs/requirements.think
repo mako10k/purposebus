@@ -1,0 +1,169 @@
+framework AGQRequirementsReview:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain AGQ:
+  description "Local-first coordination queue for human and AI agent instances"
+
+problem P1:
+  |
+    What protocol boundary lets AGQ use MQTT-like topic matching without
+    committing the MVP to MQTT compatibility or remote transport?
+
+problem P2:
+  |
+    Which distinct entities are required to explain stable identity, concrete
+    processes, demand, supply, messages, delivery, and project scope?
+
+problem P3:
+  "How should an information need or offer explain why it exists?"
+
+problem P4:
+  |
+    How can discovery and matching remain coordination facts without becoming
+    permission to perform or publish unrelated work?
+
+problem P5:
+  "What is the smallest useful and safe communication boundary for the MVP?"
+
+problem P6:
+  "Which delivery semantics are sufficient to test the first handoff effects?"
+
+problem P7:
+  |
+    How can status distinguish current activity from process liveness for both
+    human and AI participants?
+
+problem P8:
+  "How should an unfamiliar human or Agent discover and consume the CLI?"
+
+problem P9:
+  "How can existing Agent processes participate without a mandatory launcher?"
+
+problem P10:
+  |
+    Which architecture choices must remain open until a narrow experiment tests
+    durability, waiting visibility, restart recovery, and concurrency?
+
+step S1:
+  premise PR1:
+    |
+      The requested product must show which agent wants or can provide which
+      information and for what purpose.
+
+step S2:
+  premise PR2:
+    "A user participates through the same agent-instance model as AI agents"
+
+step S3:
+  premise PR3:
+    "Project directories are intended to define default communication boundaries"
+
+step S4:
+  premise PR4:
+    |
+      The first implementation is intended to test behavior and usefulness
+      before remote federation or complete MQTT compatibility.
+
+step S5:
+  premise PR5:
+    |
+      A process identifier can be absent, remote, or reused and therefore is
+      insufficient as a stable agent-instance identity.
+
+step S6:
+  evidence EV1:
+    |
+      The inspected secdat CLI exposes task-oriented usecases, concepts,
+      command groups, detailed help routes, and remediation-oriented navigation.
+
+step S7:
+  evidence EV2:
+    |
+      The inspected perttool CLI exposes a complete resource-oriented command
+      catalog and stable machine-readable workflow contracts.
+
+step S8:
+  decision D1 based_on P1, PR1, PR4:
+    |
+      AGQ is a coordination queue inspired by MQTT topic matching, not an MQTT
+      protocol implementation.
+
+step S9:
+  decision D2 based_on P2, PR1, PR2:
+    |
+      The core model separates stable Agent, concrete Instance, Subscription,
+      Offer, Message, subscriber-specific Delivery, and Partition.
+
+step S10:
+  decision D3 based_on P3, PR1:
+    |
+      Every Subscription and Offer requires a non-empty purpose, while stable
+      capability metadata remains in the Agent registry.
+
+step S11:
+  decision D4 based_on P4, PR1:
+    |
+      Offer declaration, matching, publication, and execution authority remain
+      separate facts.
+
+step S12:
+  decision D5 based_on P5, PR3, PR4:
+    |
+      The MVP is same-host and same-user, defaults to a canonical project-root
+      Partition, and performs no implicit cross-partition communication.
+
+step S13:
+  decision D6 based_on P6, PR4:
+    |
+      The MVP uses durable broadcast delivery with subscriber-specific
+      acknowledgement, bounded leases, at-least-once recovery, and optional
+      explicit retention.
+
+step S14:
+  decision D7 based_on P7, PR2, PR5:
+    |
+      Activity and liveness are orthogonal, PID is supporting evidence only, and
+      an offline human mailbox does not imply a dead human Agent.
+
+step S15:
+  decision D8 based_on P8, EV1, EV2:
+    |
+      The public CLI uses agent-neutral English, hierarchical help, concepts and
+      usecases, versioned JSON, and a read-only next-action surface.
+
+step S16:
+  decision D9 based_on P9, PR4:
+    |
+      Existing agent processes self-register and heartbeat through commands; an
+      AGQ process wrapper is not required for the MVP.
+
+step S17:
+  decision D10 based_on P10, PR4:
+    |
+      The architecture experiment must preserve durable restart recovery and
+      visible blocking waits but may choose a broker process or bounded direct
+      polling.
+
+step S18:
+  pending PD1:
+    |
+      The MVP architecture has not selected a background daemon, Unix socket
+      protocol, direct database model, implementation language, or package
+      format.
+
+step S19:
+  pending PD2:
+    |
+      Remote transport, competing-consumer queues, rich schema negotiation, and
+      automatic tool adapters remain outside the MVP.
+
+step S20:
+  pending PD3:
+    |
+      Quantitative performance targets will be set after the functional
+      prototype produces repeatable measurements.
+
+query Q1:
+  .document.steps[].statement | select(.role == "decision" and len(.based_on) > 0)
