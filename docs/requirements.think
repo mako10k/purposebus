@@ -1,14 +1,14 @@
-framework AGQRequirementsReview:
+framework PurposeBusRequirementsReview:
   requires problem and decision
   requires premise and evidence
   warns pending
 
-domain AGQ:
+domain PurposeBus:
   description "Local-first coordination queue for human and AI agent instances"
 
 problem P1:
   |
-    What protocol boundary lets AGQ use MQTT-like topic matching without
+    What protocol boundary lets PurposeBus use MQTT-like topic matching without
     committing the MVP to MQTT compatibility or remote transport?
 
 problem P2:
@@ -87,7 +87,7 @@ step S7:
 step S8:
   decision D1 based_on P1, PR1, PR4:
     |
-      AGQ is a coordination queue inspired by MQTT topic matching, not an MQTT
+      PurposeBus is a coordination queue inspired by MQTT topic matching, not an MQTT
       protocol implementation.
 
 step S9:
@@ -137,7 +137,7 @@ step S16:
   decision D9 based_on P9, PR4:
     |
       Existing agent processes self-register and heartbeat through commands; an
-      AGQ process wrapper is not required for the MVP.
+      PurposeBus process wrapper is not required for the MVP.
 
 step S17:
   decision D10 based_on P10, PR4:

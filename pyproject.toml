@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "purposebus"
+version = "0.1.0a0"
+description = "Purpose-aware coordination bus for human and AI agents"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "Makoto Katsumata"}]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Topic :: System :: Distributed Computing",
+]
+
+[project.scripts]
+purposebus = "purposebus.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

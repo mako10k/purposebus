@@ -1,15 +1,15 @@
-# AGQ MVP requirements
+# PurposeBus MVP requirements
 
 Status: initial implementation baseline
 
 Date: 2026-08-31
 
-This document is the normative requirements source for the first AGQ
+This document is the normative requirements source for the first PurposeBus
 implementation. `MUST`, `MUST NOT`, `SHOULD`, and `MAY` are normative.
 
 ## 1. Objective
 
-AGQ MUST provide a command-oriented, local-first coordination queue in which
+PurposeBus MUST provide a command-oriented, local-first coordination queue in which
 human and AI agents can discover one another, declare purpose-bearing
 information needs and offers, publish information, wait for durable delivery,
 acknowledge it, and inspect instance state inside an explicit project
@@ -48,7 +48,7 @@ stale or dead.
 ### INV-003: PID is an observation, not identity or authority
 
 PID alone MUST NOT establish Instance identity or authorization. When local
-process probing is available, AGQ MUST combine host identity, boot identity,
+process probing is available, PurposeBus MUST combine host identity, boot identity,
 PID, and process start identity sufficiently to detect ordinary PID reuse. If
 that evidence is unavailable, liveness MUST be `unknown` rather than guessed.
 
@@ -72,7 +72,7 @@ NOT perform implicit cross-partition discovery or delivery.
 
 ### INV-007: A communication boundary is not an OS security boundary
 
-AGQ MUST describe Partition containment as an application-level routing and
+PurposeBus MUST describe Partition containment as an application-level routing and
 visibility rule. It MUST NOT claim that a Partition replaces filesystem
 permissions, OS identity, a sandbox, or authorization.
 
@@ -80,9 +80,9 @@ permissions, OS identity, a sandbox, or authorization.
 
 ### FR-001: Partition resolution
 
-- With no override, AGQ MUST resolve the canonical Git worktree root containing
+- With no override, PurposeBus MUST resolve the canonical Git worktree root containing
   the current directory.
-- Outside a Git worktree, AGQ MUST use the canonical current directory.
+- Outside a Git worktree, PurposeBus MUST use the canonical current directory.
 - `--partition PATH` MUST allow an explicit path-based Partition.
 - Resolution MUST normalize symbolic and relative paths before deriving the
   stable Partition identity.
@@ -95,7 +95,7 @@ strongest normal same-user file permissions available on the platform.
 
 ### FR-002: Agent registry
 
-AGQ MUST register, list, and show stable Agents inside the resolved Partition. A
+PurposeBus MUST register, list, and show stable Agents inside the resolved Partition. A
 registry record MUST include:
 
 - an explicit `agent_id` that is unique within the Partition;
@@ -112,17 +112,17 @@ separately in multiple Partitions, but those records remain independent.
 
 ### FR-003: Instance lifecycle
 
-AGQ MUST start/register, heartbeat, stop, list, and inspect Instances. An active
+PurposeBus MUST start/register, heartbeat, stop, list, and inspect Instances. An active
 record MUST contain an `instance_id`, owning `agent_id`, Partition, current
 objective, activity, heartbeat timestamp, and lease expiry. Host, boot, PID, and
 process-start observations MUST be recorded when available.
 
 Existing agents MUST be able to self-register and heartbeat through commands;
-launching the process through an AGQ wrapper MUST NOT be required for the MVP.
+launching the process through a PurposeBus wrapper MUST NOT be required for the MVP.
 
 ### FR-004: Liveness projection
 
-AGQ MUST derive `alive`, `stale`, `dead`, or `unknown` from explicit stop state,
+PurposeBus MUST derive `alive`, `stale`, `dead`, or `unknown` from explicit stop state,
 heartbeat lease, and safe local process observations. Human output MUST explain
 the decisive observation. JSON output MUST expose both the derived value and
 its evidence source.
@@ -158,7 +158,7 @@ provider has authority to obtain it.
 
 ### FR-007: Matching and unmet demand
 
-AGQ MUST match active Subscriptions or Requests to active Offers within the same
+PurposeBus MUST match active Subscriptions or Requests to active Offers within the same
 Partition using topic filters and exact schema identifiers when both sides
 declare a schema. It MUST report:
 
@@ -214,7 +214,7 @@ Message, is outside the MVP.
 ### FR-011: Polling and waiting visibility
 
 An Instance MUST be able to poll immediately or wait up to an explicit timeout.
-During a blocking wait, AGQ MUST project that Instance as `activity=waiting` and
+During a blocking wait, PurposeBus MUST project that Instance as `activity=waiting` and
 expose the wait start, deadline, and relevant Subscription or topic selection.
 Normal return, interruption, or detected process loss MUST prevent a permanent
 false `waiting` state.
@@ -222,7 +222,7 @@ false `waiting` state.
 ### FR-012: Acknowledgement and recovery
 
 Acknowledgement MUST name an exact Delivery and owning Instance or Agent. It
-MUST be idempotent for the same Delivery. After process or AGQ restart, all
+MUST be idempotent for the same Delivery. After process or PurposeBus restart, all
 successfully committed, unexpired, unacknowledged Deliveries MUST remain
 recoverable.
 
@@ -243,7 +243,7 @@ its liveness is then `unknown` or absent, not falsely `dead`.
 
 ### FR-015: Current-state inspection
 
-AGQ MUST provide read-only commands to inspect:
+PurposeBus MUST provide read-only commands to inspect:
 
 - the Partition and storage health;
 - Agents and Instances;
@@ -254,7 +254,7 @@ AGQ MUST provide read-only commands to inspect:
 
 ### FR-016: Agent-oriented next actions
 
-`agq next` MUST return the current Agent or Instance's unread Deliveries,
+`purposebus next` MUST return the current Agent or Instance's unread Deliveries,
 matching Requests, acknowledgement work, heartbeat needs, and stale-state
 warnings. Every item MUST include a reason and an explicit command or help route
 when one exists.
@@ -272,9 +272,9 @@ observation, expiry, lease timeout, and operator action.
 ### FR-018: Secret and artifact handling
 
 The MVP MUST NOT resolve credentials or secret references automatically. Users
-and agents MUST NOT place raw secrets in inline payloads. AGQ MAY transport an
+and agents MUST NOT place raw secrets in inline payloads. PurposeBus MAY transport an
 opaque reference, but reading the referenced artifact remains a separate action
-under the caller's existing authority. AGQ MUST NOT claim that an opaque
+under the caller's existing authority. PurposeBus MUST NOT claim that an opaque
 reference is safe merely because it resembles a `secdat` key reference.
 
 ## 5. CLI requirements
@@ -332,20 +332,20 @@ The MVP command surface MUST cover these workflows, though final spelling MAY
 be refined before implementation acceptance:
 
 ```text
-agq init
-agq agent register|list|show
-agq instance start|heartbeat|stop|list|show
-agq subscription add|list|pause|resume|cancel
-agq offer add|list|pause|resume|cancel
-agq request create|list|show|cancel
-agq publish
-agq poll
-agq ack
-agq match
-agq status
-agq next
-agq events
-agq help usecases|concepts|partitions|agent
+purposebus init
+purposebus agent register|list|show
+purposebus instance start|heartbeat|stop|list|show
+purposebus subscription add|list|pause|resume|cancel
+purposebus offer add|list|pause|resume|cancel
+purposebus request create|list|show|cancel
+purposebus publish
+purposebus poll
+purposebus ack
+purposebus match
+purposebus status
+purposebus next
+purposebus events
+purposebus help usecases|concepts|partitions|agent
 ```
 
 ## 6. Non-functional requirements
@@ -417,7 +417,7 @@ developer's live queue or ambient project Partition.
    matching, retained delivery, or ordinary delivery.
 9. Repeating an identical publication idempotency key produces one Message;
    changing content under that key fails without changing the original.
-10. `agq next --format json` explains unread data, matched demand, heartbeat
+10. `purposebus next --format json` explains unread data, matched demand, heartbeat
     needs, and stale warnings without mutating state.
 11. Help exposes the complete command catalog, concepts, use cases, Partition
     behavior, JSON schema identities, and remediation routes.
@@ -432,7 +432,7 @@ developer's live queue or ambient project Partition.
 - Competing-consumer work queues.
 - Exactly-once delivery.
 - Agent scheduling, automatic delegation, or automatic task execution.
-- Treating `agq next` as authority to act.
+- Treating `purposebus next` as authority to act.
 - Secret storage, secret-value inspection, or automatic `secdat` resolution.
 - General artifact storage beyond bounded inline payloads and opaque references.
 - Semantic schema negotiation beyond absent or exact schema identifiers.

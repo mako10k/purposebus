@@ -1,4 +1,4 @@
-# AGQ requirements baseline self-review
+# PurposeBus requirements baseline self-review
 
 Status: review complete; suitable for the bounded MVP architecture experiment
 
@@ -7,18 +7,18 @@ Date: 2026-08-31
 ## Scope
 
 This review covers the initial intent, reasoning, normative requirements, and
-effect-oriented use cases. It does not review an implementation because none
-exists yet. It does not establish performance, remote-operation, security, or
-production-readiness evidence.
+effect-oriented use cases. It did not review the later implementation. It does
+not establish performance, remote-operation, security, or production-readiness
+evidence.
 
 Reviewed file SHA-256 values:
 
 | File | SHA-256 |
 | --- | --- |
-| `docs/intent.md` | `733f15874315e56e298d668804915cec50e3955a3b8c4a874842663bedfdc5fa` |
-| `docs/requirements.think` | `324085c31b87fa2ad6abb16bcbcff4027380b68dffbe2085e7725adf2184e73e` |
-| `docs/requirements.md` | `5f302f3f993c93ac05b2913a8b91914605ad844fd75fdfa9df6f172a59a2835c` |
-| `docs/use-cases.md` | `f152ba16b9a92c6f5b22cf05a33f30d7b90c10b9c2267a0dffdcda1fb880323c` |
+| `docs/intent.md` | `e3bb64359e3f88edd0c7f4a269a75d19000b0d83fc50dc4d3ea200b01a489eb0` |
+| `docs/requirements.think` | `58f44b33ef274852c9011dbcfb8b4efcc1e4d011747792c33985c760c82adc49` |
+| `docs/requirements.md` | `d3322e7c4b599c4694ca2754369a196d992a70374d1a2d934d1695bd906c6086` |
+| `docs/use-cases.md` | `87cb27a09a1a86bf27d353d035ce25b5151b0b683d6aff3728985f70245047ed` |
 
 ## LLMThink review
 
@@ -90,12 +90,12 @@ The reviewed input chain was sealed upstream-first with local source bindings:
 
 | REF | Head Seal | Cause |
 | --- | --- | --- |
-| `intent/agq-mvp` | `0339bbbab4a85eabf2752d07e454b317f5b1098083b92eb96d35332886cf8cdb` | root |
-| `reasoning/agq-mvp` | `8ec4907ce67da9a5c6f107367361b459f28b83caccc5bad4bdb8f38c4673d313` | intent |
-| `requirements/agq-mvp` | `3835a93b265e6acd117a8ef5d5e05f186d17740b4e7325aa74f98732fc2dfadb` | reasoning |
-| `usecases/agq-mvp` | `ef3a97c17423f2fc7c7f2eb9ed2863176636152ac9f079cd72761e6c797c9afe` | requirements |
+| `intent/purposebus-mvp` | `9d7ac116836e0b22ac17dd2d0cf9c1830ef4cb109ca222ad7d700af7a5bf394e` | root |
+| `reasoning/purposebus-mvp` | `74e25da61d7cb9179c57f63ea224c9c6f079c03d2237bd94074f3fd2fdbdb02e` | intent |
+| `requirements/purposebus-mvp` | `44e381c76729fe9b8639f4d14a86ec53a28924dd213650579035446127b34261` | reasoning |
+| `usecases/purposebus-mvp` | `e7a92aa0be716828b2f44993d65c996c4496782c421f014f82d04a863f90f8f9` | requirements |
 
-This review is sealed separately as `review/agq-mvp` against all four reviewed
+This review is sealed separately as `review/purposebus-mvp` against all four reviewed
 heads. Its own Seal ID cannot be embedded in its sealed content without making
 the content self-referential; the REF is the stable lookup handle.
 

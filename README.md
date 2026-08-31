@@ -1,10 +1,57 @@
-# AGQ
+# PurposeBus
 
-AGQ is a local-first coordination queue for human and AI agents. It combines
+PurposeBus is a purpose-aware coordination bus for human and AI agents. It combines
 agent discovery, purpose-bearing subscriptions and offers, observable instance
 state, and durable publish/ack delivery inside an explicit project partition.
 
-Status: initial MVP requirements baseline. No implementation exists yet.
+Status: executable local MVP experiment (`0.1.0a0`). It is suitable for
+same-host, same-user evaluation, not production deployment.
+
+## Run the prototype
+
+PurposeBus requires Python 3.11 or newer and has no runtime dependencies outside the
+standard library.
+
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -e .
+. .venv/bin/activate
+purposebus --format json init
+purposebus help usecases
+```
+
+The default Partition is the canonical Git worktree containing the current
+directory. State is written outside the checkout under the XDG state directory.
+Use `--partition PATH` and `--state-dir PATH` for explicit integration or test
+boundaries.
+
+One minimal information exchange is:
+
+```sh
+purposebus agent register producer --kind ai --description "publishes build results"
+purposebus agent register consumer --kind ai --description "reads build results"
+purposebus instance start producer --id producer-1 --objective "report the build"
+purposebus instance start consumer --id consumer-1 --objective "inspect the build"
+purposebus subscription add build/result --instance consumer-1 \
+  --purpose "decide whether the build is usable" --id build-consumer
+purposebus offer add build/result --instance producer-1 \
+  --purpose "provide the current build result" --id build-provider
+purposebus publish build/result --instance producer-1 --purpose "report the build" \
+  --json-payload '{"ok":true}' --idempotency-key build-42
+purposebus poll --instance consumer-1 --wait 5s
+purposebus ack DELIVERY_ID --instance consumer-1
+```
+
+Use `--format json` for versioned `purposebus.*.v1` documents. If a publish response is
+lost, do not blindly resend. Resolve the result first:
+
+```sh
+purposebus --format json message list --producer producer-1 --idempotency-key build-42
+```
+
+Raw secrets must not be placed in payloads. An opaque artifact reference is
+transported as metadata only; PurposeBus never resolves it or grants authority to read
+it.
 
 ## Requirements baseline
 
@@ -18,23 +65,35 @@ The normative source of truth is `docs/requirements.md`. The `.think` document
 records how the initial decisions were reached; it does not override the
 requirements.
 
-## Intended CLI navigation
+## CLI navigation
 
-AGQ will expose an English, agent-neutral CLI with human-readable output and
-versioned JSON results. The planned help routes include:
+PurposeBus exposes an English, agent-neutral CLI with human-readable output and
+versioned JSON results. Start with:
 
 ```text
-agq --help
-agq help usecases
-agq help concepts
-agq help partitions
-agq help agent
-agq COMMAND --help
+purposebus --help
+purposebus help usecases
+purposebus help concepts
+purposebus help partitions
+purposebus help agent
+purposebus COMMAND --help
 ```
 
-`agq next` is intended to be the primary navigation command for an agent. It
-will report unread deliveries, matching requests, acknowledgements, heartbeat
-work, and other current actions without authorizing unrelated work.
+`purposebus next` is the primary read-only navigation command for an agent. It reports
+unread deliveries, matching requests, acknowledgements, heartbeat work, and
+stale-state warnings without authorizing unrelated work.
+
+The direct SQLite architecture, verified behavior, and remaining experiment
+frontier are recorded in [the implementation status](docs/implementation-status.md).
+
+## Development checks
+
+```sh
+make check
+```
+
+The acceptance suite uses isolated temporary Partitions and state roots; it
+does not touch the developer's live queue.
 
 ## Provenance checks
 

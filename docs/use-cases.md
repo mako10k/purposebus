@@ -1,4 +1,4 @@
-# AGQ MVP use cases and effect checks
+# PurposeBus MVP use cases and effect checks
 
 These scenarios define the first observable product value. They supplement the
 normative requirements; if wording conflicts, `docs/requirements.md` wins.
@@ -15,7 +15,7 @@ Offer for `test/result` with purpose and schema metadata.
 1. A declares a Subscription or Request for `test/result`, including why the
    information is needed.
 2. The operator or A runs `match` or `next`.
-3. AGQ reports B as a candidate, the matching topic/schema facts, B's current
+3. PurposeBus reports B as a candidate, the matching topic/schema facts, B's current
    availability, and whether B has a live Instance.
 
 **Effect check:** The user can distinguish "B can normally provide this", "B
@@ -32,8 +32,8 @@ terminal.
 
 1. A creates a one-shot Request with a purpose, correlation identity, schema,
    and expiry.
-2. B runs `agq next`.
-3. AGQ reports the Request because it matches B's active Offer.
+2. B runs `purposebus next`.
+3. PurposeBus reports the Request because it matches B's active Offer.
 4. B separately decides whether its existing authority permits producing the
    information.
 
@@ -62,7 +62,7 @@ publish does not create another Message.
 
 1. A starts a bounded blocking poll.
 2. The operator runs `status` while the poll is blocked.
-3. AGQ reports A as `activity=waiting` and `liveness=alive`, with wait start,
+3. PurposeBus reports A as `activity=waiting` and `liveness=alive`, with wait start,
    deadline, and selection metadata.
 4. A receives a Message or times out.
 
@@ -78,7 +78,7 @@ a false wait.
 
 1. A polls and leases a Delivery.
 2. A terminates before acknowledgement.
-3. AGQ restarts or a new A Instance starts after lease expiry.
+3. PurposeBus restarts or a new A Instance starts after lease expiry.
 4. The Delivery becomes available again and is acknowledged.
 
 **Effect check:** The Message is not lost, and history explains both attempts.

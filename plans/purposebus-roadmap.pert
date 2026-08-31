@@ -1,0 +1,310 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project PURPOSEBUS_ROADMAP:
+  version 6
+  title "PurposeBus MVP to 1.0.0 roadmap"
+  description "Current and future roadmap from the executable local prototype through the PurposeBus 1.0.0 release, including Codex Plugin integration. The MVP phase is detailed from verified implementation gaps. Post-MVP version numbers, scope, and estimates are provisional and must be replanned from real multi-agent trial evidence. The Codex Plugin begins as a repo-distributed, skill-first adapter over the public PurposeBus CLI; an MCP server or broader surface support requires measured evidence and a later accepted decision. This PERT is planning evidence only and does not authorize commits, pushes, Issues, plugin installation, marketplace changes, submissions, tags, releases, deployments, or other external writes."
+  as_of 2026-08-31
+  duration_unit day
+  finish V1_0_0_RELEASED
+  goal_owner user
+  dag_owner user
+
+milestone LOCAL_PROTOTYPE:
+  title "Executable local prototype available"
+  state reached
+
+resource CODEX:
+  title "PurposeBus implementation capacity"
+  description "Serialize repository implementation and verification work"
+  capacity 1
+
+resource REVIEW:
+  title "Contract and release review capacity"
+  description "Serialize owner-facing contract and acceptance review"
+  capacity 1
+
+milestone MVP_CONTRACT_FROZEN:
+  title "MVP gap contracts frozen"
+  description "Acting identity, Request correlation, acknowledgement ownership, artifact metadata, and CLI option placement have explicit accepted behavior."
+
+milestone MVP_CONTEXT_FIXED:
+  title "Explicit mutation context implemented"
+
+milestone MVP_REQUEST_ROUTING_FIXED:
+  title "Request response routing implemented"
+
+milestone MVP_NAVIGATION_FIXED:
+  title "Purpose-bearing match and next navigation implemented"
+
+milestone MVP_ACCEPTANCE_READY:
+  title "0.1.0 MVP candidate ready for acceptance"
+
+milestone MVP_0_1_ACCEPTED:
+  title "0.1.0 MVP accepted"
+  description "The bounded same-host, same-user direct-SQLite MVP meets its normative acceptance conditions."
+
+milestone TRIAL_FEEDBACK_FROZEN:
+  title "Real multi-agent trial findings frozen"
+  description "Two AI agents and one human workflow provide usability, latency, contention, heartbeat, and delivery-mode evidence."
+
+milestone V0_2_ALPHA_ACCEPTED:
+  title "0.2.0 alpha candidate accepted"
+  description "Provisional post-MVP packaging and operational hardening milestone."
+
+milestone V0_5_SCOPE_FROZEN:
+  title "0.5.0 beta scope frozen"
+  description "The provisional tail is replanned from trial and alpha evidence, including the direct-database versus broker decision."
+
+milestone V0_5_BETA_ACCEPTED:
+  title "0.5.0 beta candidate accepted"
+
+milestone V0_9_RC_READY:
+  title "0.9.0 release candidate ready"
+
+milestone V0_9_RC_ACCEPTED:
+  title "0.9.0 release candidate accepted"
+
+milestone V1_RELEASE_READY:
+  title "1.0.0 release package ready"
+  description "The exact PurposeBus core and compatible Codex Plugin candidates, evidence, destinations, and rollback material are ready for an explicit release decision."
+
+milestone V1_RELEASE_AUTHORIZED:
+  title "1.0.0 publication explicitly authorized"
+
+milestone V1_0_0_RELEASED:
+  title "PurposeBus 1.0.0 released"
+  description "The immutable release and its server-side revision, package, and acceptance evidence are independently read back."
+
+task T_MVP_FREEZE_CONTRACT LOCAL_PROTOTYPE -> MVP_CONTRACT_FROZEN:
+  title "Freeze the remaining MVP behavior contracts"
+  description "Resolve the verified gaps before code changes: which mutations require acting Agent or Instance identity; whether Request correlation is a delivery constraint; whether Agent-owned mailbox acknowledgement is direct or Instance-mediated; where artifact digests are valid; and whether global options are accepted before and after subcommands. Update normative requirements only when the decision changes the existing contract."
+  estimate:
+    optimistic 0.5d
+    most_likely 1d
+    pessimistic 2d
+  priority 100
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "docs/requirements.md CLI-005, FR-008, FR-009, FR-012; verified 2026-08-31 gap probes"
+
+task T_MVP_EXPLICIT_CONTEXT MVP_CONTRACT_FROZEN -> MVP_CONTEXT_FIXED:
+  title "Implement explicit mutation context and ownership checks"
+  description "Require and expose the accepted acting Agent or Instance on mutable Subscription, Offer, Request, and Delivery workflows. Bind ownership checks and event actor identity consistently, preserve bootstrap exceptions explicitly, and add denial tests for missing, ambiguous, stopped, and non-owner actors."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 4d
+  priority 95
+  requires:
+    CODEX 1
+  source "MVP_CONTRACT_FROZEN; docs/requirements.md CLI-005"
+
+task T_MVP_REQUEST_ROUTING MVP_CONTEXT_FIXED -> MVP_REQUEST_ROUTING_FIXED:
+  title "Implement accepted Request correlation and payload metadata rules"
+  description "Apply the frozen Request correlation rule to retained and ordinary delivery creation, response_available, polling, and acknowledgement. Reject invalid artifact-digest combinations and preserve idempotency digests. Add negative tests for absent and mismatched correlation, wrong schema, retained responses, expiry, and changed retries."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 4d
+  priority 90
+  requires:
+    CODEX 1
+  source "MVP_CONTRACT_FROZEN; docs/requirements.md FR-008 and FR-009"
+
+task T_MVP_NAVIGATION MVP_REQUEST_ROUTING_FIXED -> MVP_NAVIGATION_FIXED:
+  title "Make match and next sufficient for relevance decisions"
+  description "Return requester and provider identity, both purposes, topic and schema facts, expiry, Offer availability, live-instance evidence, and exact mismatch classification without payload exposure. Make the documented purposebus next --format json form work and keep repeated navigation logically read-only."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 3d
+  priority 85
+  requires:
+    CODEX 1
+  source "docs/use-cases.md UC-001, UC-002, UC-009; docs/requirements.md FR-007, FR-016, acceptance 10"
+
+task T_MVP_ACCEPTANCE MVP_NAVIGATION_FIXED -> MVP_ACCEPTANCE_READY:
+  title "Build the complete 0.1.0 MVP acceptance candidate"
+  description "Map tests to all twelve normative acceptance conditions and add the missing negative probes. Verify clean-install CLI behavior, corrupt and unsupported state failures, deterministic JSON, private state sidecars, payload and event bounds, restart recovery, concurrency, read-only navigation, and Git diff checks. Correct implementation-status claims to match evidence and prepare a versioned, resumable candidate without publishing it."
+  estimate:
+    optimistic 1d
+    most_likely 3d
+    pessimistic 5d
+  priority 80
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "docs/requirements.md section 7; docs/implementation-status.md"
+
+gate G_MVP_OWNER_ACCEPTANCE MVP_ACCEPTANCE_READY -> MVP_0_1_ACCEPTED:
+  reason "The owner accepts the bounded MVP contract and evidence. This gate records planning closure only and does not authorize publication."
+
+task T_LOCAL_MULTI_AGENT_TRIALS CODEX_PLUGIN_LOCAL_READY -> TRIAL_FEEDBACK_FROZEN:
+  title "Run real local multi-agent trials and freeze findings"
+  description "Exercise at least two AI agents and one human participant across provider discovery, request response, durable fan-out, failure recovery, and offline mailbox flows. Run both raw CLI and Codex Plugin paths so the Plugin is compared against the agent-neutral baseline. Record plugin discovery and fresh-session behavior, actor identity clarity, approval and permission behavior, poll latency, writer contention, heartbeat accuracy, usefulness of purpose text, operator comprehension, and whether skill-only local integration and broadcast-only delivery are sufficient. Convert findings into an explicit post-MVP scope decision."
+  estimate:
+    optimistic 2d
+    most_likely 5d
+    pessimistic 10d
+  priority 70
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "CODEX_PLUGIN_LOCAL_READY; docs/implementation-status.md experiment frontier"
+
+task T_ALPHA_HARDENING CODEX_PLUGIN_SURFACE_FROZEN -> V0_2_ALPHA_ACCEPTED:
+  title "Prepare and accept the provisional 0.2.0 alpha"
+  description "Provisional: address the bounded trial findings; stabilize core installation, state migration, and operator diagnostics; implement only the accepted Codex Plugin surface; add manifest, marketplace, fresh-session, permission-boundary, and compatibility checks; and verify isolated alpha packages. Publication and plugin installation outside the test scope remain separately authorized actions."
+  estimate:
+    optimistic 2d
+    most_likely 4d
+    pessimistic 8d
+  priority 60
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "CODEX_PLUGIN_SURFACE_FROZEN; provisional"
+
+task T_BETA_REPLAN V0_2_ALPHA_ACCEPTED -> V0_5_SCOPE_FROZEN:
+  title "Replan the beta scope from measured evidence"
+  description "Provisional: decide whether direct SQLite remains adequate or a same-user broker is justified; select only measured reliability, performance, operability, portability, and compatibility work for beta. Replace the coarse downstream estimates when this milestone is reached."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 4d
+  priority 50
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V0_2_ALPHA_ACCEPTED; provisional decision point"
+
+task T_BETA_BUILD V0_5_SCOPE_FROZEN -> V0_5_BETA_ACCEPTED:
+  title "Implement and accept the provisional 0.5.0 beta scope"
+  description "Provisional coarse work package for the frozen beta scope, broader soak and upgrade tests, compatibility enforcement, operator recovery evidence, and Codex Plugin install, update, disable, uninstall, and fresh-session interoperability. Preserve the agent-neutral CLI as the fallback and do not infer remote federation, competing consumers, automatic delegation, or MCP from Plugin availability without a new accepted requirement."
+  estimate:
+    optimistic 5d
+    most_likely 10d
+    pessimistic 20d
+  priority 40
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V0_5_SCOPE_FROZEN; provisional"
+
+task T_RC_HARDENING V0_5_BETA_ACCEPTED -> V0_9_RC_READY:
+  title "Harden the provisional 0.9.0 release candidate"
+  description "Provisional: freeze public JSON, CLI, and Codex Plugin compatibility; validate core and Plugin upgrade and rollback, bounded load, corruption recovery, package provenance, supported Codex and Linux environments, permissions, documentation, and release automation on immutable candidates. Treat public Plugin Directory submission and other marketplace writes as separately authorized release targets."
+  estimate:
+    optimistic 3d
+    most_likely 7d
+    pessimistic 14d
+  priority 30
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V0_5_BETA_ACCEPTED; provisional"
+
+gate G_RC_OWNER_ACCEPTANCE V0_9_RC_READY -> V0_9_RC_ACCEPTED:
+  reason "The owner accepts the release-candidate contract, known limitations, and evidence. Publication remains separately authorized."
+
+task T_V1_RELEASE_PREP V1_PLUGIN_PACKAGE_READY -> V1_RELEASE_READY:
+  title "Prepare the PurposeBus 1.0.0 release package"
+  description "Provisional: freeze the 1.0.0 core source, public contracts, and compatible Codex Plugin candidate; run the final clean-room acceptance matrix; confirm migration, rollback, supported surfaces, installation, and uninstall documentation; assemble changelog and release artifacts; and record exact core and Plugin revisions without publishing them."
+  estimate:
+    optimistic 2d
+    most_likely 4d
+    pessimistic 8d
+  priority 20
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V1_PLUGIN_PACKAGE_READY; provisional"
+
+gate G_V1_RELEASE_AUTHORIZATION V1_RELEASE_READY -> V1_RELEASE_AUTHORIZED:
+  reason "The owner explicitly authorizes the exact 1.0.0 core and Codex Plugin candidates, destinations, refs, artifacts, marketplace or directory targets, and maximum external writes."
+
+task T_PUBLISH_V1_0_0 V1_RELEASE_AUTHORIZED -> V1_0_0_RELEASED:
+  title "Publish and independently verify PurposeBus 1.0.0"
+  description "Publish exactly the authorized immutable core and Codex Plugin candidates to only the named destinations, then independently read back repository refs, release and Plugin metadata, package identities, checksums, marketplace or directory entries when included, and clean-install smoke results from a fresh session. A public Plugin Directory submission, workspace publication, mutable-channel promotion, or deployment occurs only when separately included in the frozen authorization."
+  estimate:
+    optimistic 0.5d
+    most_likely 1d
+    pessimistic 2d
+  priority 10
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V1_RELEASE_AUTHORIZED; provisional release procedure"
+
+milestone CODEX_PLUGIN_CONTRACT_FROZEN:
+  title "Codex Plugin integration contract frozen"
+  description "Supported Codex surfaces, permission boundary, Agent and Instance identity, CLI JSON contract, failure behavior, packaging, and compatibility ownership are explicit."
+
+milestone CODEX_PLUGIN_LOCAL_READY:
+  title "Local PurposeBus Codex Plugin prototype ready"
+  description "A repo-scoped Plugin manifest and Skill drive only the public PurposeBus CLI and pass fresh-session local acceptance without direct SQLite access."
+
+milestone CODEX_PLUGIN_SURFACE_FROZEN:
+  title "Codex Plugin post-trial surface frozen"
+  description "Measured evidence selects skill-only local integration or a separately justified MCP server and records supported and unsupported Codex surfaces."
+
+milestone V1_PLUGIN_PACKAGE_READY:
+  title "PurposeBus Codex Plugin 1.0 package ready"
+  description "The versioned manifest, Skill, marketplace metadata, compatibility declaration, permission documentation, and isolated install evidence are frozen; no publication is implied."
+
+task T_CODEX_PLUGIN_CONTRACT MVP_0_1_ACCEPTED -> CODEX_PLUGIN_CONTRACT_FROZEN:
+  title "Freeze the PurposeBus Codex Plugin contract"
+  description "Define a local-first integration for Codex CLI and Codex in the ChatGPT desktop app when a local environment is available. Record IDE, web, mobile, and remote limitations unless an MCP-backed design later proves them. Bind every workflow to the public deterministic PurposeBus CLI and explicit Agent or Instance identity, require a new session after installation, preserve host sandbox and approval policy, and state that a match or next recommendation never authorizes action. Exclude direct SQLite access, embedded secrets, ambient credential capture, and implicit mutation."
+  estimate:
+    optimistic 0.5d
+    most_likely 1d
+    pessimistic 2d
+  status planned
+  priority 75
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "MVP_0_1_ACCEPTED; OpenAI Plugins overview and packaging documentation; docs/requirements.md CLI-005, FR-016, INV-002"
+
+task T_CODEX_PLUGIN_PROTOTYPE CODEX_PLUGIN_CONTRACT_FROZEN -> CODEX_PLUGIN_LOCAL_READY:
+  title "Build and verify the local PurposeBus Codex Plugin prototype"
+  description "Create a minimal .codex-plugin/plugin.json, a purposebus Skill, and a repo marketplace entry. The Skill discovers the resolved Partition, uses deterministic JSON CLI output, requires explicit actor identity for mutations, exposes read-only status, match, and next guidance, and requests mutation only from an explicit user objective. Validate the manifest and marketplace, install from the repo source, start a fresh Codex session, run provider discovery and request-response-acknowledgement acceptance, verify disable and uninstall fallback, and confirm that the ordinary PurposeBus CLI remains independently usable."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 4d
+  status planned
+  priority 72
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "CODEX_PLUGIN_CONTRACT_FROZEN; https://developers.openai.com/plugins/build/plugins"
+
+task T_CODEX_PLUGIN_SURFACE_DECISION TRIAL_FEEDBACK_FROZEN -> CODEX_PLUGIN_SURFACE_FROZEN:
+  title "Select the post-trial Codex Plugin surface"
+  description "Compare the local CLI-backed Skill with an optional MCP-backed integration for supported surfaces, authentication, shared or remote state, typed tool schemas, latency, approvals, and failure containment. Retain the simpler skill-only integration unless measured trial evidence establishes a material need for MCP. Record unsupported surfaces and separate any public-directory or workspace distribution proposal from implementation and publication authority."
+  estimate:
+    optimistic 0.5d
+    most_likely 1d
+    pessimistic 3d
+  status planned
+  priority 65
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "TRIAL_FEEDBACK_FROZEN; OpenAI Plugin architecture and MCP guidance"
+
+task T_V1_PLUGIN_PACKAGE V0_9_RC_ACCEPTED -> V1_PLUGIN_PACKAGE_READY:
+  title "Prepare the PurposeBus Codex Plugin 1.0 package"
+  description "Freeze an exact Plugin version and compatible PurposeBus core range; validate the manifest, Skill, repo marketplace metadata, supported-surface copy, sandbox and approval behavior, absence of embedded credentials, installation into a fresh session, end-to-end request response, and disable or uninstall fallback. Prepare review or submission material without installing outside the accepted test scope or publishing to a workspace, marketplace, or public Plugin Directory."
+  estimate:
+    optimistic 1d
+    most_likely 2d
+    pessimistic 4d
+  status planned
+  priority 25
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "V0_9_RC_ACCEPTED; OpenAI Plugin packaging and testing guidance; provisional"

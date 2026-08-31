@@ -1,4 +1,4 @@
-# AGQ initial intent and assumptions
+# PurposeBus initial intent and assumptions
 
 Date: 2026-08-31
 
@@ -26,7 +26,7 @@ The accepted initial proposal is narrowed to these implementation defaults:
 - durable broadcast delivery, with one delivery and acknowledgement state per
   matching subscription;
 - explicit agent and instance registration from existing agent processes;
-- no requirement to launch an agent through an AGQ wrapper;
+- no requirement to launch an agent through a PurposeBus wrapper;
 - small inline UTF-8 or JSON messages and opaque artifact references;
 - human and AI participants use the same agent, subscription, publication, and
   mailbox model; and
@@ -39,7 +39,7 @@ broadcast-only.
 ## Authority boundary
 
 Agent capability, an active offer, a matching request, a queued message, and an
-`agq next` recommendation are coordination facts only. None of them authorizes
+`purposebus next` recommendation are coordination facts only. None of them authorizes
 filesystem changes, external writes, credential use, process control,
 deployment, release, or another action outside the authority already held by
 the acting human or agent.

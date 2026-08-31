@@ -1,0 +1,1 @@
+{"schema":"sealgraph/recovery/v1","operation_id":"b5190c4400ac01f67c8a6fb9ad8825b4","state":"COMMITTED","kind":"seal","transitions":[{"ref":"design/agq-local-mvp","before":null,"after":"eyJzY2hlbWEiOiJzZWFsZ3JhcGgvcmVmL3YxIiwiaGVhZCI6Ijk4Y2U3ZjU2ZWNmZWQ4MmUwM2JjNjJlYmNhMTVlNTE1YjdjNmI5YzM1ZTIwN2M4YmE4OGNlZjQ5MTZjYTY1YjgiLCJ0YWdzIjpbXX0="}]}
