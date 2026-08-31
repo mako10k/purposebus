@@ -1,12 +1,15 @@
 # PurposeBus 0.1.0 MVP acceptance map
 
-Status: candidate evidence, pending owner acceptance
+Status: accepted by the owner for candidate
+`09cdd3e491587380484ab1d2a9a36b1bfacea5f9`
 
 Date: 2026-08-31
 
 This map binds each normative acceptance condition in
-`docs/requirements.md` section 7 to isolated executable evidence. It does not
-record owner acceptance, publication authority, or production readiness.
+`docs/requirements.md` section 7 to isolated executable evidence. Owner
+acceptance is recorded in `plans/purposebus-roadmap.pert` as receipt
+`RCPT_MVP_0_1_OWNER_20260831`. That receipt does not grant publication
+authority or claim production readiness.
 
 | Condition | Primary executable evidence |
 | --- | --- |
@@ -38,5 +41,5 @@ make check
 The clean-install smoke check creates an isolated virtual environment, installs
 the repository candidate, verifies `purposebus --version`, and initializes a
 temporary explicit Partition and state directory through the installed console
-entry point. It must be rerun for the exact candidate commit before owner
-acceptance.
+entry point. It was rerun successfully for the accepted candidate before the
+owner acceptance receipt was recorded.

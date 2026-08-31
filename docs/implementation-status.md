@@ -55,8 +55,10 @@ make check
 ```
 
 The condition-to-test traceability and clean-install smoke procedure are in
-[the MVP acceptance map](mvp-acceptance.md). Owner acceptance remains a separate
-decision after reviewing the exact candidate.
+[the MVP acceptance map](mvp-acceptance.md). The owner accepted candidate
+`09cdd3e491587380484ab1d2a9a36b1bfacea5f9`; receipt
+`RCPT_MVP_0_1_OWNER_20260831` records that decision in the roadmap. Publication
+and production readiness remain separate decisions.
 
 Inspection commands are verified against logical table snapshots so incidental
 SQLite WAL or shared-memory sidecars are not mistaken for coordination-state

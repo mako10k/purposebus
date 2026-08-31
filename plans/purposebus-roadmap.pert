@@ -407,3 +407,16 @@ milestone_criterion_set V1_RELEASE_AUTHORIZATION:
   revision R1
   commitment sha256:843d6c367a436c29c9d46208ec8d85a5864fe4659193d10e57d65d5d604575d5
   criterion EXPLICIT_AUTHORIZATION required owner "Owner authorizes exact candidates destinations refs artifacts and maximum external writes"
+
+milestone_acceptance_receipt RCPT_MVP_0_1_OWNER_20260831:
+  model 1
+  set MVP_OWNER_ACCEPTANCE
+  set_commitment sha256:de2fb917bbd80e1c87e9c83c0155355e59e924de55f88c4e88a42a6edc9ab739
+  criterion OWNER_ACCEPTANCE
+  criterion_commitment sha256:9643d1c89aa24c40850a8f31c2f1d7e26bcc0aa6851f89dc81025c38a0e362ce
+  action verify
+  evidence_kind owner
+  evidence_reference "owner-message:purposebus-mvp-09cdd3e"
+  evidence_revision 09cdd3e491587380484ab1d2a9a36b1bfacea5f9
+  verifier user
+  occurred_at 2026-08-31T10:56:42Z
