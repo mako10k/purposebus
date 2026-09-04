@@ -5,8 +5,10 @@ Status: accepted by the owner for candidate
 
 Date: 2026-08-31
 
-This map binds each normative acceptance condition in
-`docs/requirements.md` section 7 to isolated executable evidence. Owner
+This map binds the twelve normative acceptance conditions that existed at the
+0.1 acceptance boundary to isolated executable evidence. Condition 13 was added
+later for the unaccepted 0.2.0a1 public-response candidate and does not
+retroactively change the owner receipt. Owner
 acceptance is recorded in `plans/purposebus-roadmap.pert` as receipt
 `RCPT_MVP_0_1_OWNER_20260831`. That receipt does not grant publication
 authority or claim production readiness.
@@ -25,6 +27,14 @@ authority or claim production readiness.
 | 10. Read-only, explained `next --format json` | `test_next_reports_matching_request_heartbeat_and_stale_warning`, `test_next_and_status_are_read_only`, `test_global_options_are_accepted_after_nested_subcommands` |
 | 11. Complete help and remediation routes | `test_help_routes_expose_catalog_and_integration_contract`, `test_parser_errors_follow_requested_json_format` |
 | 12. Corrupt or unsupported state fails closed | `test_existing_unknown_schema_is_not_modified_by_init`, `test_corrupt_sqlite_state_fails_closed` |
+
+Development evidence for condition 13 is
+`test_public_v2_projection_excludes_persistence_and_process_internals`,
+`test_resource_collections_have_a_bounded_result_contract`, and
+the strict projection tests in `tests/test_public.py`, plus
+`test_human_read_surfaces_use_command_specific_renderers` and
+`test_human_poll_prints_payload_and_exact_ack_step`. It requires separate
+candidate acceptance.
 
 The same suite also verifies explicit mutation actors and ownership denial,
 ordinary and retained Request correlation, Request expiry, artifact-digest

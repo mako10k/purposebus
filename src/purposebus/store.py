@@ -1153,7 +1153,6 @@ class Store:
                 )
         return {
             "matches": pairs,
-            "unavailable": [pair for pair in pairs if not pair["provider_live"]],
             "unmet": unmet,
         }
 
@@ -1707,10 +1706,8 @@ class Store:
         event_count = self.connection.execute("SELECT COUNT(*) FROM events").fetchone()[0]
         metadata = self.metadata()
         return {
-            "partition": self.partition.as_dict(),
             "storage": {
                 "schema_version": SCHEMA_VERSION,
-                "database_exists": self.partition.database.exists(),
                 "max_delivery_attempts": MAX_DELIVERY_ATTEMPTS,
                 "max_event_rows": MAX_EVENT_ROWS,
                 "event_rows": event_count,

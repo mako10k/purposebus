@@ -16,15 +16,6 @@ class Partition:
     directory: Path
     database: Path
 
-    def as_dict(self) -> dict:
-        return {
-            "partition_id": self.partition_id,
-            "path": str(self.path),
-            "source": self.source,
-            "state_root": str(self.state_root),
-            "database": str(self.database),
-        }
-
 
 def _git_root(cwd: Path) -> Path | None:
     environment = dict(os.environ)

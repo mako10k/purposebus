@@ -4,7 +4,7 @@ PurposeBus is a purpose-aware coordination bus for human and AI agents. It combi
 agent discovery, purpose-bearing subscriptions and offers, observable instance
 state, and durable publish/ack delivery inside an explicit project partition.
 
-Status: locally accepted engineering alpha candidate (`0.2.0a0`). It is
+Status: post-alpha response-contract development candidate (`0.2.0a1`). It is
 suitable for same-host, same-user evaluation, not production deployment.
 
 ## Run the prototype
@@ -39,11 +39,15 @@ purposebus offer add build/result --instance producer-1 \
 purposebus publish build/result --instance producer-1 --purpose "report the build" \
   --json-payload '{"ok":true}' --idempotency-key build-42
 purposebus poll --instance consumer-1 --wait 5s
-purposebus ack DELIVERY_ID --instance consumer-1
 ```
 
+After handling the leased payload, run the exact `Next:` acknowledgement command
+printed by human output. JSON integrations use
+`.result.deliveries.items[].next.command` while preserving the same Partition and
+state configuration.
+
 Use `--format json` before or after a subcommand for versioned
-`purposebus.*.v1` documents. Each document exposes the resolved Partition and
+`purposebus.*.v2` documents. Each document exposes the resolved Partition and
 the explicit acting identity, or `null` for an operator-style read. If a
 publish response is lost, do not blindly resend. Resolve the result first:
 
@@ -58,13 +62,15 @@ it. `--artifact-digest` is valid only together with `--reference`.
 Lifecycle changes name their actor explicitly, for example
 `purposebus subscription pause SUBSCRIPTION_ID --agent AGENT_ID`. An Agent-owned
 queued or lease-expired Delivery can be acknowledged without inventing a live
-Instance by using `purposebus ack DELIVERY_ID --agent AGENT_ID`; an active
+Instance by using the exact ID from inspection with
+`purposebus ack ID --agent AGENT_ID`; an active
 Instance lease cannot be taken this way.
 
 ## Requirements baseline
 
 - [Intent and assumptions](docs/intent.md)
 - [Normative requirements](docs/requirements.md)
+- [Public response contract](docs/public-response-contract.md)
 - [Use cases and effect checks](docs/use-cases.md)
 - [Reviewable LLMThink reasoning](docs/requirements.think)
 - [Requirements self-review](docs/reviews/requirements-baseline-review-2026-08-31.md)

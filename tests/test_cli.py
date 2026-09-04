@@ -11,6 +11,8 @@ import time
 import unittest
 from pathlib import Path
 
+from purposebus.partition import resolve_partition
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -71,6 +73,31 @@ class PurposeBusCliTest(unittest.TestCase):
         stream = result.stdout if result.returncode == 0 else result.stderr
         return json.loads(stream)
 
+    def run_human(
+        self,
+        partition: Path,
+        *arguments: str,
+        at: str | None = None,
+        expected: int = 0,
+    ) -> subprocess.CompletedProcess[str]:
+        command = self.command(partition, *arguments, at=at)
+        command[command.index("--format") + 1] = "human"
+        result = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            env=self.environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        self.assertEqual(
+            result.returncode,
+            expected,
+            msg=f"command={arguments}\nstdout={result.stdout}\nstderr={result.stderr}",
+        )
+        return result
+
     def init(self, partition: Path | None = None, *, at: str | None = None) -> dict:
         return self.run_purposebus(partition or self.project_a, "init", at=at)
 
@@ -108,8 +135,11 @@ class PurposeBusCliTest(unittest.TestCase):
             self.register(agent, at=at)
             self.start(agent, agent + "1", at=at)
 
-    def logical_state(self, partition_document: dict) -> dict[str, list[tuple]]:
-        database = Path(partition_document["database"])
+    def database_for(self, partition: Path) -> Path:
+        return resolve_partition(str(partition), str(self.state)).database
+
+    def logical_state(self, partition: Path) -> dict[str, list[tuple]]:
+        database = self.database_for(partition)
         connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
         try:
             tables = (
@@ -134,7 +164,11 @@ class PurposeBusCliTest(unittest.TestCase):
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             status = self.run_purposebus(self.project_a, "status")["result"]
-            instance = next(item for item in status["instances"] if item["instance_id"] == instance_id)
+            instance = next(
+                item
+                for item in status["instances"]["items"]
+                if item["instance_id"] == instance_id
+            )
             if instance["activity"] == "waiting" and instance["wait_valid"]:
                 return instance
             time.sleep(0.05)
@@ -189,7 +223,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "off1",
         )
         result = self.run_purposebus(self.project_a, "match")["result"]
-        match = result["matches"][0]
+        match = result["matches"]["items"][0]
         self.assertEqual(match["subscription_id"], "sub1")
         self.assertEqual(match["subscriber_agent_id"], "requester")
         self.assertEqual(match["subscription_purpose"], "validate build")
@@ -197,9 +231,14 @@ class PurposeBusCliTest(unittest.TestCase):
         self.assertTrue(match["facts"]["topic_filters_overlap"])
         self.assertTrue(match["facts"]["schemas_compatible"])
         self.assertTrue(match["provider_live"])
-        self.assertEqual([item["subscription_id"] for item in result["unmet"]], ["sub2"])
-        self.assertEqual(result["unmet"][0]["classification"], "topic_filter_mismatch")
-        self.assertIn("topic_filter_mismatch", result["unmet"][0]["candidates"][0]["mismatch_reasons"])
+        self.assertNotIn("unavailable", result)
+        unmet = result["unmet"]["items"]
+        self.assertEqual([item["subscription_id"] for item in unmet], ["sub2"])
+        self.assertEqual(unmet[0]["classification"], "topic_filter_mismatch")
+        self.assertIn(
+            "topic_filter_mismatch",
+            unmet[0]["candidates"]["items"][0]["mismatch_reasons"],
+        )
 
     def test_durable_fanout_ack_and_idempotency(self):
         self.bootstrap_three()
@@ -254,9 +293,10 @@ class PurposeBusCliTest(unittest.TestCase):
             "producer1",
             "--idempotency-key",
             "build-1",
-        )["result"]
+        )["result"]["items"]
         self.assertEqual([item["message_id"] for item in readback], [first["message_id"]])
         self.assertNotIn("payload_text", readback[0])
+        self.assertNotIn("payload", readback[0])
         message = self.run_purposebus(
             self.project_a, "message", "show", first["message_id"], "--include-payload"
         )["result"]
@@ -264,11 +304,12 @@ class PurposeBusCliTest(unittest.TestCase):
 
         alice_delivery = self.run_purposebus(
             self.project_a, "poll", "--instance", "alice1", "--lease", "10s"
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         self.run_purposebus(
             self.project_a, "ack", alice_delivery["delivery_id"], "--instance", "alice1"
         )
-        deliveries = self.run_purposebus(self.project_a, "delivery", "list")["result"]
+        deliveries = self.run_purposebus(self.project_a, "delivery", "list")["result"]["items"]
+        self.assertTrue(all("payload" not in item for item in deliveries))
         states = {item["subscription_id"]: item["effective_state"] for item in deliveries}
         self.assertEqual(states, {"suba": "acked", "subc": "queued"})
 
@@ -330,7 +371,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--lease",
             "1s",
             at=t0,
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         second = self.run_purposebus(
             self.project_a,
             "poll",
@@ -341,7 +382,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--lease",
             "1s",
             at="2026-01-01T00:00:02Z",
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         self.assertEqual(first["delivery_id"], second["delivery_id"])
         self.assertEqual(second["attempt"], 2)
 
@@ -373,6 +414,8 @@ class PurposeBusCliTest(unittest.TestCase):
             expected=4,
         )
         self.assertEqual(empty["error"], "no_message")
+        self.assertIn("purposebus poll --instance consumer1", empty["hint"])
+        self.assertIn("purposebus next --instance consumer1", empty["hint"])
         missing = self.run_purposebus(
             self.project_a,
             "poll",
@@ -439,7 +482,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--lease",
             "1s",
             at=start,
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         second = self.run_purposebus(
             self.project_a,
             "poll",
@@ -448,7 +491,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--subscription",
             "agent-owned",
             at="2026-01-01T00:00:02Z",
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         self.assertEqual(first["delivery_id"], second["delivery_id"])
         self.assertEqual(second["attempt"], 2)
         acknowledged = self.run_purposebus(
@@ -496,7 +539,9 @@ class PurposeBusCliTest(unittest.TestCase):
             "off1",
         )
         next_result = self.run_purposebus(self.project_a, "next", "--instance", "provider1")["result"]
-        self.assertIn("req1", [item["entity_id"] for item in next_result["items"]])
+        self.assertIn(
+            "req1", [item["entity_id"] for item in next_result["items"]["items"]]
+        )
         self.run_purposebus(
             self.project_a,
             "publish",
@@ -516,7 +561,7 @@ class PurposeBusCliTest(unittest.TestCase):
         self.assertEqual(response_available["effective_request_state"], "response_available")
         delivery = self.run_purposebus(
             self.project_a, "poll", "--instance", "requester1", "--subscription", "req1"
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         self.run_purposebus(
             self.project_a, "ack", delivery["delivery_id"], "--instance", "requester1"
         )
@@ -558,9 +603,16 @@ class PurposeBusCliTest(unittest.TestCase):
             "--id",
             "sub1",
         )
-        delivery = self.run_purposebus(self.project_a, "poll", "--instance", "consumer1")["result"][0]
+        delivery = self.run_purposebus(self.project_a, "poll", "--instance", "consumer1")[
+            "result"
+        ]["deliveries"]["items"][0]
         self.assertTrue(delivery["retained"])
         self.assertEqual(delivery["payload"], {"state": "ready"})
+        self.assertEqual(delivery["next"]["action"], "ack")
+        self.assertEqual(
+            delivery["next"]["command"],
+            f"purposebus ack {delivery['delivery_id']} --instance consumer1",
+        )
 
     def test_human_agent_has_offline_mailbox(self):
         self.init()
@@ -591,7 +643,9 @@ class PurposeBusCliTest(unittest.TestCase):
             "ready",
         )
         self.start("operator", "operator1")
-        delivery = self.run_purposebus(self.project_a, "poll", "--instance", "operator1")["result"][0]
+        delivery = self.run_purposebus(self.project_a, "poll", "--instance", "operator1")[
+            "result"
+        ]["deliveries"]["items"][0]
         self.assertEqual(delivery["subscription_id"], "humanbox")
         acknowledged = self.run_purposebus(
             self.project_a, "ack", delivery["delivery_id"], "--instance", "operator1"
@@ -626,7 +680,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--text",
             "ready",
         )
-        delivery = self.run_purposebus(self.project_a, "delivery", "list")["result"][0]
+        delivery = self.run_purposebus(self.project_a, "delivery", "list")["result"]["items"][0]
         message = self.run_purposebus(
             self.project_a, "message", "show", delivery["message_id"], "--include-payload"
         )["result"]
@@ -684,7 +738,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "--lease",
             "10s",
             at=start,
-        )["result"][0]
+        )["result"]["deliveries"]["items"][0]
         denied = self.run_purposebus(
             self.project_a,
             "ack",
@@ -752,9 +806,12 @@ class PurposeBusCliTest(unittest.TestCase):
             self.project_a, "subscription", "show", "ephemeral1"
         )["result"]
         self.assertEqual(subscription["state"], "cancelled")
-        delivery = self.run_purposebus(self.project_a, "delivery", "list")["result"][0]
+        delivery = self.run_purposebus(self.project_a, "delivery", "list")["result"]["items"][0]
         self.assertEqual(delivery["state"], "expired")
-        event_types = [item["event_type"] for item in self.run_purposebus(self.project_a, "events")["result"]]
+        event_types = [
+            item["event_type"]
+            for item in self.run_purposebus(self.project_a, "events")["result"]["items"]
+        ]
         self.assertIn("cancelled", event_types)
 
     def test_delivery_expires_and_redelivery_is_bounded(self):
@@ -794,7 +851,7 @@ class PurposeBusCliTest(unittest.TestCase):
                 "--lease",
                 "1s",
                 at=f"2026-08-31T00:00:{second:02d}Z",
-            )["result"][0]
+            )["result"]["deliveries"]["items"][0]
         self.assertEqual(delivery["attempt"], 5)
         self.run_purposebus(
             self.project_a,
@@ -808,7 +865,7 @@ class PurposeBusCliTest(unittest.TestCase):
         )
         dead_letter = self.run_purposebus(
             self.project_a, "delivery", "list", at="2026-08-31T00:00:10Z"
-        )["result"][0]
+        )["result"]["items"][0]
         self.assertEqual(dead_letter["state"], "dead_letter")
         self.assertEqual(dead_letter["attempt"], 5)
 
@@ -836,12 +893,12 @@ class PurposeBusCliTest(unittest.TestCase):
         )
         deliveries = self.run_purposebus(
             self.project_a, "delivery", "list", at="2026-08-31T00:00:22Z"
-        )["result"]
+        )["result"]["items"]
         self.assertEqual([item["state"] for item in deliveries], ["dead_letter", "expired"])
 
     def test_existing_unknown_schema_is_not_modified_by_init(self):
-        initialized = self.init()
-        database = Path(initialized["partition"]["database"])
+        self.init()
+        database = self.database_for(self.project_a)
         connection = sqlite3.connect(database)
         connection.execute("UPDATE metadata SET value='99' WHERE key='schema_version'")
         connection.execute("DROP TABLE offers")
@@ -864,18 +921,18 @@ class PurposeBusCliTest(unittest.TestCase):
         self.assertIsNone(offer_table)
 
     def test_supported_state_reopens_without_migration_or_mutation(self):
-        initialized = self.init(at="2026-01-01T00:00:00Z")
-        before = self.logical_state(initialized["partition"])
+        self.init(at="2026-01-01T00:00:00Z")
+        before = self.logical_state(self.project_a)
         reopened = self.init(at="2026-01-02T00:00:00Z")
-        after = self.logical_state(initialized["partition"])
+        after = self.logical_state(self.project_a)
 
         self.assertFalse(reopened["result"]["created"])
         self.assertEqual(reopened["result"]["metadata"]["schema_version"], "1")
         self.assertEqual(before, after)
 
     def test_corrupt_sqlite_state_fails_closed(self):
-        initialized = self.init()
-        database = Path(initialized["partition"]["database"])
+        self.init()
+        database = self.database_for(self.project_a)
         database.write_bytes(b"not a sqlite database")
         result = self.run_purposebus(self.project_a, "status", expected=5)
         self.assertIn(result["error"], {"conflict", "storage_failure"})
@@ -953,7 +1010,7 @@ class PurposeBusCliTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         document = json.loads(result.stdout)
-        self.assertEqual(document["schema"], "purposebus.next.v1")
+        self.assertEqual(document["schema"], "purposebus.next.v2")
         self.assertEqual(document["actor"], {"type": "instance", "id": "provider1"})
 
     def test_mutations_expose_actor_and_enforce_owner_family(self):
@@ -1265,9 +1322,10 @@ class PurposeBusCliTest(unittest.TestCase):
         first = self.init(self.project_a)
         second = self.init(self.project_b)
         self.assertNotEqual(first["partition"]["partition_id"], second["partition"]["partition_id"])
-        first_dir = Path(first["partition"]["database"]).parent
+        first_database = self.database_for(self.project_a)
+        first_dir = first_database.parent
         self.assertEqual(stat.S_IMODE(first_dir.stat().st_mode), 0o700)
-        self.assertEqual(stat.S_IMODE(Path(first["partition"]["database"]).stat().st_mode), 0o600)
+        self.assertEqual(stat.S_IMODE(first_database.stat().st_mode), 0o600)
         for partition in (self.project_a, self.project_b):
             self.register("producer", partition=partition)
             self.register("consumer", partition=partition)
@@ -1309,18 +1367,165 @@ class PurposeBusCliTest(unittest.TestCase):
             "--id",
             "subscription1",
         )
-        self.assertEqual(self.run_purposebus(self.project_b, "message", "list")["result"], [])
-        self.assertEqual(self.run_purposebus(self.project_b, "delivery", "list")["result"], [])
+        self.assertEqual(
+            self.run_purposebus(self.project_b, "message", "list")["result"]["items"], []
+        )
+        self.assertEqual(
+            self.run_purposebus(self.project_b, "delivery", "list")["result"]["items"], []
+        )
         self.run_purposebus(
             self.project_b, "poll", "--instance", "consumer1", expected=4
         )
         for partition_dir in (
-            Path(first["partition"]["database"]).parent,
-            Path(second["partition"]["database"]).parent,
+            self.database_for(self.project_a).parent,
+            self.database_for(self.project_b).parent,
         ):
             for state_file in partition_dir.iterdir():
                 if state_file.is_file():
                     self.assertEqual(stat.S_IMODE(state_file.stat().st_mode), 0o600)
+
+    def test_public_v2_projection_excludes_persistence_and_process_internals(self):
+        initialized = self.init()
+        self.assertEqual(initialized["schema"], "purposebus.init.v2")
+        self.assertEqual(
+            set(initialized["partition"]),
+            {"partition_id", "path", "source", "display_name"},
+        )
+        self.assertEqual(initialized["partition"]["path"], str(self.project_a))
+        self.assertEqual(initialized["partition"]["display_name"], "project-a")
+        self.assertNotIn("partition_id", initialized["result"]["metadata"])
+
+        self.register("producer")
+        started = self.run_purposebus(
+            self.project_a,
+            "instance",
+            "start",
+            "producer",
+            "--id",
+            "producer1",
+            "--objective",
+            "publish bounded results",
+            "--pid",
+            str(os.getpid()),
+        )["result"]
+        for field in (
+            "host",
+            "boot_id",
+            "pid",
+            "process_start",
+            "wait_pid",
+            "wait_boot_id",
+            "wait_process_start",
+            "waiting_since",
+            "waiting_until",
+            "waiting_selector",
+        ):
+            self.assertNotIn(field, started)
+
+        publication = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "projection/value",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "prove internal values stay internal",
+            "--text",
+            "value",
+            "--idempotency-key",
+            "projection-1",
+        )["result"]
+        self.assertNotIn("command_digest", publication)
+        self.assertNotIn("payload_text", publication)
+
+        messages = self.run_purposebus(self.project_a, "message", "list")["result"]
+        self.assertNotIn("command_digest", messages["items"][0])
+        status = self.run_purposebus(self.project_a, "status")["result"]
+        self.assertNotIn("partition", status)
+        self.assertEqual(
+            set(status["storage"]),
+            {
+                "health",
+                "state_schema_version",
+                "max_delivery_attempts",
+                "max_event_rows",
+                "event_rows",
+                "events_pruned",
+            },
+        )
+        self.assertEqual(status["storage"]["health"], "ok")
+        self.assertEqual(status["storage"]["state_schema_version"], "1")
+
+    def test_resource_collections_have_a_bounded_result_contract(self):
+        self.init()
+        for agent_id in ("agent-a", "agent-b", "agent-c"):
+            self.register(agent_id)
+
+        result = self.run_purposebus(
+            self.project_a, "agent", "list", "--limit", "2"
+        )["result"]
+        self.assertEqual([item["agent_id"] for item in result["items"]], ["agent-a", "agent-b"])
+        self.assertEqual(
+            result["page"],
+            {"limit": 2, "returned": 2, "total": 3, "truncated": True},
+        )
+        invalid = self.run_purposebus(
+            self.project_a, "agent", "list", "--limit", "1001", expected=2
+        )
+        self.assertEqual(invalid["error"], "invalid_input")
+        invalid_candidates = self.run_purposebus(
+            self.project_a, "match", "--candidate-limit", "101", expected=2
+        )
+        self.assertEqual(invalid_candidates["error"], "invalid_input")
+
+        for subscription_id, topic in (
+            ("matching", "common/value"),
+            ("unmet", "missing/value"),
+        ):
+            self.run_purposebus(
+                self.project_a,
+                "subscription",
+                "add",
+                topic,
+                "--agent",
+                "agent-a",
+                "--purpose",
+                f"exercise {subscription_id} bound",
+                "--id",
+                subscription_id,
+            )
+        for agent_id in ("agent-b", "agent-c"):
+            self.run_purposebus(
+                self.project_a,
+                "offer",
+                "add",
+                "common/value",
+                "--agent",
+                agent_id,
+                "--purpose",
+                "exercise match bound",
+                "--id",
+                f"offer-{agent_id}",
+            )
+
+        matched = self.run_purposebus(
+            self.project_a,
+            "match",
+            "--limit",
+            "1",
+            "--candidate-limit",
+            "1",
+        )["result"]
+        self.assertEqual(matched["matches"]["page"]["total"], 2)
+        self.assertTrue(matched["matches"]["page"]["truncated"])
+        candidates = matched["unmet"]["items"][0]["candidates"]
+        self.assertEqual(candidates["page"]["total"], 2)
+        self.assertTrue(candidates["page"]["truncated"])
+
+        events = self.run_purposebus(self.project_a, "events", "--limit", "1")["result"]
+        self.assertEqual(events["page"]["returned"], 1)
+        self.assertGreater(events["page"]["total"], 1)
+        self.assertTrue(events["page"]["truncated"])
 
     def test_payload_and_query_bounds_fail_as_invalid_input(self):
         self.init()
@@ -1353,7 +1558,7 @@ class PurposeBusCliTest(unittest.TestCase):
         self.register("agent-a")
         self.register("agent-b")
         self.register("operator", kind="human")
-        json_agents = self.run_purposebus(self.project_a, "agent", "list")["result"]
+        json_agents = self.run_purposebus(self.project_a, "agent", "list")["result"]["items"]
         self.assertEqual([item["agent_id"] for item in json_agents], ["agent-a", "agent-b", "operator"])
         command = [
             sys.executable,
@@ -1379,6 +1584,164 @@ class PurposeBusCliTest(unittest.TestCase):
         self.assertIn("agent-a", result.stdout)
         self.assertIn("operator", result.stdout)
         self.assertIn("human", result.stdout)
+        self.assertIn("Agents: 3 of 3", result.stdout)
+        self.assertNotIn("database", result.stdout)
+        self.assertNotIn("state_root", result.stdout)
+        self.assertNotIn("result:", result.stdout)
+
+    def test_human_read_surfaces_use_command_specific_renderers(self):
+        self.init()
+        self.register("producer")
+        self.register("consumer")
+        self.start("producer", "producer1")
+        self.start("consumer", "consumer1")
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "render/value",
+            "--instance",
+            "consumer1",
+            "--purpose",
+            "consume rendered value",
+            "--id",
+            "render-sub",
+        )
+        self.run_purposebus(
+            self.project_a,
+            "offer",
+            "add",
+            "render/value",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "provide rendered value",
+            "--id",
+            "render-offer",
+        )
+        request = self.run_purposebus(
+            self.project_a,
+            "request",
+            "create",
+            "render/request",
+            "--instance",
+            "consumer1",
+            "--purpose",
+            "request rendered value",
+            "--id",
+            "render-request",
+        )["result"]
+        message = self.run_purposebus(
+            self.project_a,
+            "publish",
+            "render/value",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "render one value",
+            "--text",
+            "visible payload",
+        )["result"]
+
+        read_commands = (
+            ("status",),
+            ("agent", "list"),
+            ("agent", "show", "producer"),
+            ("instance", "list"),
+            ("instance", "show", "producer1"),
+            ("subscription", "list"),
+            ("subscription", "show", "render-sub"),
+            ("offer", "list"),
+            ("offer", "show", "render-offer"),
+            ("request", "list"),
+            ("request", "show", request["subscription_id"]),
+            ("message", "list"),
+            ("message", "show", message["message_id"], "--include-payload"),
+            ("delivery", "list"),
+            ("match",),
+            ("next", "--instance", "consumer1"),
+            ("events", "--limit", "10"),
+        )
+        for command in read_commands:
+            with self.subTest(command=command):
+                result = self.run_human(self.project_a, *command)
+                self.assertTrue(result.stdout.strip())
+                for internal in (
+                    "command_digest",
+                    "database",
+                    "payload_text",
+                    "state_root",
+                    "result:",
+                ):
+                    self.assertNotIn(internal, result.stdout)
+
+        shown = self.run_human(
+            self.project_a,
+            "message",
+            "show",
+            message["message_id"],
+            "--include-payload",
+        )
+        self.assertIn('Payload: "visible payload"', shown.stdout)
+
+    def test_human_poll_prints_payload_and_exact_ack_step(self):
+        self.init()
+        self.register("producer")
+        self.register("consumer")
+        self.start("producer", "producer1")
+        self.start("consumer", "consumer1")
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "human/value",
+            "--instance",
+            "consumer1",
+            "--purpose",
+            "handle one value",
+            "--id",
+            "human-sub",
+        )
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "human/value",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "provide one value",
+            "--text",
+            "ready",
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "purposebus",
+                "--partition",
+                str(self.project_a),
+                "--state-dir",
+                str(self.state),
+                "poll",
+                "--instance",
+                "consumer1",
+            ],
+            cwd=REPO_ROOT,
+            env=self.environment,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("Leased Deliveries: 1 of 1", result.stdout)
+        self.assertIn('Payload: "ready"', result.stdout)
+        self.assertRegex(
+            result.stdout,
+            r"Next: purposebus ack del_[a-f0-9]+ --instance consumer1",
+        )
+        for internal in ("command_digest", "database", "state_root", "result:"):
+            self.assertNotIn(internal, result.stdout)
 
     def test_next_reports_matching_request_heartbeat_and_stale_warning(self):
         start = "2026-08-31T00:00:00Z"
@@ -1422,8 +1785,12 @@ class PurposeBusCliTest(unittest.TestCase):
             "provider1",
             at="2026-08-31T00:59:50Z",
         )["result"]
-        self.assertIn("consider_request", [item["kind"] for item in near_expiry["items"]])
-        self.assertIn("heartbeat", [item["kind"] for item in near_expiry["items"]])
+        self.assertIn(
+            "consider_request", [item["kind"] for item in near_expiry["items"]["items"]]
+        )
+        self.assertIn(
+            "heartbeat", [item["kind"] for item in near_expiry["items"]["items"]]
+        )
         stale = self.run_purposebus(
             self.project_a,
             "next",
@@ -1431,7 +1798,7 @@ class PurposeBusCliTest(unittest.TestCase):
             "provider1",
             at="2026-08-31T01:00:01Z",
         )["result"]
-        self.assertTrue(stale["warnings"])
+        self.assertTrue(stale["warnings"]["items"])
         self.assertEqual(stale["instance"]["liveness"], "stale")
 
     def test_help_routes_expose_catalog_and_integration_contract(self):
@@ -1465,7 +1832,7 @@ class PurposeBusCliTest(unittest.TestCase):
             ("usecases", "Publish and receive"),
             ("concepts", "never authorize unrelated work"),
             ("partitions", "no implicit cross-Partition"),
-            ("agent", "purposebus.*.v1"),
+            ("agent", "purposebus.*.v2"),
         ):
             document = self.run_purposebus(self.project_a, "help", topic)
             self.assertIn(phrase, document["result"]["text"])
@@ -1499,13 +1866,15 @@ class PurposeBusCliTest(unittest.TestCase):
             "--text",
             "value",
         )
-        before = self.logical_state(publication["partition"])
+        before = self.logical_state(self.project_a)
         next_result = self.run_purposebus(self.project_a, "next", "--instance", "consumer1")["result"]
         self.run_purposebus(self.project_a, "status")
         self.run_purposebus(self.project_a, "match")
-        after = self.logical_state(publication["partition"])
+        after = self.logical_state(self.project_a)
         self.assertEqual(before, after)
-        self.assertIn("read_delivery", [item["kind"] for item in next_result["items"]])
+        self.assertIn(
+            "read_delivery", [item["kind"] for item in next_result["items"]["items"]]
+        )
 
     def test_blocking_poll_is_visible_and_clears_after_message(self):
         self.init()
@@ -1548,9 +1917,16 @@ class PurposeBusCliTest(unittest.TestCase):
         )
         stdout, stderr = process.communicate(timeout=5)
         self.assertEqual(process.returncode, 0, msg=stderr)
-        self.assertEqual(json.loads(stdout)["result"][0]["payload"], "arrived")
+        self.assertEqual(
+            json.loads(stdout)["result"]["deliveries"]["items"][0]["payload"],
+            "arrived",
+        )
         status = self.run_purposebus(self.project_a, "status")["result"]
-        instance = next(item for item in status["instances"] if item["instance_id"] == "consumer1")
+        instance = next(
+            item
+            for item in status["instances"]["items"]
+            if item["instance_id"] == "consumer1"
+        )
         self.assertEqual(instance["activity"], "idle")
         self.assertIsNone(instance["wait_valid"])
 
@@ -1570,7 +1946,11 @@ class PurposeBusCliTest(unittest.TestCase):
         process.kill()
         process.communicate(timeout=5)
         status = self.run_purposebus(self.project_a, "status")["result"]
-        instance = next(item for item in status["instances"] if item["instance_id"] == "consumer1")
+        instance = next(
+            item
+            for item in status["instances"]["items"]
+            if item["instance_id"] == "consumer1"
+        )
         self.assertEqual(instance["declared_activity"], "waiting")
         self.assertEqual(instance["activity"], "idle")
         self.assertFalse(instance["wait_valid"])
@@ -1620,7 +2000,7 @@ class PurposeBusCliTest(unittest.TestCase):
         for process in processes:
             stdout, stderr = process.communicate(timeout=10)
             self.assertEqual(process.returncode, 0, msg=f"{stdout}\n{stderr}")
-        deliveries = self.run_purposebus(self.project_a, "delivery", "list")["result"]
+        deliveries = self.run_purposebus(self.project_a, "delivery", "list")["result"]["items"]
         self.assertEqual(len(deliveries), 5)
 
 

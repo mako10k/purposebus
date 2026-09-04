@@ -26,13 +26,13 @@ Do not substitute a local probe for the unsupported requested outcome.
 ## Establish context
 
 1. Confirm `purposebus --version` reports the compatible alpha
-   `purposebus 0.2.0a0`. If it is absent or incompatible, stop and report the
+   `purposebus 0.2.0a1`. If it is absent or incompatible, stop and report the
    missing prerequisite; do not locate or open its SQLite database as a
    fallback.
 2. Resolve the intended Partition from the user's explicit path or the canonical
    Git worktree containing the current task. Keep that path explicit with
    `--partition PATH` on every command. Do not silently switch Partitions.
-3. Use `--format json` and accept only documented `purposebus.*.v1` results.
+3. Use `--format json` and accept only documented `purposebus.*.v2` results.
    Treat an unknown schema or nonzero exit as a stopped operation.
 4. Leave `--state-dir` unset for ordinary use. Set it only when the user asks for
    an isolated test state, and keep that state separate from their live queue.
@@ -86,6 +86,12 @@ recipient.
   accepted or processed, using its owning Agent or Instance. Never steal an
   active Instance lease with direct Agent acknowledgement.
 - Keep polls bounded. Do not leave a hidden background poll running.
+- Read resource-list entries from `.result.items` and inspect `.result.page`
+  before assuming the list is complete. Narrow `--limit` to the amount needed.
+- Read leased Deliveries from `.result.deliveries.items`. After the payload has
+  actually been handled, use that Delivery's exact `.next.command` while
+  preserving the same Partition and state configuration. Do not acknowledge a
+  placeholder ID or construct an acknowledgement for a different actor.
 
 Never put credentials or raw secrets in PurposeBus. Use an opaque
 `--reference` for external artifacts, and attach `--artifact-digest` only with

@@ -1,6 +1,6 @@
 {
   "name": "purposebus",
-  "version": "0.2.0+codex.20260904024157",
+  "version": "0.2.0+codex.20260904090953",
   "description": "Coordinate local human and AI agents through the PurposeBus CLI.",
   "author": {
     "name": "Makoto Katsumata",

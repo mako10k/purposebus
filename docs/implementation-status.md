@@ -1,6 +1,6 @@
-# PurposeBus 0.2.0 alpha implementation status
+# PurposeBus 0.2 alpha implementation status
 
-Status: local alpha candidate accepted
+Status: 0.2.0a0 accepted; 0.2.0a1 response-contract update under development
 
 Date: 2026-09-04
 
@@ -39,6 +39,8 @@ depending on an in-memory broker.
 | Delivery processing | 5 leases | `dead_letter` after the fifth lease times out |
 | Event query | 1 to 1,000 rows | invalid-input error outside the range |
 | Stored event history | latest 10,000 rows | `status.storage.events_pruned` records removals |
+| Resource list, status Instance, and next-action output | default 100, caller range 1 to 1,000 | page metadata reports total and truncation |
+| Match output | default 100 results; 25 candidates per unmet need | independent result and candidate bounds |
 
 ## Acceptance evidence
 
@@ -71,6 +73,15 @@ core/Plugin compatibility assertions, isolated package evidence, and new-session
 Plugin permission checks. Its exact candidate hashes and results are in
 [the alpha acceptance record](alpha-acceptance-2026-09-04.md).
 
+The unaccepted 0.2.0a1 development candidate addresses GitHub Issue #1 and its
+public-surface audit. It separates public serializers from persistence records,
+removes storage paths, command digests, and raw process observations from
+ordinary output, introduces bounded command-specific collections, removes the
+duplicate match and status projections, provides task-oriented human output,
+and makes poll-to-ack guidance explicit. These incompatible successful response
+shapes use `purposebus.*.v2`; errors and durable state remain schema version `1`.
+See [the public response contract](public-response-contract.md).
+
 ## Alpha result and beta frontier
 
 The first real local multi-agent trial is complete. It exercised raw CLI and
@@ -95,8 +106,9 @@ workspace distribution, and public-directory publication outside the accepted
 alpha scope. See
 [the 2026-09-04 surface decision](codex-plugin-surface-decision-2026-09-04.md).
 
-The accepted local alpha retains schema version `1` and the direct SQLite
-design. It does not require a state migration, broker daemon, or MCP server.
+The accepted local alpha and the response-contract candidate retain durable
+state schema version `1` and the direct SQLite design. They do not require a
+state migration, broker daemon, or MCP server.
 `T_BETA_REPLAN` is now the next planning task: it must select later work from
 measured alpha evidence rather than treating the provisional beta package as
 already accepted scope.

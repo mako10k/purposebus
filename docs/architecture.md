@@ -58,6 +58,20 @@ Activity and liveness remain separate projections. No-PID human Instances can
 be alive from a current heartbeat, become stale after lease expiry, and become
 dead only after an explicit stop.
 
+## Public response boundary
+
+The direct SQLite model is internal. Persistence rows and `Partition` storage
+members are normalized inside the Store, then passed through command-specific
+field allowlists before the CLI emits them. The public response layer owns
+semantic Partition context, resource projections, bounded collection metadata,
+poll-to-ack guidance, and task-oriented human rendering.
+
+This separation prevents a new database column or process-observation field
+from becoming public by default. `purposebus.*.v2` identifies the incompatible
+output-contract change; the durable state schema remains version `1` and does
+not migrate. The detailed field and compatibility contract is documented in
+[the public response contract](public-response-contract.md).
+
 ## Security boundary
 
 The MVP is same-host and same-OS-user only. State directories are mode `0700`

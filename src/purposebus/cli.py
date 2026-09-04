@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import sqlite3
 import sys
@@ -11,7 +10,16 @@ from datetime import datetime
 from . import __version__
 from .errors import PurposeBusError, InvalidInput, NoMessage
 from .partition import resolve_partition
-from .store import Store
+from .public import (
+    DEFAULT_CANDIDATE_LIMIT,
+    DEFAULT_COLLECTION_LIMIT,
+    MAX_CANDIDATE_LIMIT,
+    MAX_COLLECTION_LIMIT,
+    partition_context,
+    project_result,
+    render_human,
+)
+from .store import MAX_EVENT_ROWS, Store
 from .util import (
     add_seconds,
     capabilities,
@@ -44,7 +52,9 @@ Publish and receive:
   purposebus publish TOPIC --purpose TEXT --instance INSTANCE_ID --json-payload JSON --idempotency-key KEY
   purposebus message list --producer INSTANCE_ID --idempotency-key KEY
   purposebus poll --instance INSTANCE_ID --wait 30s
-  purposebus ack DELIVERY_ID --instance INSTANCE_ID
+
+After handling a leased payload, run its exact returned next.command to acknowledge it.
+Resource lists return bounded result.items and result.page metadata.
 
 Inspect without mutation:
   purposebus status
@@ -87,8 +97,10 @@ Existing Agents call commands directly; a PurposeBus launcher is not required.
 
 Use --format json for stable machine-readable results. Mutations require explicit
 Agent or Instance identity; PurposeBus never chooses an arbitrary live Instance. Every
-JSON document carries an explicit purposebus.*.v1 schema identity. On ambiguous publish
+JSON document carries an explicit purposebus.*.v2 schema identity. On ambiguous publish
 outcomes, read back with message list before retrying the identical command.
+Resource lists use result.items and result.page. Poll uses result.deliveries.items
+and supplies an exact next.command for each leased Delivery.
 
 An Instance-owned Subscription can be polled only by that exact Instance identity,
 including after a new CLI process starts. An Agent-owned durable Subscription can be
@@ -113,6 +125,15 @@ def _actor_arguments(parser: argparse.ArgumentParser) -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--agent", dest="actor_agent")
     group.add_argument("--instance", dest="actor_instance")
+
+
+def _collection_limit(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=DEFAULT_COLLECTION_LIMIT,
+        help=f"maximum returned items (default {DEFAULT_COLLECTION_LIMIT}, max {MAX_COLLECTION_LIMIT})",
+    )
 
 
 def _owner(args) -> tuple[str, str]:
@@ -145,7 +166,8 @@ def build_parser() -> Parser:
     register.add_argument("--kind", choices=("human", "ai"), required=True)
     register.add_argument("--description", required=True)
     register.add_argument("--capabilities", help="comma-separated stable capability identifiers")
-    agent_commands.add_parser("list", help="list Agents")
+    agent_list = agent_commands.add_parser("list", help="list Agents")
+    _collection_limit(agent_list)
     agent_show = agent_commands.add_parser("show", help="show one Agent")
     agent_show.add_argument("agent_id")
 
@@ -164,7 +186,8 @@ def build_parser() -> Parser:
     heartbeat.add_argument("--objective")
     stop = instance_commands.add_parser("stop", help="explicitly stop one Instance")
     stop.add_argument("instance_id")
-    instance_commands.add_parser("list", help="list Instances")
+    instance_list = instance_commands.add_parser("list", help="list Instances")
+    _collection_limit(instance_list)
     instance_show = instance_commands.add_parser("show", help="show one Instance")
     instance_show.add_argument("instance_id")
 
@@ -178,7 +201,8 @@ def build_parser() -> Parser:
     subscription_add.add_argument("--expires-in")
     subscription_add.add_argument("--ephemeral", action="store_true")
     subscription_add.add_argument("--id", dest="subscription_id")
-    subscription_commands.add_parser("list", help="list Subscriptions")
+    subscription_list = subscription_commands.add_parser("list", help="list Subscriptions")
+    _collection_limit(subscription_list)
     subscription_show = subscription_commands.add_parser("show", help="show one Subscription")
     subscription_show.add_argument("subscription_id")
     for action in ("pause", "resume", "cancel"):
@@ -195,7 +219,8 @@ def build_parser() -> Parser:
     offer_add.add_argument("--schema")
     offer_add.add_argument("--expires-in")
     offer_add.add_argument("--id", dest="offer_id")
-    offer_commands.add_parser("list", help="list Offers")
+    offer_list = offer_commands.add_parser("list", help="list Offers")
+    _collection_limit(offer_list)
     offer_show = offer_commands.add_parser("show", help="show one Offer")
     offer_show.add_argument("offer_id")
     for action in ("pause", "resume", "cancel"):
@@ -214,7 +239,8 @@ def build_parser() -> Parser:
     request_create.add_argument("--correlation-id")
     request_create.add_argument("--id", dest="request_id")
     request_create.add_argument("--wait", help="wait for a response; requires Instance ownership")
-    request_commands.add_parser("list", help="list Requests")
+    request_list = request_commands.add_parser("list", help="list Requests")
+    _collection_limit(request_list)
     request_show = request_commands.add_parser("show", help="show one Request")
     request_show.add_argument("request_id")
     request_cancel = request_commands.add_parser("cancel", help="cancel one Request")
@@ -242,6 +268,7 @@ def build_parser() -> Parser:
     message_list = message_commands.add_parser("list", help="list Message metadata without payloads")
     message_list.add_argument("--producer", help="filter by producer Instance ID")
     message_list.add_argument("--idempotency-key", help="filter by producer-scoped idempotency key")
+    _collection_limit(message_list)
     message_show = message_commands.add_parser("show", help="show one Message")
     message_show.add_argument("message_id")
     message_show.add_argument("--include-payload", action="store_true")
@@ -257,53 +284,43 @@ def build_parser() -> Parser:
     ack.add_argument("delivery_id")
     _actor_arguments(ack)
 
-    commands.add_parser("match", help="show matching Offers and unmet demand")
-    commands.add_parser("status", help="show Partition and Instance status")
+    match = commands.add_parser("match", help="show matching Offers and unmet demand")
+    _collection_limit(match)
+    match.add_argument(
+        "--candidate-limit",
+        type=int,
+        default=DEFAULT_CANDIDATE_LIMIT,
+        help=(
+            f"maximum candidate Offers per unmet need "
+            f"(default {DEFAULT_CANDIDATE_LIMIT}, max {MAX_CANDIDATE_LIMIT})"
+        ),
+    )
+    status = commands.add_parser("status", help="show Partition and Instance status")
+    _collection_limit(status)
 
     next_parser = commands.add_parser("next", help="show read-only actions for one Instance")
     next_parser.add_argument("--instance", required=True)
+    _collection_limit(next_parser)
 
     events = commands.add_parser("events", help="show non-payload event history")
     events.add_argument("--limit", type=int, default=100)
 
     delivery = commands.add_parser("delivery", help="inspect Delivery state")
     delivery_commands = delivery.add_subparsers(dest="delivery_command", required=True)
-    delivery_commands.add_parser("list", help="list Deliveries without payloads")
+    delivery_list = delivery_commands.add_parser("list", help="list Deliveries without payloads")
+    _collection_limit(delivery_list)
 
     return parser
-
-
-def _human_lines(value, indent=0):
-    prefix = " " * indent
-    if isinstance(value, dict):
-        for key, item in value.items():
-            if isinstance(item, (dict, list)):
-                yield f"{prefix}{key}:"
-                yield from _human_lines(item, indent + 2)
-            else:
-                rendered = "-" if item is None else str(item).lower() if isinstance(item, bool) else str(item)
-                yield f"{prefix}{key}: {rendered}"
-    elif isinstance(value, list):
-        if not value:
-            yield f"{prefix}[]"
-        for item in value:
-            if isinstance(item, dict):
-                yield f"{prefix}-"
-                yield from _human_lines(item, indent + 2)
-            else:
-                yield f"{prefix}- {item}"
-    else:
-        yield f"{prefix}{value}"
 
 
 def emit(args, schema: str, result, partition=None, actor=None) -> None:
     document = {"schema": schema, "actor": actor, "result": result}
     if partition is not None:
-        document["partition"] = partition.as_dict()
+        document["partition"] = partition_context(partition)
     if args.format == "json":
         print(json_text(document))
     else:
-        for line in _human_lines(document):
+        for line in render_human(document):
             print(line)
 
 
@@ -402,6 +419,16 @@ def _write_store(partition) -> Store:
     return Store(partition, readonly=False)
 
 
+def _poll_retry_hint(instance_id: str, subscription_id: str | None) -> str:
+    command = f"purposebus poll --instance {instance_id}"
+    if subscription_id is not None:
+        command += f" --subscription {subscription_id}"
+    return (
+        f"retry the same Partition and state context with {command}, or inspect "
+        f"purposebus next --instance {instance_id}"
+    )
+
+
 def _poll_wait(
     store: Store,
     *,
@@ -430,7 +457,7 @@ def _poll_wait(
             now=current,
         )
         if not deliveries:
-            raise NoMessage()
+            raise NoMessage(hint=_poll_retry_hint(instance_id, subscription_id))
         return deliveries
 
     store.validate_poll_target(instance_id, subscription_id)
@@ -451,7 +478,10 @@ def _poll_wait(
             if deliveries:
                 return deliveries
             if current >= deadline:
-                raise NoMessage("poll wait expired without a matching message")
+                raise NoMessage(
+                    "poll wait expired without a matching message",
+                    hint=_poll_retry_hint(instance_id, subscription_id),
+                )
             if (current - last_refresh).total_seconds() >= 1:
                 store.refresh_wait(instance_id, current)
                 last_refresh = current
@@ -464,12 +494,22 @@ def dispatch(args) -> tuple[str, object, object | None]:
     partition = resolve_partition(args.partition, args.state_dir)
     now = parse_time(args.at)
 
+    if hasattr(args, "limit") and args.command not in {"poll", "events"}:
+        if args.limit <= 0 or args.limit > MAX_COLLECTION_LIMIT:
+            raise InvalidInput(f"--limit must be between 1 and {MAX_COLLECTION_LIMIT}")
+    if args.command == "match" and (
+        args.candidate_limit <= 0 or args.candidate_limit > MAX_CANDIDATE_LIMIT
+    ):
+        raise InvalidInput(
+            f"--candidate-limit must be between 1 and {MAX_CANDIDATE_LIMIT}"
+        )
+
     if args.command == "help":
-        return "purposebus.help.v1", {"topic": args.topic, "text": HELP_TOPICS[args.topic]}, partition
+        return "purposebus.help.v2", {"topic": args.topic, "text": HELP_TOPICS[args.topic]}, partition
     if args.command == "init":
         store, created = Store.initialize(partition, now)
         try:
-            return "purposebus.init.v1", {"created": created, "metadata": store.metadata()}, partition
+            return "purposebus.init.v2", {"created": created, "metadata": store.metadata()}, partition
         finally:
             store.close()
 
@@ -483,14 +523,14 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     capabilities(args.capabilities),
                     now,
                 )
-            return "purposebus.agent-register.v1", result, partition
+            return "purposebus.agent-register.v2", result, partition
         with _read_store(partition) as store:
             if args.agent_command == "list":
                 result = store.list_agents()
-                schema = "purposebus.agent-list.v1"
+                schema = "purposebus.agent-list.v2"
             else:
                 result = store.get_agent(validate_identifier(args.agent_id, "Agent ID"))
-                schema = "purposebus.agent-show.v1"
+                schema = "purposebus.agent-show.v2"
         return schema, result, partition
 
     if args.command == "instance":
@@ -508,7 +548,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     args.pid,
                     now,
                 )
-            return "purposebus.instance-start.v1", result, partition
+            return "purposebus.instance-start.v2", result, partition
         if args.instance_command == "heartbeat":
             with _write_store(partition) as store:
                 result = store.heartbeat_instance(
@@ -517,18 +557,18 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     activity=args.activity,
                     objective=args.objective,
                 )
-            return "purposebus.instance-heartbeat.v1", result, partition
+            return "purposebus.instance-heartbeat.v2", result, partition
         if args.instance_command == "stop":
             with _write_store(partition) as store:
                 result = store.stop_instance(validate_identifier(args.instance_id, "Instance ID"), now)
-            return "purposebus.instance-stop.v1", result, partition
+            return "purposebus.instance-stop.v2", result, partition
         with _read_store(partition) as store:
             if args.instance_command == "list":
                 result = store.list_instances(now)
-                schema = "purposebus.instance-list.v1"
+                schema = "purposebus.instance-list.v2"
             else:
                 result = store.get_instance(validate_identifier(args.instance_id, "Instance ID"), now)
-                schema = "purposebus.instance-show.v1"
+                schema = "purposebus.instance-show.v2"
         return schema, result, partition
 
     if args.command == "subscription":
@@ -550,7 +590,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     correlation_id=None,
                     now=now,
                 )
-            return "purposebus.subscription-add.v1", result, partition
+            return "purposebus.subscription-add.v2", result, partition
         if args.subscription_command in {"pause", "resume", "cancel"}:
             actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
@@ -561,16 +601,16 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     actor_id,
                     now,
                 )
-            return f"purposebus.subscription-{args.subscription_command}.v1", result, partition
+            return f"purposebus.subscription-{args.subscription_command}.v2", result, partition
         with _read_store(partition) as store:
             if args.subscription_command == "list":
                 result = store.list_subscriptions(now, kind="subscription")
-                schema = "purposebus.subscription-list.v1"
+                schema = "purposebus.subscription-list.v2"
             else:
                 result = store.get_subscription(
                     validate_identifier(args.subscription_id, "Subscription ID"), now
                 )
-                schema = "purposebus.subscription-show.v1"
+                schema = "purposebus.subscription-show.v2"
         return schema, result, partition
 
     if args.command == "offer":
@@ -587,7 +627,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     expires_at=expiry(now, args.expires_in),
                     now=now,
                 )
-            return "purposebus.offer-add.v1", result, partition
+            return "purposebus.offer-add.v2", result, partition
         if args.offer_command in {"pause", "resume", "cancel"}:
             actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
@@ -598,14 +638,14 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     actor_id,
                     now,
                 )
-            return f"purposebus.offer-{args.offer_command}.v1", result, partition
+            return f"purposebus.offer-{args.offer_command}.v2", result, partition
         with _read_store(partition) as store:
             if args.offer_command == "list":
                 result = store.list_offers(now)
-                schema = "purposebus.offer-list.v1"
+                schema = "purposebus.offer-list.v2"
             else:
                 result = store.get_offer(validate_identifier(args.offer_id, "Offer ID"), now)
-                schema = "purposebus.offer-show.v1"
+                schema = "purposebus.offer-show.v2"
         return schema, result, partition
 
     if args.command == "request":
@@ -642,7 +682,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     result = {"request": request, "deliveries": deliveries}
                 else:
                     result = request
-            return "purposebus.request-create.v1", result, partition
+            return "purposebus.request-create.v2", result, partition
         if args.request_command == "cancel":
             actor_type, actor_id = _actor(args)
             with _write_store(partition) as store:
@@ -653,14 +693,14 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     actor_id,
                     now,
                 )
-            return "purposebus.request-cancel.v1", result, partition
+            return "purposebus.request-cancel.v2", result, partition
         with _read_store(partition) as store:
             if args.request_command == "list":
                 result = store.list_subscriptions(now, kind="request")
-                schema = "purposebus.request-list.v1"
+                schema = "purposebus.request-list.v2"
             else:
                 result = store.get_subscription(validate_identifier(args.request_id, "Request ID"), now)
-                schema = "purposebus.request-show.v1"
+                schema = "purposebus.request-show.v2"
         return schema, result, partition
 
     if args.command == "publish":
@@ -694,7 +734,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
             )
         safe_result = dict(result)
         safe_result.pop("payload_text", None)
-        return "purposebus.publish.v1", safe_result, partition
+        return "purposebus.publish.v2", safe_result, partition
 
     if args.command == "message":
         with _read_store(partition) as store:
@@ -707,13 +747,13 @@ def dispatch(args) -> tuple[str, object, object | None]:
                     ),
                     idempotency_key=args.idempotency_key,
                 )
-                schema = "purposebus.message-list.v1"
+                schema = "purposebus.message-list.v2"
             else:
                 result = store.get_message(
                     validate_identifier(args.message_id, "Message ID"),
                     include_payload=args.include_payload,
                 )
-                schema = "purposebus.message-show.v1"
+                schema = "purposebus.message-show.v2"
         return schema, result, partition
 
     if args.command == "poll":
@@ -730,7 +770,7 @@ def dispatch(args) -> tuple[str, object, object | None]:
                 wait_seconds=parse_duration(args.wait),
                 fixed_time=fixed_time,
             )
-        return "purposebus.poll.v1", result, partition
+        return "purposebus.poll.v2", result, partition
 
     if args.command == "ack":
         actor_type, actor_id = _actor(args)
@@ -741,34 +781,34 @@ def dispatch(args) -> tuple[str, object, object | None]:
                 actor_id,
                 now,
             )
-        return "purposebus.ack.v1", result, partition
+        return "purposebus.ack.v2", result, partition
 
     if args.command == "match":
         with _read_store(partition) as store:
             result = store.matches(now)
-        return "purposebus.match.v1", result, partition
+        return "purposebus.match.v2", result, partition
 
     if args.command == "status":
         with _read_store(partition) as store:
             result = store.status(now)
-        return "purposebus.status.v1", result, partition
+        return "purposebus.status.v2", result, partition
 
     if args.command == "next":
         with _read_store(partition) as store:
             result = store.next_actions(validate_identifier(args.instance, "Instance ID"), now)
-        return "purposebus.next.v1", result, partition
+        return "purposebus.next.v2", result, partition
 
     if args.command == "events":
         if args.limit <= 0 or args.limit > 1000:
             raise InvalidInput("--limit must be between 1 and 1000")
         with _read_store(partition) as store:
-            result = store.events(limit=args.limit)
-        return "purposebus.events.v1", result, partition
+            result = store.events(limit=MAX_EVENT_ROWS)
+        return "purposebus.events.v2", result, partition
 
     if args.command == "delivery" and args.delivery_command == "list":
         with _read_store(partition) as store:
             result = store.list_deliveries(now)
-        return "purposebus.delivery-list.v1", result, partition
+        return "purposebus.delivery-list.v2", result, partition
 
     raise InvalidInput("unsupported command")
 
@@ -784,11 +824,13 @@ def main(argv=None) -> int:
     args = argparse.Namespace(format="json" if requested_json else "human")
     try:
         args = parser.parse_args(_normalize_global_options(effective_argv))
-        schema, result, partition = dispatch(args)
+        schema, internal_result, partition = dispatch(args)
         if args.command == "help" and args.format == "human":
-            print(result["text"].rstrip())
+            print(internal_result["text"].rstrip())
         else:
-            emit(args, schema, result, partition, _output_actor(args, result))
+            actor = _output_actor(args, internal_result)
+            result = project_result(args, internal_result)
+            emit(args, schema, result, partition, actor)
         return 0
     except PurposeBusError as exc:
         emit_error(args, exc)

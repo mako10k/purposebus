@@ -1,6 +1,6 @@
 # PurposeBus Codex Plugin contract
 
-Status: Skill-only local 0.2 alpha accepted
+Status: accepted 0.2 alpha with an unaccepted 0.2.0a1 response-contract update
 
 Date: 2026-09-04
 
@@ -47,7 +47,8 @@ for MCP and froze the Skill-only local surface for the 0.2 alpha. See
 
 ## CLI and failure contract
 
-The Plugin requires `purposebus --version` and versioned `purposebus.*.v1` JSON
+The response-contract update requires `purposebus --version` and versioned
+`purposebus.*.v2` JSON
 documents. Unknown schemas, unknown state versions, corrupt state, missing CLI,
 nonzero exits, ambiguous writes, and actor or ownership errors fail closed. A
 named Subscription with the wrong polling identity reports
@@ -56,7 +57,9 @@ named Subscription with the wrong polling identity reports
 The Plugin freezes write inputs and uses at most the explicitly intended number
 of writes. A lost publish response is resolved through read-only lookup by
 producer and idempotency key before any retry. Polling is bounded, and a Delivery
-is acknowledged only after actual processing by its owning actor.
+is acknowledged only after actual processing by its owning actor. The v2
+Plugin reads list entries from `result.items`, checks page truncation, and uses
+the exact poll Delivery `next.command` rather than a placeholder ID.
 
 Payloads must not contain raw secrets. External artifacts use opaque references;
 an artifact digest is accepted only with a reference, and the reference itself
@@ -64,9 +67,11 @@ does not grant access.
 
 ## Package and compatibility
 
-- Plugin identity and accepted alpha version: `purposebus`
-  `0.2.0+codex.20260904024157`.
-- Compatible alpha core: PurposeBus `0.2.0a0` with `purposebus.*.v1` JSON.
+- The accepted Plugin/core pair remains `0.2.0+codex.20260904024157` with
+  PurposeBus `0.2.0a0` and `purposebus.*.v1` JSON.
+- The unaccepted response-contract candidate targets PurposeBus `0.2.0a1` with
+  `purposebus.*.v2` JSON and Plugin
+  `0.2.0+codex.20260904090953`.
 - Components: one Skill and repo marketplace entry.
 - Explicitly absent: `.mcp.json`, `.app.json`, hooks, embedded credentials, and
   direct database access.

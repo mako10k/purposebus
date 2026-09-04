@@ -1,4 +1,5 @@
 import json
+import re
 import tomllib
 import unittest
 from pathlib import Path
@@ -49,9 +50,11 @@ class PluginPackageTest(unittest.TestCase):
         skill = skill_path.read_text(encoding="utf-8")
         core_version = project["project"]["version"]
         plugin_base_version = manifest["version"].split("+", 1)[0]
-        self.assertEqual(core_version, "0.2.0a0")
-        self.assertEqual(plugin_base_version, core_version.removesuffix("a0"))
+        self.assertEqual(core_version, "0.2.0a1")
+        self.assertEqual(plugin_base_version, re.sub(r"a\d+$", "", core_version))
         self.assertIn(f"purposebus {core_version}", skill)
+        self.assertIn("purposebus.*.v2", skill)
+        self.assertIn(".result.deliveries.items", skill)
         self.assertIn("ownership_mismatch", skill)
         self.assertIn("## Mutate only for an explicit objective", skill)
         self.assertIn("Do not access PurposeBus storage directly", skill)

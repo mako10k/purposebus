@@ -262,7 +262,7 @@ its liveness is then `unknown` or absent, not falsely `dead`.
 
 PurposeBus MUST provide read-only commands to inspect:
 
-- the Partition and storage health;
+- the Partition and backend-neutral storage health;
 - Agents and Instances;
 - Subscriptions, Requests, and Offers, including their purposes;
 - matches and unmet demand;
@@ -315,6 +315,9 @@ help route.
 Every inspection and workflow command needed by an Agent MUST support
 machine-readable JSON with an explicit schema identity and schema version. The
 same semantic distinctions MUST be preserved in human and JSON output.
+Removing a field, changing a field's meaning, or changing a result collection's
+shape MUST use a new response schema version rather than silently changing an
+existing version.
 Global context and output options MUST be accepted before or after a subcommand,
 including the documented `purposebus next --format json` form.
 
@@ -324,12 +327,17 @@ On success, structured data MUST be written to standard output. Diagnostics
 MUST be written to standard error. Exit status MUST distinguish success,
 invalid input, unavailable state, timeout/no message, conflict, and internal
 failure without requiring diagnostic-string parsing.
+Ordinary output MUST NOT expose persistence locations, internal command
+digests, or raw process-observation records. Operational evidence that is not
+part of a workflow response MUST use an explicit diagnostic surface.
 
 ### CLI-005: Explicit context
 
 Commands MUST expose the resolved Partition and acting Agent or Instance in
 JSON. Mutating commands MUST fail when the acting identity is absent or
 ambiguous; they MUST NOT select an arbitrary live Instance.
+The resolved Partition MUST have one authoritative top-level projection; a
+command result MUST NOT repeat it.
 
 `init`, `agent register`, and `instance start` are bootstrap operations. `init`
 has no acting identity; registration and start explicitly act as the identity
@@ -377,6 +385,22 @@ purposebus events
 purposebus help usecases|concepts|partitions|agent
 ```
 
+### CLI-009: Public response boundary
+
+Public response projections MUST use explicit field allowlists separate from
+persistence rows and internal runtime records. List, show, status, next, poll,
+and match MUST each have an intentional command-specific projection. Adding a
+persistence column MUST NOT add a public field automatically.
+
+Resource collections MUST expose a documented result bound or pagination
+contract. Match output MUST avoid duplicate serialization of the same pair and
+bound nested candidate output. Human output MUST be task-oriented rather than a
+recursive rendering of the machine document.
+
+A leased Delivery response MUST identify an exact acknowledgement step. A
+normal empty or timed-out poll MUST provide a retry or inspection hint without
+implying that acknowledgement is authorized before payload handling.
+
 ## 6. Non-functional requirements
 
 ### NFR-001: Durability
@@ -398,9 +422,10 @@ use deterministic ordering and stable projections.
 
 ### NFR-004: Bounded resources
 
-Polling, payload size, event retention, redelivery attempts, and history output
-MUST have documented bounds. Reaching a bound MUST produce an observable state
-or error rather than silently dropping live data.
+Polling, payload size, event retention, redelivery attempts, history output,
+resource lists, status detail, next actions, and match expansion MUST have
+documented bounds. Reaching a bound MUST produce an observable state, page
+metadata, or error rather than silently dropping live data.
 
 ### NFR-005: Local access boundary
 
@@ -452,6 +477,10 @@ developer's live queue or ambient project Partition.
     behavior, JSON schema identities, and remediation routes.
 12. State corruption or an unsupported state schema fails closed with a
     diagnostic; it is not silently reset or repaired.
+13. Public responses omit persistence and raw process-observation fields,
+    collections report their bounds, human output is task-oriented, and the
+    poll result supplies an exact acknowledgement step without changing the
+    supported state schema.
 
 ## 8. Explicit MVP non-goals
 
