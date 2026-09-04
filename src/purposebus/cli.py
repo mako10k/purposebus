@@ -89,6 +89,11 @@ Use --format json for stable machine-readable results. Mutations require explici
 Agent or Instance identity; PurposeBus never chooses an arbitrary live Instance. Every
 JSON document carries an explicit purposebus.*.v1 schema identity. On ambiguous publish
 outcomes, read back with message list before retrying the identical command.
+
+An Instance-owned Subscription can be polled only by that exact Instance identity,
+including after a new CLI process starts. An Agent-owned durable Subscription can be
+recovered by another active Instance of the same Agent. An explicit --subscription
+owned by someone else fails as ownership_mismatch rather than no_message.
 """,
 }
 
@@ -428,6 +433,7 @@ def _poll_wait(
             raise NoMessage()
         return deliveries
 
+    store.validate_poll_target(instance_id, subscription_id)
     started = now_utc()
     deadline = add_seconds(started, wait_seconds)
     previous_activity = store.set_wait(instance_id, started, deadline, subscription_id, os.getpid())

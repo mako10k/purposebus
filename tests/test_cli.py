@@ -336,12 +336,130 @@ class PurposeBusCliTest(unittest.TestCase):
             "poll",
             "--instance",
             "consumer1",
+            "--subscription",
+            "sub1",
             "--lease",
             "1s",
             at="2026-01-01T00:00:02Z",
         )["result"][0]
         self.assertEqual(first["delivery_id"], second["delivery_id"])
         self.assertEqual(second["attempt"], 2)
+
+    def test_explicit_poll_distinguishes_empty_missing_and_owner_mismatch(self):
+        self.init()
+        self.register("consumer")
+        self.start("consumer", "consumer1")
+        self.start("consumer", "consumer2")
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "owned/value",
+            "--instance",
+            "consumer1",
+            "--purpose",
+            "keep exact Instance ownership",
+            "--id",
+            "owned1",
+        )
+
+        empty = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "consumer1",
+            "--subscription",
+            "owned1",
+            expected=4,
+        )
+        self.assertEqual(empty["error"], "no_message")
+        missing = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "consumer1",
+            "--subscription",
+            "missing",
+            expected=3,
+        )
+        self.assertEqual(missing["error"], "not_found")
+        mismatch = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "consumer2",
+            "--subscription",
+            "owned1",
+            expected=5,
+        )
+        self.assertEqual(mismatch["error"], "ownership_mismatch")
+        self.assertIn("consumer1", mismatch["message"])
+        self.assertIn("Agent-owned durable Subscription", mismatch["hint"])
+
+    def test_agent_owned_delivery_recovers_through_successor_instance(self):
+        start = "2026-01-01T00:00:00Z"
+        self.init(at=start)
+        self.register("producer", at=start)
+        self.register("consumer", at=start)
+        self.start("producer", "producer1", at=start)
+        self.start("consumer", "consumer1", at=start)
+        self.start("consumer", "consumer2", at=start)
+        self.run_purposebus(
+            self.project_a,
+            "subscription",
+            "add",
+            "recovery/value",
+            "--agent",
+            "consumer",
+            "--purpose",
+            "allow successor Instance recovery",
+            "--id",
+            "agent-owned",
+            at=start,
+        )
+        self.run_purposebus(
+            self.project_a,
+            "publish",
+            "recovery/value",
+            "--instance",
+            "producer1",
+            "--purpose",
+            "exercise successor recovery",
+            "--text",
+            "recover",
+            at=start,
+        )
+        first = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "consumer1",
+            "--subscription",
+            "agent-owned",
+            "--lease",
+            "1s",
+            at=start,
+        )["result"][0]
+        second = self.run_purposebus(
+            self.project_a,
+            "poll",
+            "--instance",
+            "consumer2",
+            "--subscription",
+            "agent-owned",
+            at="2026-01-01T00:00:02Z",
+        )["result"][0]
+        self.assertEqual(first["delivery_id"], second["delivery_id"])
+        self.assertEqual(second["attempt"], 2)
+        acknowledged = self.run_purposebus(
+            self.project_a,
+            "ack",
+            second["delivery_id"],
+            "--instance",
+            "consumer2",
+            at="2026-01-01T00:00:03Z",
+        )["result"]
+        self.assertEqual(acknowledged["state"], "acked")
 
     def test_request_becomes_fulfilled_only_after_ack(self):
         self.init()
@@ -744,6 +862,16 @@ class PurposeBusCliTest(unittest.TestCase):
             connection.close()
         self.assertEqual(schema_version, "99")
         self.assertIsNone(offer_table)
+
+    def test_supported_state_reopens_without_migration_or_mutation(self):
+        initialized = self.init(at="2026-01-01T00:00:00Z")
+        before = self.logical_state(initialized["partition"])
+        reopened = self.init(at="2026-01-02T00:00:00Z")
+        after = self.logical_state(initialized["partition"])
+
+        self.assertFalse(reopened["result"]["created"])
+        self.assertEqual(reopened["result"]["metadata"]["schema_version"], "1")
+        self.assertEqual(before, after)
 
     def test_corrupt_sqlite_state_fails_closed(self):
         initialized = self.init()

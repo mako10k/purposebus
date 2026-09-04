@@ -1,4 +1,5 @@
 import json
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -13,7 +14,7 @@ class PluginPackageTest(unittest.TestCase):
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
         self.assertEqual(manifest["name"], PLUGIN_ROOT.name)
-        self.assertEqual(manifest["version"], "0.1.0")
+        self.assertRegex(manifest["version"], r"^0\.2\.0\+codex\.\d{14}$")
         self.assertEqual(manifest["skills"], "./skills/")
         self.assertTrue((PLUGIN_ROOT / manifest["skills"]).is_dir())
         self.assertNotIn("mcpServers", manifest)
@@ -38,6 +39,22 @@ class PluginPackageTest(unittest.TestCase):
         self.assertTrue(skill.startswith("---\nname: purposebus\n"))
         self.assertIn("\ndescription:", skill.split("---", 2)[1])
         self.assertNotIn("[TODO:", skill)
+
+    def test_skill_declares_alpha_compatibility_and_permission_boundary(self) -> None:
+        manifest = json.loads(
+            (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        project = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        skill_path = PLUGIN_ROOT / "skills" / "purposebus" / "SKILL.md"
+        skill = skill_path.read_text(encoding="utf-8")
+        core_version = project["project"]["version"]
+        plugin_base_version = manifest["version"].split("+", 1)[0]
+        self.assertEqual(core_version, "0.2.0a0")
+        self.assertEqual(plugin_base_version, core_version.removesuffix("a0"))
+        self.assertIn(f"purposebus {core_version}", skill)
+        self.assertIn("ownership_mismatch", skill)
+        self.assertIn("## Mutate only for an explicit objective", skill)
+        self.assertIn("Do not access PurposeBus storage directly", skill)
 
 
 if __name__ == "__main__":

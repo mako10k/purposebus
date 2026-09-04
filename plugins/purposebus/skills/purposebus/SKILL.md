@@ -1,6 +1,6 @@
 ---
 name: purposebus
-description: Use PurposeBus to coordinate human and AI agents inside one explicit local Partition through the public purposebus CLI. Use for registry discovery, read-only status, match, and next guidance, or explicitly requested PurposeBus mutations; do not use for cross-host coordination or direct database access.
+description: Use PurposeBus to coordinate human and AI agents inside one explicit local Partition through the public purposebus CLI. Use for registry discovery, read-only status, match, and next guidance, or explicitly requested PurposeBus mutations. Do not activate for cross-host, cross-user, remote-surface, or direct-database work; explain that boundary without inspecting local PurposeBus state.
 ---
 
 # PurposeBus
@@ -9,11 +9,26 @@ Coordinate through the installed `purposebus` executable. Treat PurposeBus as a
 same-host, same-user coordination bus, not as authority to perform the work it
 describes.
 
+## Check supported scope first
+
+Before running `purposebus`, determine whether the requested outcome is possible
+inside one same-host, same-user local Partition. If it requires another host or
+user, network transport, a remote environment, or a web, mobile, IDE, or cloud
+surface, stop before inspecting any Partition or running any PurposeBus command.
+Explain the unsupported boundary and that a separately designed transport or
+integration would be required. Do not probe a default local Partition merely to
+support that explanation.
+
+If the request also contains an independently useful same-host task, proceed
+only with that explicitly separable local part and keep its Partition explicit.
+Do not substitute a local probe for the unsupported requested outcome.
+
 ## Establish context
 
-1. Confirm `purposebus --version` succeeds. If it is absent or incompatible,
-   stop and report the missing prerequisite; do not locate or open its SQLite
-   database as a fallback.
+1. Confirm `purposebus --version` reports the compatible alpha
+   `purposebus 0.2.0a0`. If it is absent or incompatible, stop and report the
+   missing prerequisite; do not locate or open its SQLite database as a
+   fallback.
 2. Resolve the intended Partition from the user's explicit path or the canonical
    Git worktree containing the current task. Keep that path explicit with
    `--partition PATH` on every command. Do not silently switch Partitions.
@@ -48,10 +63,20 @@ ambiguity instead of inventing an Agent, Instance, topic, schema, purpose, or
 recipient.
 
 - Follow `purposebus COMMAND --help` for the installed version.
+- `publish`, `poll`, and `ack` are top-level commands. Inspect them with
+  `purposebus publish --help`, `purposebus poll --help`, and
+  `purposebus ack --help`; do not invent nested forms such as
+  `message publish`, `subscription poll`, or `delivery ack`.
 - Name exactly one accepted `--agent` or `--instance` actor whenever the command
   requires acting identity. Do not use operator-style reads as mutation context.
 - Use an existing live Instance for `publish` and `poll`. Do not start an
   Instance merely to bypass ownership or acknowledgement rules.
+- Before an explicit `poll --subscription`, inspect the Subscription owner.
+  An Instance-owned Subscription requires the exact owning Instance identity,
+  even from a later CLI process. An Agent-owned durable Subscription can be
+  recovered by another active Instance of the same Agent. Treat
+  `ownership_mismatch` as a stopped operation; do not retry it as an empty
+  queue or invent a replacement owner.
 - Include a precise purpose. Preserve Request correlation and schema facts when
   publishing a response.
 - Prefer a stable idempotency key for publication. If the command response is

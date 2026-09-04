@@ -1,12 +1,12 @@
-# PurposeBus local MVP implementation status
+# PurposeBus 0.2.0 alpha implementation status
 
-Status: executable experiment
+Status: local alpha candidate accepted
 
-Date: 2026-08-31
+Date: 2026-09-04
 
 ## Implemented vertical slice
 
-The prototype implements the normative entity model with a Python standard
+The alpha implements the normative entity model with a Python standard
 library CLI and one SQLite WAL database per canonical Partition. It includes:
 
 - Agent registry and Instance start, heartbeat, stop, liveness, and wait state;
@@ -19,6 +19,8 @@ library CLI and one SQLite WAL database per canonical Partition. It includes:
   retry;
 - explicit mutation actors and owner-family checks, including direct Agent
   acknowledgement for offline mailboxes;
+- explicit poll-target validation that distinguishes an empty queue, a missing
+  Subscription, and an ownership mismatch before wait state or delivery work;
 - human and JSON output with Partition and actor context, task-oriented help,
   `status`, `events`, and purpose-bearing read-only `next` navigation; and
 - project Partition isolation, private same-user state, and no network listener.
@@ -64,14 +66,40 @@ Inspection commands are verified against logical table snapshots so incidental
 SQLite WAL or shared-memory sidecars are not mistaken for coordination-state
 mutation.
 
-## Experiment frontier
+The 0.2.0 alpha adds the bounded ownership diagnostic, state-reopen check,
+core/Plugin compatibility assertions, isolated package evidence, and new-session
+Plugin permission checks. Its exact candidate hashes and results are in
+[the alpha acceptance record](alpha-acceptance-2026-09-04.md).
 
-The direct-database approach remains an experiment. Real multi-agent trials
-should measure poll latency, writer contention, heartbeat accuracy, usability of
-purpose text, and whether durable broadcast is sufficient. A broker daemon is
-the next architecture candidate only if those measurements expose a material
-problem that cannot be addressed while preserving the direct model's simpler
-lifecycle.
+## Alpha result and beta frontier
+
+The first real local multi-agent trial is complete. It exercised raw CLI and
+fresh-session Codex Plugin paths with two AI Agents and one human Agent, including
+provider discovery, correlated response, durable fan-out, failure recovery,
+offline mailbox acknowledgement, poll latency, writer contention, heartbeat
+projection, purpose text, identity, and permission behavior. The evidence and
+accepted post-MVP scope are recorded in
+[the 2026-09-04 trial report](local-multi-agent-trial-2026-09-04.md).
+
+The bounded results retain the direct-database approach and Skill-only Plugin,
+keep correlated Requests and explicit acknowledgement alongside durable
+broadcast, and select ownership diagnostics and regression coverage for alpha
+hardening. They do not justify a broker daemon or MCP server. A broader broker
+candidate remains contingent on later evidence of a material problem that cannot
+be addressed while preserving the direct model's simpler lifecycle.
+
+The post-trial Plugin surface comparison is complete. It retains the public-CLI
+Skill for the verified local Codex CLI and configured Desktop-to-WSL paths,
+records other Codex and ChatGPT surfaces as unsupported, and leaves MCP,
+workspace distribution, and public-directory publication outside the accepted
+alpha scope. See
+[the 2026-09-04 surface decision](codex-plugin-surface-decision-2026-09-04.md).
+
+The accepted local alpha retains schema version `1` and the direct SQLite
+design. It does not require a state migration, broker daemon, or MCP server.
+`T_BETA_REPLAN` is now the next planning task: it must select later work from
+measured alpha evidence rather than treating the provisional beta package as
+already accepted scope.
 
 Remote transport, federation, competing consumers, exactly-once delivery,
 automatic delegation, secret resolution, and cross-user authorization remain

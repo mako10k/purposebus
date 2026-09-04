@@ -26,3 +26,8 @@ class NoMessage(PurposeBusError):
 class Conflict(PurposeBusError):
     def __init__(self, message, *, hint=None):
         super().__init__(message, error="conflict", exit_code=5, hint=hint)
+
+
+class OwnershipMismatch(PurposeBusError):
+    def __init__(self, message, *, hint=None):
+        super().__init__(message, error="ownership_mismatch", exit_code=5, hint=hint)

@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from .errors import Conflict, InvalidInput, NotFound
+from .errors import Conflict, InvalidInput, NotFound, OwnershipMismatch
 from .partition import Partition
 from .util import (
     add_seconds,
@@ -1331,6 +1331,36 @@ class Store:
             return subscription["owner_id"] == instance["instance_id"]
         return subscription["owner_id"] == instance["agent_id"]
 
+    def validate_poll_target(
+        self, instance_id: str, subscription_id: str | None
+    ) -> dict:
+        instance = self._instance_row(instance_id)
+        if instance["lifecycle_state"] != "active":
+            raise Conflict(f"polling instance is stopped: {instance_id}")
+        if subscription_id is None:
+            return dict(instance)
+        subscription = self.connection.execute(
+            "SELECT owner_type, owner_id FROM subscriptions WHERE subscription_id=?",
+            (subscription_id,),
+        ).fetchone()
+        if subscription is None:
+            raise NotFound(f"subscription or request not found: {subscription_id}")
+        if self._delivery_owned_by(subscription, instance):
+            return dict(instance)
+        if subscription["owner_type"] == "instance":
+            hint = (
+                f"poll with the exact owning Instance {subscription['owner_id']!r}; "
+                "use an Agent-owned durable Subscription when successor Instances must recover it"
+            )
+        else:
+            hint = f"poll with an active Instance registered to Agent {subscription['owner_id']!r}"
+        raise OwnershipMismatch(
+            f"subscription {subscription_id!r} is owned by "
+            f"{subscription['owner_type']} {subscription['owner_id']!r}, not polling "
+            f"Instance {instance_id!r}",
+            hint=hint,
+        )
+
     def _message_result(self, row: sqlite3.Row | dict, *, include_payload: bool = False) -> dict:
         result = dict(row)
         result["retained"] = bool(result["retained"])
@@ -1391,9 +1421,7 @@ class Store:
         lease_seconds: float,
         now: datetime,
     ) -> list[dict]:
-        instance = self._instance_row(instance_id)
-        if instance["lifecycle_state"] != "active":
-            raise Conflict(f"polling instance is stopped: {instance_id}")
+        instance = self.validate_poll_target(instance_id, subscription_id)
         at = iso(now)
         lease_until = iso(add_seconds(now, lease_seconds))
         selected = []

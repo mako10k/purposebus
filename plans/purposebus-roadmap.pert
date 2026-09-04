@@ -163,6 +163,7 @@ task T_LOCAL_MULTI_AGENT_TRIALS CODEX_PLUGIN_LOCAL_READY -> TRIAL_FEEDBACK_FROZE
     optimistic 2d
     most_likely 5d
     pessimistic 10d
+  status done
   priority 70
   requires:
     CODEX 1
@@ -176,11 +177,12 @@ task T_ALPHA_HARDENING CODEX_PLUGIN_SURFACE_FROZEN -> V0_2_ALPHA_ACCEPTED:
     optimistic 2d
     most_likely 4d
     pessimistic 8d
+  status done
   priority 60
   requires:
     CODEX 1
     REVIEW 1
-  source "CODEX_PLUGIN_SURFACE_FROZEN; provisional"
+  source "CODEX_PLUGIN_SURFACE_FROZEN; docs/alpha-acceptance-2026-09-04.md; local 0.2.0 alpha verification"
 
 task T_BETA_REPLAN V0_2_ALPHA_ACCEPTED -> V0_5_SCOPE_FROZEN:
   title "Replan the beta scope from measured evidence"
@@ -290,7 +292,7 @@ task T_CODEX_PLUGIN_PROTOTYPE CODEX_PLUGIN_CONTRACT_FROZEN -> CODEX_PLUGIN_LOCAL
     optimistic 1d
     most_likely 2d
     pessimistic 4d
-  status active
+  status done
   priority 72
   requires:
     CODEX 1
@@ -304,12 +306,12 @@ task T_CODEX_PLUGIN_SURFACE_DECISION TRIAL_FEEDBACK_FROZEN -> CODEX_PLUGIN_SURFA
     optimistic 0.5d
     most_likely 1d
     pessimistic 3d
-  status planned
+  status done
   priority 65
   requires:
     CODEX 1
     REVIEW 1
-  source "TRIAL_FEEDBACK_FROZEN; OpenAI Plugin architecture and MCP guidance"
+  source "TRIAL_FEEDBACK_FROZEN; docs/codex-plugin-surface-decision-2026-09-04.md; OpenAI Plugin architecture and MCP guidance"
 
 task T_V1_PLUGIN_PACKAGE V0_9_RC_ACCEPTED -> V1_PLUGIN_PACKAGE_READY:
   title "Prepare the PurposeBus Codex Plugin 1.0 package"

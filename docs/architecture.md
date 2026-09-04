@@ -1,8 +1,8 @@
-# PurposeBus local MVP architecture
+# PurposeBus local 0.2 alpha architecture
 
-Status: implementation experiment
+Status: direct-store design retained through local alpha
 
-Date: 2026-08-31
+Date: 2026-09-04
 
 ## Decision
 
@@ -10,10 +10,12 @@ The first executable MVP uses one SQLite database per resolved Partition and
 direct CLI access. Blocking poll uses short, bounded read transactions with a
 sleep between attempts; it does not hold a database transaction while waiting.
 
-This is an experiment, not a decision that PurposeBus will never have a broker daemon.
-The direct design is selected first because it can test durable delivery,
-concurrent client serialization, process-visible waits, restart recovery, and
-operator value without introducing a second service lifecycle.
+This remains an experiment, not a decision that PurposeBus will never have a
+broker daemon. The direct design was selected first because it can test durable
+delivery, concurrent client serialization, process-visible waits, restart
+recovery, and operator value without introducing a second service lifecycle.
+The bounded local trial and alpha verification found no material failure that
+requires replacing this design, so it remains selected through the 0.2 alpha.
 
 ## Runtime shape
 
@@ -64,9 +66,9 @@ Partition isolation is an application routing rule, not an OS authorization
 boundary. Payloads must not contain raw secrets, and opaque references are not
 resolved automatically.
 
-## Experiment exit criteria
+## Experiment result and next decision
 
-Keep this design only if the CLI tests demonstrate:
+The CLI suite and local trial demonstrated:
 
 - independent durable fan-out and acknowledgement;
 - lease-expiry redelivery after client restart;
@@ -75,6 +77,9 @@ Keep this design only if the CLI tests demonstrate:
 - deterministic read-only status and next actions; and
 - acceptable behavior with concurrent local clients.
 
-A broker daemon becomes the next candidate if bounded polling causes material
-latency, heartbeat accuracy, contention, or lifecycle problems that cannot be
-fixed while preserving the direct model's simplicity.
+The observed ownership ambiguity was corrected in poll-target validation and
+operator guidance; it was not caused by the lack of a broker. A broker daemon
+becomes the next candidate only if later evidence shows that bounded polling,
+heartbeat accuracy, contention, shared-state access, or lifecycle requirements
+cannot be addressed while preserving the direct model's simplicity. That
+decision belongs to `T_BETA_REPLAN`.

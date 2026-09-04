@@ -4,8 +4,8 @@ PurposeBus is a purpose-aware coordination bus for human and AI agents. It combi
 agent discovery, purpose-bearing subscriptions and offers, observable instance
 state, and durable publish/ack delivery inside an explicit project partition.
 
-Status: executable local MVP experiment (`0.1.0a0`). It is suitable for
-same-host, same-user evaluation, not production deployment.
+Status: locally accepted engineering alpha candidate (`0.2.0a0`). It is
+suitable for same-host, same-user evaluation, not production deployment.
 
 ## Run the prototype
 

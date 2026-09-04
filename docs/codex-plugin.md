@@ -1,8 +1,8 @@
 # PurposeBus Codex Plugin contract
 
-Status: local Skill-first implementation candidate
+Status: Skill-only local 0.2 alpha accepted
 
-Date: 2026-08-31
+Date: 2026-09-04
 
 ## Purpose and architecture
 
@@ -27,8 +27,9 @@ testing.
 
 Codex IDE, web, mobile, cloud, remote environments, ChatGPT without local shell
 access, cross-host coordination, and cross-user authorization are not supported
-or verified by this candidate. An MCP-backed design is deferred until measured
-multi-agent trials establish a material need.
+or verified by this candidate. The post-trial comparison found no measured need
+for MCP and froze the Skill-only local surface for the 0.2 alpha. See
+[the surface decision](codex-plugin-surface-decision-2026-09-04.md).
 
 ## Partition, identity, and authority
 
@@ -48,7 +49,9 @@ multi-agent trials establish a material need.
 
 The Plugin requires `purposebus --version` and versioned `purposebus.*.v1` JSON
 documents. Unknown schemas, unknown state versions, corrupt state, missing CLI,
-nonzero exits, ambiguous writes, and actor or ownership errors fail closed.
+nonzero exits, ambiguous writes, and actor or ownership errors fail closed. A
+named Subscription with the wrong polling identity reports
+`ownership_mismatch`; it is not an empty queue and must not be retried as one.
 
 The Plugin freezes write inputs and uses at most the explicitly intended number
 of writes. A lost publish response is resolved through read-only lookup by
@@ -61,8 +64,9 @@ does not grant access.
 
 ## Package and compatibility
 
-- Plugin identity and version: `purposebus` `0.1.0`.
-- Initial compatible core: PurposeBus `0.1.0a0` with `purposebus.*.v1` JSON.
+- Plugin identity and accepted alpha version: `purposebus`
+  `0.2.0+codex.20260904024157`.
+- Compatible alpha core: PurposeBus `0.2.0a0` with `purposebus.*.v1` JSON.
 - Components: one Skill and repo marketplace entry.
 - Explicitly absent: `.mcp.json`, `.app.json`, hooks, embedded credentials, and
   direct database access.
@@ -71,9 +75,16 @@ does not grant access.
 
 ## Acceptance boundary
 
-Repository validation covers manifest ingestion, Skill structure, marketplace
-resolution, absence of undeclared components, the core test suite, and isolated
-CLI request/response/acknowledgement behavior. Installing the Plugin into the
-user's configured marketplace, starting a fresh Codex or desktop session, and
-publishing it to a workspace or public directory are separate actions and are
-not authorized by this implementation candidate.
+The 0.2 alpha acceptance covers manifest ingestion, Skill structure,
+marketplace resolution, compatibility and permission-boundary assertions, the
+core test suite, an isolated package, installed Linux CLI fresh sessions,
+ownership recovery guidance, and uninstall fallback. See
+[the alpha acceptance record](alpha-acceptance-2026-09-04.md). The earlier 0.1
+Linux and Windows/Desktop checks remain in
+[the prototype acceptance record](codex-plugin-acceptance-2026-09-04.md).
+
+The native GUI window was not automated or visually observed, and the 0.2 alpha
+was not installed into the Windows/Desktop profile. The local multi-agent trial
+and surface comparison retain the Skill-only Plugin. No acceptance record
+authorizes publication to a workspace or public directory, Git push, remote
+coordination, MCP deployment, release, or deployment.
