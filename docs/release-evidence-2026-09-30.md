@@ -1,10 +1,37 @@
 # PurposeBus 1.0.0 再検証記録（2026-09-30）
 
 対象：core 1.0.0、Plugin `1.0.0+codex.20260908103255`、read-only MCP 0.1.0a0、
-非実行controller policy 0.0.0a0。公開対象の最終Git revisionとassetsは後続の
-凍結・owner判断で結び付ける。この文書はsource snapshotから除外する。
+非実行controller policy 0.0.0a0。公開候補Git revisionは `75d18d5f7e643179c18132f1eb0eab75da8cd32a`。
+この文書はsource snapshotから除外する。
 
-## 確認済み
+## 公開結果（2026-09-30 13:24 JST時点）
+
+正式Release： https://github.com/mako10k/purposebus/releases/tag/v1.0.0
+公開時刻：2026-09-30 13:19:55 JST（GitHub publishedAt）。
+ownerの「承認します。」に対応するreceipt `RCPT_V1_RELEASE_OWNER_20260930` を正本PERTへ記録した。
+公開範囲・最大書込み・確定asset hashは `release/release-authorization-20260930.json` に保存した。
+
+- candidate branchとimmutable tag v1.0.0はserver-sideで上記candidate SHAに一致した。
+- 正式Releaseのdraft=false、prerelease=false、title、公開本文一致を独立readbackした。
+- draft段階と正式公開後に9 assetsをそれぞれdownloadし、全hashを承認済みinventoryと照合した。
+- 公開tagのrepository marketplaceとPlugin manifestをGitHub contents APIで読み、candidate bytes一致を確認した。
+- 公開wheelを新規venvへno-index/no-deps installし、source PYTHONPATHなし・site-packagesからのcore 1.0.0を確認した。
+- 隔離PartitionでRequest `public-release-request`、correlation `corr-public-release-20260930`、
+  Message `msg_4448f87bec5b462db5228192b9602ec5`、Delivery `del_e57050a639e54cddbe2988e471165b8a` の
+  request-response-poll-ackを実施し、別CLI processの読戻しでfulfilled/ackedとpayload/correlationを確認した。
+- smokeの10変更は各1回。最後の読戻しでharnessが未対応のdelivery showを指定した失敗は保存し、
+  変更を再実行せず対応するdelivery listで補完した。製品不具合として扱わない。
+- T_PUBLISH_V1_0_0を13:18:01〜13:24:21 JST、active 380/3600h（6分20秒）で完了記録した。
+  final evidence synchronizationはこのtaskの公開検証後のgoal closeoutとして扱う。
+- 完了後observe-velocityもunsupported_source_versionでunavailable。測定値を保持し、仮定velocityは書き込まない。
+
+受益者は公開URLからexact core wheelとtag固定Pluginを取得可能となった。
+baselineのローカル未公開候補から、正式公開・hash読戻し・公開core新規導入の実証へ進んだ。
+この公開目的の機能・検証作業は残0。承認済み3ファイルのcompletion commit/pushとserver-side readbackは
+この文書を保存した後の最後のcloseoutで、最終chat報告を同期確認の記録とする。
+main merge、PyPI/public Directory、active profile導入は承認範囲外として実行していない。
+
+## 公開前の再検証記録
 
 - 独立レビューでFR-001の暗黙Partition誤解決とCLI-004のduration overflowを再現。
   修正後の読み取り再レビューで両INSIDEブロッカー解消を確認した。
@@ -47,9 +74,8 @@ fixture（監査後setup7変更を各1回）でPluginのlive workflowを確認�
 「共有profileは不変」という証明には使わない。隔離test内の操作と全体の共有状態を区別する。
 
 native Desktop GUI、cross-host/cross-user、remote transport、public Plugin Directory、
-package registry publication、signing、実際の公開後の新規導入は未確認である。
-最終source/asset凍結とownerの公開範囲決定、公開後のserver ref・asset hash・clean-install
-読戻しが残る。公開受益者への今回の実現価値は現時点で0、検証済み候補は将来価値への寄与。
+package registry publication、signingは未確認である。
+公開前の時点では実現価値0だったが、上記公開結果とcore新規導入確認で今回の配布目的を実現した。
 
 ## 証拠と計測
 
@@ -69,7 +95,6 @@ machine evidence：`release/v1-plugin-evaluations-20260930.json`、
 LLMThinkの再計画監査はfatal/error/warning=0、pending情報1。fixture setupのwarning1は
 未確認の実行結果に関する制限として保持した。
 
-次の推奨は `G_V1_RELEASE_AUTHORIZATION` のexact公開範囲をownerが決めること。
-目的への寄与は、候補を新規導入可能な公開配布物にするための作用先の確定。
-その後の `T_PUBLISH_V1_0_0` は公開・独立読戻し・公開wheel新規導入確認を完了条件とする。
-暫定残内部工数は2〜6時間、信頼度低。外部の判断待ちは別で期限不明。
+承認条件は充足し、`T_PUBLISH_V1_0_0` の公開・独立読戻し・公開wheel新規導入確認は完了した。
+次の推奨は利用者がReleaseのSHA256SUMSで配布物を照合して新しい環境へ導入すること。
+今回の範囲で追加の機能実装・公開作業は不要。最後のcheckpointはcompletion commitのremote SHAと3ファイルbytesの照合。

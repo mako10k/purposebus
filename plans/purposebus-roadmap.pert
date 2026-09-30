@@ -254,6 +254,7 @@ task T_PUBLISH_V1_0_0 V1_RELEASE_AUTHORIZED -> V1_0_0_RELEASED:
     optimistic 0.5p
     most_likely 1p
     pessimistic 2p
+  status done
   priority 10
   requires:
     CODEX 1
@@ -534,3 +535,30 @@ work_event WE-7daaa5a1f109bdddc39e496d2874a95d4d7a44eafde619d856e17078bf44caba:
   kind finish
   occurred_at 2026-09-30T02:49:59+00:00
   active_time 1861/3600h
+
+milestone_acceptance_receipt RCPT_V1_RELEASE_OWNER_20260930:
+  model 1
+  set V1_RELEASE_AUTHORIZATION
+  set_commitment sha256:843d6c367a436c29c9d46208ec8d85a5864fe4659193d10e57d65d5d604575d5
+  criterion EXPLICIT_AUTHORIZATION
+  criterion_commitment sha256:96eaffb912ff5dd40accb53ccc160be1d2aa92086c57eb7b33c2846526395434
+  action verify
+  evidence_kind owner
+  evidence_reference "owner-message:2026-09-30:承認します:approval-sha256:206215dd66b8dc97b0512b77ae11ecc1231bcc72301f28d4708f319a5ecd43d0"
+  evidence_revision 75d18d5f7e643179c18132f1eb0eab75da8cd32a
+  verifier user
+  occurred_at 2026-09-30T04:18:01Z
+
+work_event WE-f3fee897f7895e121e853512bd09b3dcee1f3269c8d3e8f6132375ea8bc1a909:
+  model 1
+  task T_PUBLISH_V1_0_0
+  kind start
+  occurred_at 2026-09-30T04:18:01+00:00
+  planned_value 13/12p
+
+work_event WE-b978a5e469f7249fe6bcf87e90c151ef883687f80710b73b45b69f01b281adf5:
+  model 1
+  task T_PUBLISH_V1_0_0
+  kind finish
+  occurred_at 2026-09-30T04:24:21+00:00
+  active_time 19/180h

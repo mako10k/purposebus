@@ -1,0 +1,374 @@
+{
+  "schema": "purposebus.release-authorization.v1",
+  "owner_message": "承認します。",
+  "recorded_at": "2026-09-30T04:18:01+00:00",
+  "approval_scope_sha256": "206215dd66b8dc97b0512b77ae11ecc1231bcc72301f28d4708f319a5ecd43d0",
+  "approval_scope_japanese": "# PurposeBus 1.0.0 公開判断用の確定候補\n\n## 対象と作用\n\n公開先は既存の公開GitHub repository `mako10k/purposebus`。候補Git revisionは `75d18d5f7e643179c18132f1eb0eab75da8cd32a`、source SHA-256は `a5ec55729bc91e05dcc06969396e15ae549e8ac46e58520fc5e9c22e7e3b3c32`。既存branch `feature/local-mvp` をこの候補へfast-forward pushし、新規tag `v1.0.0` をこの候補に固定する。一般公開の正式GitHub Release（draft=false、prerelease=false、title=PurposeBus 1.0.0）を作成し、下記9 assetsと指定本文を公開する。実行担当はこのchatの主agent一人。\n\n最大書込みはcandidate branch更新1回、tag作成1回、Release作成1回、draftから公開への変更が必要な場合1回、asset作成9件各1回。成功後、公開証拠・承認receipt・PERT完了記録だけを `docs/release-evidence-2026-09-30.md`、`release/release-authorization-20260930.json`、`plans/purposebus-roadmap.pert` に記録し、追加commitと同branchへの追加pushを各1回行う。製品sourceとtagは変更しない。branch更新は計最大2回。既存tag/Releaseが現れた場合や結果が曖昧な場合は、再送せず独立readbackして不一致なら停止する。\n\nmainへのmerge、PR/Issue更新、PyPIへの公開、public Plugin Directoryへの申請、active profileへのinstallはこの案に含めない。Pluginは公開tagを指定したrepository marketplaceから利用する。\n\n## 候補に含まれる変更と判断\n\n既存の未コミットbeta・RC・v1準備と今回の修正を63ファイルのlocal commitにまとめた。core 1.0.0、Skill-only Plugin 1.0.0+codex.20260908103255、任意のread-only MCP 0.1.0a0、非実行controller policy 0.0.0a0を配布する。controller起動・制御機能は完成機能として提示しない。FR-001のGit環境による暗黙Partition誤選択とCLI-004の巨大duration/日時overflowを修正した。public success v2、error v1、state schema 1を維持する。\n\ncore67件、installed MCP14件、controller制約2件、Plugin必須5ケース成功。再現build・upgrade/rollback・破損stateのfail-closedと隔離復旧を確認した。全source archive memberがcandidate Gitのbytesと一致し、assetsのhashを再照合した。Git作業ツリーはclean。公開前なので公開後導入の証拠はまだない。\n\n## 公開本文の日本語全文対応\n\nPurposeBus 1.0.0は、同じLinux hostとOS userの明示的なproject Partitionで、人とAI agentが目的に沿って連携する機能を提供する。core CLIはAgent/Instance探索、目的を持つSubscriptionとOffer、correlation付きRequest、永続fan-out、lease付きpollと明示的ack、retained情報、producerごとのpublish冪等性、read-only status/match/nextを含む。\n\nSkill-only Codex Pluginと任意のlocal stdio read-only MCP adapter（public CLIに基づく6 tools）を含み、双方core 1.0.0をexact指定する。controller wheelは実行不能のpolicy packageで、Codex lifecycleの実行制御は後続phaseである。9月30日レビューでPartition誤選択とoverflow入力診断を修正した。Accepted 0.2.0a1 RCからのupgrade・rollback・再upgradeは対応stateをmigrationなしで保持する。\n\ncoreは新しいPython3.11以上のvenvに、GitHub Release URLのwheelをpip installし、versionとhelp usecasesで確認する。Pluginは `codex plugin marketplace add mako10k/purposebus --ref v1.0.0` でreleased sourceを固定し、対応clientの導入手順と新規会話を使う。active profileへの導入は別のoperator操作である。\n\nSHA256SUMSでdownloadを照合する。bundleは候補artifact・contract・rollback wheel/Plugin・exact predecessor検証入力を含む。tag checkout後にverification-inputs内の元pathをcheckoutへ戻し、verify_release_20260930.pyを実行する。local Codex CLIとPython build toolsが必要で、verifierは公開やactive profileへの導入を行わない。検証はcore67件、再現wheel、state遷移と破損処理、並行read、installed MCP、隔離Plugin遷移、新規会話評価を含む。\n\n観測runtimeはWSL/Linux・Python3.12。native Desktop GUI、別host/user、remote transport、自動delegation、Connector統合、public Plugin Directory申請、package-index公開は今回検証した配布面に含まれない。MCP試験ではlocal MCP2.2.0/Pydantic2.13.5を使用し、indexからの新規依存解決を試していない。\n\n公開する英語本文は `build/release-notes-20260930.md`（SHA-256 `61ace4ff44c415bdd3910fa61c63f8b02536092ad25aae04d9689e42aca9cb7e`）。\n\n## 選択肢・限界・完了条件\n\n推奨はこのGitHub Release案。core wheelとtag固定Pluginを新規導入可能にする最短の検証済み経路である。代替はmain統合を先に選ぶ案、またはpackage registry/public Directoryを追加する案で、いずれも対象と作用の追加決定・検証が必要になる。公開repositoryへのpushとReleaseは内容が一般閲覧可能となる。署名による配布元証明はない。共有Codex configのhash変化を観測したが、変更元はunknownで、共有profile不変の証拠にはしない。復旧は実施していない。\n\n完了条件はserver-side branch/tag SHA一致、公開Releaseの9 assetsとhash一致、公開wheelを新規venvへ導入したrequest-response-ack成功、正本PERTの公開taskと完了証拠の同期確認。今は未公開で、公開受益者の実現価値は0。内部残工数2〜6時間は低信頼agent見積り。実測active31分1秒を記録したが、commit後のobserve-velocityもunsupported_source_versionでunavailableだったため1p/日を実測値として用いない。次の計測checkpointは公開task完了時のactualsとobserve-velocity再確認。\n\n## 固定assets\n\n| file | bytes | SHA-256 |\n|---|---:|---|\n| SHA256SUMS | 797 | `a2edccd35838b88f1233f5c2303457bc229c1991d3b29c3410ddb276d415b06d` |\n| candidate-source.tar | 675840 | `a5ec55729bc91e05dcc06969396e15ae549e8ac46e58520fc5e9c22e7e3b3c32` |\n| evidence.json | 3491 | `706bc4b036f899a0a0e687095fb3308092f8e1b9ae14bafe529171382e9bb617` |\n| purposebus-1.0.0-py3-none-any.whl | 34781 | `0ef17df40c1b73916be6d4dbc14352d8552e2f777c8fdc80b373d2c2f078e175` |\n| purposebus-1.0.0-release-bundle.tar | 1382400 | `b4ae82aa09a5738d2ea67cc4bec0e39b0c03e6be48cab7dee06ac63e91a56d44` |\n| purposebus-plugin-1.0.0+codex.20260908103255.zip | 7962 | `d039d8f5d3276d0c3def88a743a886d139cb1d66e093025843831c5253d5b884` |\n| purposebus_codex_controller-0.0.0a0-py3-none-any.whl | 2240 | `d4797e1463c0bf5cd977f216e390ec98cf5000847aaba3fa4e1a1040a2017273` |\n| purposebus_mcp-0.1.0a0-py3-none-any.whl | 7002 | `06de86293564a42e48fdfab0546e76d0edd003704a28e702fd461b097217ef8d` |\n| release-manifest.json | 2327 | `e5f61ac09428aa6c249e35703782419b3b0db5f5f662fd6eba1966826e3d59fa` |\n",
+  "candidate_git_sha": "75d18d5f7e643179c18132f1eb0eab75da8cd32a",
+  "source_sha256": "a5ec55729bc91e05dcc06969396e15ae549e8ac46e58520fc5e9c22e7e3b3c32",
+  "repository": "mako10k/purposebus",
+  "branch": "feature/local-mvp",
+  "tag": "v1.0.0",
+  "assets": {
+    "SHA256SUMS": {
+      "sha256": "a2edccd35838b88f1233f5c2303457bc229c1991d3b29c3410ddb276d415b06d",
+      "bytes": 797
+    },
+    "candidate-source.tar": {
+      "sha256": "a5ec55729bc91e05dcc06969396e15ae549e8ac46e58520fc5e9c22e7e3b3c32",
+      "bytes": 675840
+    },
+    "evidence.json": {
+      "sha256": "706bc4b036f899a0a0e687095fb3308092f8e1b9ae14bafe529171382e9bb617",
+      "bytes": 3491
+    },
+    "purposebus-1.0.0-py3-none-any.whl": {
+      "sha256": "0ef17df40c1b73916be6d4dbc14352d8552e2f777c8fdc80b373d2c2f078e175",
+      "bytes": 34781
+    },
+    "purposebus-1.0.0-release-bundle.tar": {
+      "sha256": "b4ae82aa09a5738d2ea67cc4bec0e39b0c03e6be48cab7dee06ac63e91a56d44",
+      "bytes": 1382400
+    },
+    "purposebus-plugin-1.0.0+codex.20260908103255.zip": {
+      "sha256": "d039d8f5d3276d0c3def88a743a886d139cb1d66e093025843831c5253d5b884",
+      "bytes": 7962
+    },
+    "purposebus_codex_controller-0.0.0a0-py3-none-any.whl": {
+      "sha256": "d4797e1463c0bf5cd977f216e390ec98cf5000847aaba3fa4e1a1040a2017273",
+      "bytes": 2240
+    },
+    "purposebus_mcp-0.1.0a0-py3-none-any.whl": {
+      "sha256": "06de86293564a42e48fdfab0546e76d0edd003704a28e702fd461b097217ef8d",
+      "bytes": 7002
+    },
+    "release-manifest.json": {
+      "sha256": "e5f61ac09428aa6c249e35703782419b3b0db5f5f662fd6eba1966826e3d59fa",
+      "bytes": 2327
+    }
+  },
+  "executor": "root",
+  "max_writes": {
+    "branch_updates": 2,
+    "tag_create": 1,
+    "release_create": 1,
+    "publish_transition": 1,
+    "asset_uploads": 9
+  },
+  "receipt": "RCPT_V1_RELEASE_OWNER_20260930",
+  "publication": {
+    "url": "https://github.com/mako10k/purposebus/releases/tag/v1.0.0",
+    "published_at": "2026-09-30T04:19:55Z",
+    "is_draft": false,
+    "is_prerelease": false,
+    "assets": [
+      {
+        "name": "candidate-source.tar",
+        "size": 675840,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/candidate-source.tar"
+      },
+      {
+        "name": "evidence.json",
+        "size": 3491,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/evidence.json"
+      },
+      {
+        "name": "purposebus-1.0.0-py3-none-any.whl",
+        "size": 34781,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/purposebus-1.0.0-py3-none-any.whl"
+      },
+      {
+        "name": "purposebus-1.0.0-release-bundle.tar",
+        "size": 1382400,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/purposebus-1.0.0-release-bundle.tar"
+      },
+      {
+        "name": "purposebus-plugin-1.0.0+codex.20260908103255.zip",
+        "size": 7962,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/purposebus-plugin-1.0.0%2Bcodex.20260908103255.zip"
+      },
+      {
+        "name": "purposebus_codex_controller-0.0.0a0-py3-none-any.whl",
+        "size": 2240,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/purposebus_codex_controller-0.0.0a0-py3-none-any.whl"
+      },
+      {
+        "name": "purposebus_mcp-0.1.0a0-py3-none-any.whl",
+        "size": 7002,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/purposebus_mcp-0.1.0a0-py3-none-any.whl"
+      },
+      {
+        "name": "release-manifest.json",
+        "size": 2327,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/release-manifest.json"
+      },
+      {
+        "name": "SHA256SUMS",
+        "size": 797,
+        "url": "https://github.com/mako10k/purposebus/releases/download/v1.0.0/SHA256SUMS"
+      }
+    ],
+    "remote_candidate_refs": "75d18d5f7e643179c18132f1eb0eab75da8cd32a\trefs/heads/feature/local-mvp\n75d18d5f7e643179c18132f1eb0eab75da8cd32a\trefs/tags/v1.0.0\n",
+    "downloaded_hashes_verified": true,
+    "release_body_sha256": "61ace4ff44c415bdd3910fa61c63f8b02536092ad25aae04d9689e42aca9cb7e",
+    "tagged_marketplace_bytes_verified": true,
+    "tagged_plugin_manifest_bytes_verified": true,
+    "installed_public_core_smoke": {
+      "status": "passed",
+      "wheel_sha256": "0ef17df40c1b73916be6d4dbc14352d8552e2f777c8fdc80b373d2c2f078e175",
+      "release_url": "https://github.com/mako10k/purposebus/releases/tag/v1.0.0",
+      "installed_identity": {
+        "file": "/home/katsumata-m/purposebus/build/public-release-smoke-20260930/venv/lib/python3.12/site-packages/purposebus/__init__.py",
+        "version": "1.0.0"
+      },
+      "request_id": "public-release-request",
+      "correlation_id": "corr-public-release-20260930",
+      "message_id": "msg_4448f87bec5b462db5228192b9602ec5",
+      "delivery_id": "del_e57050a639e54cddbe2988e471165b8a",
+      "request_state": "fulfilled",
+      "delivery_state": "acked",
+      "command_log_sha256": "2c31dac95416efa3c3c9606164140544d891ca3d1481b4c3e00b83cec64cc908",
+      "command_count": 17,
+      "mutations": 10,
+      "harness_limitation": "Unsupported delivery show observation failed after ack; preserved evidence and used supported delivery list readback without repeating mutations.",
+      "isolation": "fresh venv outside source path with PYTHONPATH/PYTHONHOME removed; isolated Partition and state root"
+    },
+    "timing": {
+      "task": "T_PUBLISH_V1_0_0",
+      "start": "2026-09-30T04:18:01+00:00",
+      "finish": "2026-09-30T04:24:21+00:00",
+      "active_seconds": 380,
+      "active_time": "380/3600h",
+      "basis": "Continuous task active interval; task publication verification complete; final evidence synchronization is remaining goal closeout."
+    },
+    "velocity": {
+      "observation": {
+        "id": "perttool.velocity-observation",
+        "version": 1,
+        "history_model_version": 1,
+        "selected_task_ids": [
+          "T_PUBLISH_V1_0_0"
+        ],
+        "evidence": "declared",
+        "candidates": [
+          {
+            "id": "declared_elapsed_hour_throughput",
+            "measure": "elapsed_hour_throughput",
+            "evidence_class": "declared_actual",
+            "state": "unavailable",
+            "numerator": null,
+            "denominator": null,
+            "rate": null,
+            "adoptable_velocity_token": null,
+            "included_task_ids": [],
+            "excluded": [
+              {
+                "task_id": "T_PUBLISH_V1_0_0",
+                "causes": [
+                  {
+                    "cause": "no_complete_sequence",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  },
+                  {
+                    "cause": "missing_baseline",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  }
+                ]
+              }
+            ],
+            "observation_start": null,
+            "observation_finish": null,
+            "baseline_sources": [],
+            "qualifiers": [],
+            "unavailable_causes": [
+              {
+                "cause": "no_complete_sequence",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "missing_baseline",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "history_incomplete",
+                "task_id": null,
+                "event_id": null,
+                "commit_id": null
+              }
+            ]
+          },
+          {
+            "id": "declared_active_date_throughput",
+            "measure": "active_date_throughput",
+            "evidence_class": "declared_actual",
+            "state": "unavailable",
+            "numerator": null,
+            "denominator": null,
+            "rate": null,
+            "adoptable_velocity_token": null,
+            "included_task_ids": [],
+            "excluded": [
+              {
+                "task_id": "T_PUBLISH_V1_0_0",
+                "causes": [
+                  {
+                    "cause": "no_complete_sequence",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  },
+                  {
+                    "cause": "missing_baseline",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  }
+                ]
+              }
+            ],
+            "observation_start": null,
+            "observation_finish": null,
+            "baseline_sources": [],
+            "qualifiers": [],
+            "unavailable_causes": [
+              {
+                "cause": "no_complete_sequence",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "missing_baseline",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "history_incomplete",
+                "task_id": null,
+                "event_id": null,
+                "commit_id": null
+              }
+            ]
+          },
+          {
+            "id": "declared_effort_productivity",
+            "measure": "effort_productivity",
+            "evidence_class": "declared_actual",
+            "state": "unavailable",
+            "numerator": null,
+            "denominator": null,
+            "rate": null,
+            "adoptable_velocity_token": null,
+            "included_task_ids": [],
+            "excluded": [
+              {
+                "task_id": "T_PUBLISH_V1_0_0",
+                "causes": [
+                  {
+                    "cause": "no_complete_sequence",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  },
+                  {
+                    "cause": "missing_effort",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  },
+                  {
+                    "cause": "missing_baseline",
+                    "task_id": "T_PUBLISH_V1_0_0",
+                    "event_id": null,
+                    "commit_id": null
+                  }
+                ]
+              }
+            ],
+            "observation_start": null,
+            "observation_finish": null,
+            "baseline_sources": [],
+            "qualifiers": [],
+            "unavailable_causes": [
+              {
+                "cause": "no_complete_sequence",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "missing_effort",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "missing_baseline",
+                "task_id": "T_PUBLISH_V1_0_0",
+                "event_id": null,
+                "commit_id": null
+              },
+              {
+                "cause": "history_incomplete",
+                "task_id": null,
+                "event_id": null,
+                "commit_id": null
+              }
+            ]
+          }
+        ]
+      },
+      "history_status": "incomplete",
+      "unavailable_causes": [
+        {
+          "cause": "unsupported_source_version",
+          "commit_id": "09cdd3e491587380484ab1d2a9a36b1bfacea5f9",
+          "task_id": null,
+          "event_id": null
+        },
+        {
+          "cause": "unsupported_source_version",
+          "commit_id": "75d18d5f7e643179c18132f1eb0eab75da8cd32a",
+          "task_id": null,
+          "event_id": null
+        },
+        {
+          "cause": "unsupported_source_version",
+          "commit_id": "9ca22e782b77d58479866230df1d556c729d1cde",
+          "task_id": null,
+          "event_id": null
+        },
+        {
+          "cause": "unsupported_source_version",
+          "commit_id": "da097dd4f0ed5bb7823b269171f340eb2708433b",
+          "task_id": null,
+          "event_id": null
+        },
+        {
+          "cause": "unsupported_source_version",
+          "commit_id": "f089f0ed8cdad29f49d3ba593060728989783740",
+          "task_id": null,
+          "event_id": null
+        }
+      ]
+    },
+    "write_counts": {
+      "candidate_branch_update": 1,
+      "tag_create": 1,
+      "release_create": 1,
+      "draft_to_public": 1,
+      "asset_uploads": 9,
+      "completion_branch_update_pending": 1
+    },
+    "final_sync": "Pending one completion commit and independent remote readback; synchronization result belongs to the final chat closeout."
+  }
+}
