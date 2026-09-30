@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "wheels": {
+    "purposebus-1.0.0-py3-none-any.whl": "0ef17df40c1b73916be6d4dbc14352d8552e2f777c8fdc80b373d2c2f078e175",
+    "purposebus_codex_controller-0.0.0a0-py3-none-any.whl": "d4797e1463c0bf5cd977f216e390ec98cf5000847aaba3fa4e1a1040a2017273",
+    "purposebus_mcp-0.1.0a0-py3-none-any.whl": "06de86293564a42e48fdfab0546e76d0edd003704a28e702fd461b097217ef8d"
+  },
+  "checks": {
+    "mcp": {
+      "exit_code": 0,
+      "log_sha256": "c71176a2619f9eee82449840be9401097418876a83e1c2104a7dab5775766683"
+    },
+    "controller": {
+      "exit_code": 0,
+      "log_sha256": "1e84cf585867932dbc54f082ae61db5c9f12a186293adbc1c0ef0776ef22f0e5"
+    }
+  },
+  "runtime": {
+    "core_file": "/home/katsumata-m/purposebus/build/installed-release-20260930/venv/lib/python3.12/site-packages/purposebus/__init__.py",
+    "mcp_file": "/home/katsumata-m/purposebus/build/installed-release-20260930/venv/lib/python3.12/site-packages/purposebus_mcp/__init__.py",
+    "sdk_version": "2.2.0"
+  },
+  "dependency_source": "existing locally installed MCP 2.2.0 and Pydantic 2.13.5 via local-test-dependencies.pth; not clean-index dependency installation",
+  "schema": "purposebus.installed-package-evidence.v1"
+}

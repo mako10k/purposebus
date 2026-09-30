@@ -1,0 +1,136 @@
+framework PurposeBusPluginV1Package:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain PurposeBus:
+  description "Local-first coordination queue and Skill-only Codex Plugin"
+
+problem P1:
+  |
+    What exact local package, compatibility contract, and behavioral evidence
+    satisfy T_V1_PLUGIN_PACKAGE without changing active profiles, broadening the
+    accepted surface, or publishing the Plugin?
+
+premise PR1:
+  |
+    The owner accepted the immutable RC candidate and explicitly instructed the
+    next PERT task to proceed. T_V1_PLUGIN_PACKAGE requires an exact Plugin 1.0
+    package, compatible core range, manifest and Skill validation, repo
+    marketplace metadata, supported-surface copy, sandbox and approval behavior,
+    credential absence, fresh-session behavior, end-to-end request response, and
+    disable or uninstall fallback.
+
+premise PR2:
+  |
+    The same task excludes installation outside the accepted test scope and does
+    not authorize workspace or public-directory publication, commit, push,
+    release, deployment, an MCP component, or a changed remote surface claim.
+
+premise PR3:
+  |
+    The accepted RC contract is historical candidate evidence. Moving the live
+    Plugin source to the downstream 1.0 package must preserve the RC version and
+    hashes as predecessor provenance instead of rewriting the accepted RC.
+
+evidence EV1:
+  |
+    Current PERT digest 76bcec4141dea5068ed5965e4bd1c6855d238a6df546a6bec568400471b64a90
+    reports V0_9_RC_ACCEPTED accepted with no blocking criterion and recommends
+    only T_V1_PLUGIN_PACKAGE.
+
+evidence EV2:
+  |
+    Local HEAD and an independently read GitHub feature/local-mvp ref both equal
+    2a2b3a68c8f44a4107268e4fd51949106a37d486. Existing uncommitted beta and RC
+    work remains in the same worktree and must be preserved.
+
+evidence EV3:
+  |
+    The current source Plugin is Skill-only at version
+    0.2.0+codex.20260904090953, requires exactly purposebus 0.2.0a1 at runtime,
+    consumes purposebus.*.v2 and purposebus.error.v1, and has no MCP, app, hook,
+    embedded credential, or direct database component.
+
+evidence EV4:
+  |
+    The repo marketplace purposebus-local already resolves
+    ./plugins/purposebus with AVAILABLE installation, ON_INSTALL authentication,
+    and Productivity category. The Plugin and marketplace are currently visible
+    from the configured local source, but the active installed Plugin remains the
+    accepted 0.2 candidate.
+
+evidence EV5:
+  |
+    Current official OpenAI Plugin documentation requires plugin.json, supports
+    skills at the Plugin root, treats local marketplaces as distinct from public
+    publication, and calls for complete Skill-only Plugin testing after local
+    installation in a new conversation using direct, indirect, follow-up,
+    negative, and unsupported or boundary prompts.
+
+evidence EV6:
+  |
+    The installed Codex CLI supports marketplace add, Plugin add, list, and
+    remove, but exposes no Plugin disable subcommand. Therefore an uninstall and
+    raw CLI fallback is the directly supported local fallback check.
+
+premise IN1:
+  |
+    Inference: only purposebus 0.2.0a1 has current end-to-end evidence for this
+    Plugin contract. Declaring compatibility with future 0.2 or 1.0 core versions
+    would be speculative, so the initial 1.0 Plugin contract should use the exact
+    version specifier ==0.2.0a1 plus the v2 success, v1 error, and state-schema 1
+    requirements. A later tested core candidate can revise the range.
+
+premise ALT1:
+  |
+    Alternative: add the optional read-only MCP package to Plugin 1.0. This is
+    rejected because the accepted post-trial surface is Skill-only and no new
+    measured requirement justifies the lifecycle and authority expansion.
+
+premise ALT2:
+  |
+    Alternative: install or update the active user Plugin profile. This is
+    rejected because the task accepts an isolated test scope and active-profile
+    mutation is a separate state boundary.
+
+premise ALT3:
+  |
+    Alternative: use static package tests as a substitute for fresh-session
+    behavior. This is rejected because it omits a material completion condition.
+
+pending PD1:
+  |
+    Whether a fresh isolated Codex home can authenticate and load the candidate
+    while using the existing auth object read-only is not yet observed. If it
+    cannot, retain that as a blocker rather than replacing the behavioral test.
+
+pending PD2:
+  |
+    Windows/Desktop GUI pickup and public submission review are outside the
+    accepted local test scope and remain unverified.
+
+decision D1 based_on P1, PR1, PR2, PR3, EV1, EV2, EV3, EV4, EV5, EV6, IN1, ALT1, ALT2, ALT3, PD1, PD2:
+  |
+    Start T_V1_PLUGIN_PACKAGE in the current worktree. Change the Plugin base
+    version to 1.0.0 and use the plugin-creator cachebuster helper for one exact
+    development candidate. Keep the Plugin Skill-only and freeze a machine
+    contract with core specifier ==0.2.0a1, required CLI and response schemas,
+    supported surfaces, absent components, authority limits, predecessor RC
+    digests, critical file hashes, and the required five-class evaluation matrix.
+    Update tests so the immutable RC remains historical provenance rather than a
+    false live-Plugin invariant. Add a deterministic Plugin archive and verifier
+    that validates the manifest, Skill, marketplace, package contents, secret
+    absence, isolated install and cache readback, uninstall, and independent CLI
+    fallback. Use only a temporary HOME, CODEX_HOME, state root, marketplace,
+    and working directory for fresh Codex sessions; reference the existing auth
+    object read-only without copying or printing it. Run direct, indirect,
+    follow-up, negative, and cross-host boundary evaluations plus an isolated
+    request-response workflow. If any material behavioral check is unavailable,
+    stop with the task incomplete. Otherwise emit exact local evidence and finish
+    T_V1_PLUGIN_PACKAGE. Do not change the active Plugin profile or marketplace,
+    add MCP or apps, commit, push, publish, release, deploy, or start downstream
+    release preparation.
+
+query Q1:
+  .document.steps[].statement | select(.role == "decision" and len(.based_on) > 0)

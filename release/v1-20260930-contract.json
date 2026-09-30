@@ -1,0 +1,171 @@
+{
+  "schema": "purposebus.release-contract.v1",
+  "roadmap_task": "T_V1_REVALIDATE_20260930",
+  "target_milestone": "V1_REVALIDATED_20260930",
+  "base_head": "2a2b3a68c8f44a4107268e4fd51949106a37d486",
+  "source_snapshot_excludes": [
+    "docs/v1-candidate-evidence-2026-09-08.md",
+    "docs/release-evidence-2026-09-30.md",
+    "release/release-authorization-20260930.json"
+  ],
+  "baseline": {
+    "core_version": "0.2.0a1",
+    "plugin_version": "1.0.0+codex.20260908092104"
+  },
+  "candidate": {
+    "core_version": "1.0.0",
+    "mcp_version": "0.1.0a0",
+    "controller_version": "0.0.0a0",
+    "plugin_version": "1.0.0+codex.20260908103255",
+    "plugin_core_specifier": "==1.0.0",
+    "state_schema": "1",
+    "error_schema": "purposebus.error.v1",
+    "public_success_schemas": [
+      "purposebus.ack.v2",
+      "purposebus.agent-list.v2",
+      "purposebus.agent-register.v2",
+      "purposebus.agent-show.v2",
+      "purposebus.delivery-list.v2",
+      "purposebus.events.v2",
+      "purposebus.help.v2",
+      "purposebus.init.v2",
+      "purposebus.instance-heartbeat.v2",
+      "purposebus.instance-list.v2",
+      "purposebus.instance-show.v2",
+      "purposebus.instance-start.v2",
+      "purposebus.instance-stop.v2",
+      "purposebus.match.v2",
+      "purposebus.message-list.v2",
+      "purposebus.message-show.v2",
+      "purposebus.next.v2",
+      "purposebus.offer-add.v2",
+      "purposebus.offer-list.v2",
+      "purposebus.offer-show.v2",
+      "purposebus.poll.v2",
+      "purposebus.publish.v2",
+      "purposebus.request-cancel.v2",
+      "purposebus.request-create.v2",
+      "purposebus.request-list.v2",
+      "purposebus.request-show.v2",
+      "purposebus.status.v2",
+      "purposebus.subscription-add.v2",
+      "purposebus.subscription-list.v2",
+      "purposebus.subscription-show.v2"
+    ],
+    "mcp_tools": [
+      "purposebus_status",
+      "purposebus_list_agents",
+      "purposebus_list_instances",
+      "purposebus_match",
+      "purposebus_next",
+      "purposebus_get_request"
+    ],
+    "plugin_components": [
+      "skills"
+    ],
+    "plugin_files": [
+      ".codex-plugin/plugin.json",
+      "skills/purposebus/SKILL.md",
+      "skills/purposebus/agents/openai.yaml"
+    ],
+    "critical_file_sha256": {
+      ".agents/plugins/marketplace.json": "7848dfdcbc088e3d1339aa6ea3096c1afd138a30e991d5307da1cbaf3334dfb5",
+      "CHANGELOG.md": "7489694ebd67cc79b881956ea810b4378a2a8442d5f5e674b771d56fe06a42d4",
+      "README.md": "c08a5412358f45eeb9904678434189afafa29a1f49f71757c0d7afe2b9bc02b2",
+      "docs/codex-plugin.md": "89b5b1b904eb0d81cc7da917c38321affe5a907279c92c4d3c5e1c7e5a9c9ebf",
+      "docs/mcp-readonly-contract.md": "e34654e9d9c499bcb157ceb9690a26e02c23331b4212c2a5f75e7e5b6cf47b51",
+      "docs/public-response-contract.md": "1b7d687a374e090933a5a96c7edb97688e368b479c596250999a155153fd6d14",
+      "docs/v1-release-prep.md": "1c51c3a62ed52ebef90467ca048163d4005d2d64d018412da2e80e2dcebef04d",
+      "integrations/purposebus_codex_controller/pyproject.toml": "f3a58bca0a033f9334287a0b3059f3084ab832d6c5cbc79bd3bcf18488646efc",
+      "integrations/purposebus_mcp/pyproject.toml": "de72f1904702065695b8453c127f6b5c625610e5b80df0fa4f18c23c292ec0f5",
+      "integrations/purposebus_mcp/src/purposebus_mcp/cli_adapter.py": "1660067a97557598e401ba030bfae9fde950cf8a5b66cf86f8e0a25088c26138",
+      "integrations/purposebus_mcp/src/purposebus_mcp/server.py": "0f4a7a4f036319089985ae1a77d4cae52b984240c19b11e653d767037d86edd0",
+      "plugins/purposebus/.codex-plugin/plugin.json": "41bcb9df731d5a249bce15b1e93735d1687cf0bc60c0cf277b638697bbb34372",
+      "plugins/purposebus/skills/purposebus/SKILL.md": "3baab56facf93988e9fba3115d87eca3c8b3cae882c7b22af4d153e23ff60a94",
+      "plugins/purposebus/skills/purposebus/agents/openai.yaml": "e84bf24f46e44e39bb8589c32d8f1245a78b64ead907ce6b50c03a40e235b3a0",
+      "pyproject.toml": "58a2ae0900eb3484b0d4d53b951214073cfa0d8c0cc054d5a82cbf90f8773267",
+      "release/v1-plugin-evaluations.json": "758db8e2e47436b81816ffe848a63246887227cadf0600af9a1685bfc529b3c2",
+      "scripts/verify_rc_candidate.py": "c598309521f6930afc34cb5c932dadb39a27927691cb862ee9ea130eedfcb8da",
+      "scripts/verify_v1_candidate.py": "1a1f6082167c72c58cb70da4a7414a5c2fc3db77f9bb55e980804ce1c55b6472",
+      "src/purposebus/__init__.py": "9c6124ba3f2f4d0e8a93fd1bdb5c5dd05dd38be0237fa2bdaf97058b1d0f4bdf",
+      "src/purposebus/cli.py": "eb3444be6e861c9469eebfdf062e25df734e2dd120e3c82dccd3d611c7df5b2a",
+      "src/purposebus/public.py": "13cdf34077d77e3ad911dad07a04c9d9fb9dd12311c8becdd680ba834c6af001",
+      "src/purposebus/store.py": "baf5c9c3b7324f28500c57dbc35772575939e9eb5b853a7a270621a10f2e35a9",
+      "src/purposebus/util.py": "62c0ec96d9ecd11b38dde655bd68ce9ac298d0244c2e7cdb10a728796f863443",
+      "src/purposebus/partition.py": "8f3d02daf263fdc85cfac91858349375e5073f19429099352de00faac2efc38e",
+      "tests/test_release_regressions.py": "0a13f1ddae3a10f917e5fa3e89f87a66de44da1fe11c825c6e9e9dfc6dd13357",
+      "scripts/verify_release_20260930.py": "6011044f126877035308637cf3d4c5c3e5ee6bb4f15ef54c0202c7a5fd115bc7",
+      "docs/release-review-2026-09-30.md": "6c6fc6a7153c0f48bc64b8e3bb949ee614fd68299118a03ecd3933f394eab480",
+      "scripts/prepare_release_assets.py": "b79d549fc96acefa1bd479952e716ddd2ffce7895012ff8d4c2875d071ce7a9a",
+      "release/v1-plugin-evaluations-20260930.json": "50726e5040fb20b7138397fe11201e285d105efe0e9d4092f57d8d698625a106",
+      "release/installed-package-evidence-20260930.json": "cc224d3ee56e696d2cea24d286fa29ade2acfc207b4019ca3164a79b6e71b3fd"
+    }
+  },
+  "predecessors": {
+    "rc": {
+      "contract_path": "release/rc-contract.json",
+      "contract_sha256": "c658784e2bb649c6dfb094719f0e028dd52f4759b5e573cc3695f4404f0f43a6",
+      "source_path": "build/rc/ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d/artifacts/candidate-source.tar",
+      "source_sha256": "ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d",
+      "evidence_path": "build/rc/ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d/evidence.json",
+      "evidence_sha256": "b0141b8d4693977519a65fd0fa55677c6e6d0de1fc6d1a5f17b3eaee2aa666bb",
+      "core_wheel_path": "build/rc/ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d/artifacts/candidate/purposebus-0.2.0a1-py3-none-any.whl",
+      "core_wheel_sha256": "195de2c97bd21a25580d966e762999459e81208d26e65225802c899aa8405cb8"
+    },
+    "plugin_package": {
+      "contract_path": "release/plugin-v1-contract.json",
+      "contract_sha256": "38e80b49a735e7c8fad46027ad1fb0de7f3b4c91d5ac047c3b71f46d680f6c03",
+      "package_path": "build/plugin-v1/2b02d722e3ce949164fff2398884d4f71150cf1fc710c1062c0f2defa144c383/purposebus-plugin-1.0.0+codex.20260908092104.zip",
+      "package_sha256": "7484ab48059bbdc95b87169486c78ce147ae8734a04613989968cc34f4743874",
+      "evidence_path": "build/plugin-v1/2b02d722e3ce949164fff2398884d4f71150cf1fc710c1062c0f2defa144c383/evidence.json",
+      "evidence_sha256": "facc2c5398d4bced03133d7b48c76fa5826c224a604d835d0cb4f73bb300c55d"
+    }
+  },
+  "evaluations": {
+    "path": "release/v1-plugin-evaluations-20260930.json",
+    "sha256": "50726e5040fb20b7138397fe11201e285d105efe0e9d4092f57d8d698625a106",
+    "required": [
+      "direct_request_response",
+      "follow_up",
+      "indirect",
+      "negative",
+      "cross_host_boundary"
+    ]
+  },
+  "bounds": {
+    "load_processes": 20,
+    "load_workers": 4,
+    "per_process_timeout_seconds": 10
+  },
+  "publication_inputs": {
+    "git_repository": "https://github.com/mako10k/purposebus.git",
+    "git_ref": "pending_explicit_authorization",
+    "core_registry": "not_selected",
+    "local_plugin_marketplace": "purposebus-local",
+    "workspace_or_public_plugin_directory": "not_selected"
+  },
+  "limitations": [
+    "No active Codex or ChatGPT profile was changed.",
+    "No native Desktop GUI window was automated or visually observed.",
+    "No candidate commit, tag, server-side ref, package registry, workspace, or public Plugin Directory result exists yet.",
+    "Signing, publication, release, deployment, and public clean-install behavior were not exercised.",
+    "September 30 fresh Plugin matrix passed on the exact core wheel.",
+    "Shared active Codex config drift was observed during isolated evaluation; its origin is unknown. Isolated profile targeting was verified; no global config invariance is claimed.",
+    "Installed MCP tests used existing local dependency packages, not a clean-index install."
+  ],
+  "excluded_authority": [
+    "active_profile_installation",
+    "agent_launch_outside_isolated_evaluation",
+    "commit",
+    "connector_use",
+    "deployment",
+    "mcp_or_app_plugin_addition",
+    "plugin_directory_submission",
+    "publication",
+    "purposebus_mutation_outside_isolated_tests",
+    "push",
+    "release",
+    "tag",
+    "workspace_publication"
+  ]
+}

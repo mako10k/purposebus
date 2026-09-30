@@ -1,3 +1,3 @@
 """PurposeBus local-first agent coordination queue."""
 
-__version__ = "0.2.0a1"
+__version__ = "1.0.0"

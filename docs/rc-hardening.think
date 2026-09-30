@@ -1,0 +1,123 @@
+framework PurposeBusRcHardening:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain PurposeBus:
+  description "Local-first coordination queue for human and AI agent instances"
+
+problem P1:
+  |
+    What bounded implementation and evidence are required to move the
+    owner-accepted read-only MCP beta to V0_9_RC_READY without starting the
+    later Codex-controller, Plugin 1.0 packaging, installation, or publication
+    work?
+
+premise PR1:
+  |
+    The user authorized proceeding with T_RC_HARDENING after accepting the
+    exact beta candidate, but did not authorize commit, push, profile mutation,
+    public marketplace submission, release, deployment, Connector use, or
+    agent launch.
+
+premise PR2:
+  |
+    T_RC_HARDENING requires public JSON, CLI, MCP adapter, and current Skill-only
+    Plugin compatibility to be frozen and requires upgrade, rollback, bounded
+    load, corruption, provenance, environment, permission, documentation, and
+    release-automation evidence on immutable local candidates.
+
+premise PR3:
+  |
+    T_V1_PLUGIN_PACKAGE remains downstream of owner acceptance of the RC, so
+    this task must not turn the current Skill-only Plugin into the later 1.0
+    package or add the read-only MCP server to the Plugin manifest.
+
+evidence EV1:
+  |
+    The active roadmap reports V0_5_BETA_ACCEPTED as reached and accepted,
+    records T_BETA_BUILD done, and recommends T_RC_HARDENING next.
+
+evidence EV2:
+  |
+    Local HEAD and the independently read GitHub feature/local-mvp ref both
+    equal 2a2b3a68c8f44a4107268e4fd51949106a37d486; the accepted beta is
+    uncommitted workspace content on that base.
+
+evidence EV3:
+  |
+    The accepted beta has core 0.2.0a1, MCP adapter 0.1.0a0, controller policy
+    skeleton 0.0.0a0, Plugin 0.2.0 plus a Codex cachebuster, public response
+    schemas purposebus.*.v2, error schema purposebus.error.v1, and state schema
+    version 1.
+
+evidence EV4:
+  |
+    Existing tests already cover deterministic public projections, bounded
+    inputs, private state permissions, concurrency, corrupt and unknown state,
+    Plugin package structure, MCP fail-closed behavior, and isolated wheel
+    contents, but the repository has no one-command immutable RC manifest and
+    no artifact-bound upgrade and rollback verification.
+
+evidence EV5:
+  |
+    Official OpenAI Plugin documentation says local and repository marketplaces
+    are separate authoring and testing sources from public publication, and a
+    complete skills-only Plugin test uses a local install, a new conversation,
+    and direct, indirect, follow-up, negative, and unsupported cases.
+
+premise IN1:
+  |
+    Inference: because the roadmap milestone name is not the installed package
+    version and the accepted beta deliberately uses independently versioned
+    packages, changing every package to 0.9.0 merely to match V0_9_RC_READY
+    would introduce an unsupported compatibility decision rather than harden
+    the accepted candidate.
+
+premise ALT1:
+  |
+    Alternative: immediately install into the active Codex profile and exercise
+    a live conversation. This can test pickup behavior, but it exceeds the
+    current profile-mutation boundary and is not necessary for artifact-local
+    RC hardening.
+
+premise ALT2:
+  |
+    Alternative: add documentation only. This cannot establish upgrade,
+    rollback, load, corruption, provenance, or permission behavior and does not
+    satisfy the implementation contract.
+
+premise ALT3:
+  |
+    Alternative: first add an executable clean-room RC verifier and a frozen
+    machine-readable compatibility manifest, run it on an immutable local
+    source snapshot, and record only the actually observed environment and
+    known limitations. This exercises the required mechanisms without profile
+    or external mutation.
+
+pending PD1:
+  |
+    Active-profile fresh-conversation behavior, other Linux distributions,
+    other Codex versions, public Plugin Directory review, signing identity, and
+    publication destinations remain unverified and cannot be claimed by local
+    clean-room evidence.
+
+decision D1 based_on P1, PR1, PR2, PR3, EV1, EV2, EV3, EV4, EV5, IN1, ALT1, ALT2, ALT3, PD1:
+  |
+    Start T_RC_HARDENING on the existing feature/local-mvp WIP. Preserve the
+    accepted package and public-schema versions. Add an accepted compatibility
+    and provenance ADR, a machine-readable RC contract, and repository-owned
+    automation that creates a source snapshot and wheels, binds their digests,
+    installs only into temporary environments, verifies beta-to-candidate
+    upgrade and rollback, reopens supported state across both versions, checks
+    corrupt-state fail-closed behavior, runs bounded load and permission tests,
+    validates Plugin and MCP contracts, and emits a local evidence manifest.
+    Run the existing full suites and the new verifier. Record current WSL/Linux,
+    Python, and Codex versions as observed support evidence, retain all other
+    environments as limitations, and stop at V0_9_RC_READY for separate owner
+    acceptance. Do not install into an active profile, commit, push, publish,
+    release, deploy, add controller behavior, add MCP to the Plugin, use a
+    Connector, or launch agents.
+
+query Q1:
+  .document.steps[].statement | select(.role == "decision" and len(.based_on) > 0)

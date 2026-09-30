@@ -1,5 +1,4 @@
 import json
-import re
 import tomllib
 import unittest
 from pathlib import Path
@@ -7,6 +6,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = REPO_ROOT / "plugins" / "purposebus"
+PLUGIN_CONTRACT = json.loads(
+    (REPO_ROOT / "release/v1-contract.json").read_text(encoding="utf-8")
+)
 
 
 class PluginPackageTest(unittest.TestCase):
@@ -15,7 +17,8 @@ class PluginPackageTest(unittest.TestCase):
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
         self.assertEqual(manifest["name"], PLUGIN_ROOT.name)
-        self.assertRegex(manifest["version"], r"^0\.2\.0\+codex\.\d{14}$")
+        self.assertEqual(manifest["version"], PLUGIN_CONTRACT["candidate"]["plugin_version"])
+        self.assertRegex(manifest["version"], r"^1\.0\.0\+codex\.\d{14}$")
         self.assertEqual(manifest["skills"], "./skills/")
         self.assertTrue((PLUGIN_ROOT / manifest["skills"]).is_dir())
         self.assertNotIn("mcpServers", manifest)
@@ -41,7 +44,7 @@ class PluginPackageTest(unittest.TestCase):
         self.assertIn("\ndescription:", skill.split("---", 2)[1])
         self.assertNotIn("[TODO:", skill)
 
-    def test_skill_declares_alpha_compatibility_and_permission_boundary(self) -> None:
+    def test_skill_declares_v1_compatibility_and_permission_boundary(self) -> None:
         manifest = json.loads(
             (PLUGIN_ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
         )
@@ -49,10 +52,13 @@ class PluginPackageTest(unittest.TestCase):
         skill_path = PLUGIN_ROOT / "skills" / "purposebus" / "SKILL.md"
         skill = skill_path.read_text(encoding="utf-8")
         core_version = project["project"]["version"]
-        plugin_base_version = manifest["version"].split("+", 1)[0]
-        self.assertEqual(core_version, "0.2.0a1")
-        self.assertEqual(plugin_base_version, re.sub(r"a\d+$", "", core_version))
+        self.assertEqual(core_version, "1.0.0")
+        self.assertEqual(manifest["version"].split("+", 1)[0], "1.0.0")
+        self.assertEqual(
+            PLUGIN_CONTRACT["candidate"]["plugin_core_specifier"], f"=={core_version}"
+        )
         self.assertIn(f"purposebus {core_version}", skill)
+        self.assertIn(f"`=={core_version}`", skill)
         self.assertIn("purposebus.*.v2", skill)
         self.assertIn(".result.deliveries.items", skill)
         self.assertIn("ownership_mismatch", skill)

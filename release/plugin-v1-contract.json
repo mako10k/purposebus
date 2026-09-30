@@ -1,0 +1,100 @@
+{
+  "schema": "purposebus.plugin-package-contract.v1",
+  "roadmap_task": "T_V1_PLUGIN_PACKAGE",
+  "plugin": {
+    "name": "purposebus",
+    "version": "1.0.0+codex.20260908092104",
+    "source_root": "plugins/purposebus",
+    "components": [
+      "skills"
+    ],
+    "absent_components": [
+      ".app.json",
+      ".mcp.json",
+      "hooks"
+    ],
+    "files": [
+      ".codex-plugin/plugin.json",
+      "skills/purposebus/SKILL.md",
+      "skills/purposebus/agents/openai.yaml"
+    ]
+  },
+  "core_compatibility": {
+    "specifier": "==0.2.0a1",
+    "verified_versions": [
+      "0.2.0a1"
+    ],
+    "cli_version_output": "purposebus 0.2.0a1",
+    "state_schema": "1",
+    "success_schema_pattern": "purposebus.*.v2",
+    "error_schema": "purposebus.error.v1"
+  },
+  "marketplace": {
+    "file": ".agents/plugins/marketplace.json",
+    "name": "purposebus-local",
+    "source": {
+      "source": "local",
+      "path": "./plugins/purposebus"
+    },
+    "policy": {
+      "installation": "AVAILABLE",
+      "authentication": "ON_INSTALL"
+    },
+    "category": "Productivity"
+  },
+  "supported_surfaces": [
+    "codex_cli_with_local_environment",
+    "chatgpt_desktop_codex_with_local_environment"
+  ],
+  "unsupported_surfaces": [
+    "codex_cloud",
+    "codex_ide_without_same_local_environment",
+    "chatgpt_web_without_local_shell",
+    "mobile",
+    "cross_host",
+    "cross_user"
+  ],
+  "required_evaluations": [
+    "direct",
+    "indirect",
+    "follow_up",
+    "negative",
+    "cross_host_boundary",
+    "request_response"
+  ],
+  "predecessor": {
+    "rc_source_sha256": "ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d",
+    "rc_evidence_sha256": "b0141b8d4693977519a65fd0fa55677c6e6d0de1fc6d1a5f17b3eaee2aa666bb",
+    "plugin_version": "0.2.0+codex.20260904090953",
+    "plugin_tree_sha256": "805177e45614644bd2e63625a91a2d1b972b46600397a7c24fca0de12c953395",
+    "critical_file_sha256": {
+      "plugins/purposebus/.codex-plugin/plugin.json": "7592284c42cf39c52197734274523ec5e713cf84d24c0bbd26df6acd52bcd740",
+      "plugins/purposebus/skills/purposebus/SKILL.md": "ea1aed311df0def59f246b4e78a83eb909b2e3874fe374148f4f3f8c2fa868c2"
+    }
+  },
+  "critical_file_sha256": {
+    ".agents/plugins/marketplace.json": "7848dfdcbc088e3d1339aa6ea3096c1afd138a30e991d5307da1cbaf3334dfb5",
+    "plugins/purposebus/.codex-plugin/plugin.json": "a6c64c829af26ef70923a53311c4f8e80a91e0c191bc717ab372419b3f008aa7",
+    "plugins/purposebus/skills/purposebus/SKILL.md": "daeaf81c0d94cda7dc15f3f0dbca80a7204a4cd6d2bfc952a8a3dc8ec318d0b2",
+    "plugins/purposebus/skills/purposebus/agents/openai.yaml": "e84bf24f46e44e39bb8589c32d8f1245a78b64ead907ce6b50c03a40e235b3a0"
+  },
+  "isolated_profile_max_writes": {
+    "marketplace_add": 1,
+    "plugin_add": 1,
+    "plugin_remove": 1,
+    "marketplace_remove": 1
+  },
+  "excluded_authority": [
+    "active_profile_installation",
+    "commit",
+    "connector_use",
+    "deployment",
+    "mcp_or_app_addition",
+    "plugin_directory_submission",
+    "publication",
+    "push",
+    "release",
+    "remote_coordination",
+    "workspace_publication"
+  ]
+}

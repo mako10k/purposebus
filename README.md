@@ -4,8 +4,10 @@ PurposeBus is a purpose-aware coordination bus for human and AI agents. It combi
 agent discovery, purpose-bearing subscriptions and offers, observable instance
 state, and durable publish/ack delivery inside an explicit project partition.
 
-Status: post-alpha response-contract development candidate (`0.2.0a1`). It is
-suitable for same-host, same-user evaluation, not production deployment.
+Status: locally verified PurposeBus core package (`1.0.0`) and compatible Codex
+Plugin release package; publication authorization pending. The package remains
+a same-host, same-user local coordination system, not a production deployment
+claim.
 
 ## Run the prototype
 
@@ -113,10 +115,66 @@ Creating the repository package does not install or publish the Plugin. A new
 Codex or ChatGPT desktop session is required after a separately authorized
 local installation.
 
+The exact release Plugin candidate is
+`1.0.0+codex.20260908103255`, compatible with exactly PurposeBus `1.0.0`.
+Build and exercise the complete core and Plugin release package with:
+
+```sh
+make verify-v1
+```
+
+The deterministic archive identity, fresh Codex CLI session matrix, request
+response identifiers, and unchanged-profile readback are in
+[the 1.0.0 release preparation record](docs/v1-release-prep.md).
+No active-profile installation or publication is implied.
+
+## Optional local read-only MCP adapter
+
+An experimental, separately packaged MCP server is available under
+`integrations/purposebus_mcp/`. It exposes six bounded read-only tools over
+local stdio and invokes only the public `purposebus 1.0.0` CLI against
+operator-configured Partition aliases. It does not modify the existing Plugin,
+open SQLite directly, mutate PurposeBus, use a network listener, or launch
+Codex or subagents.
+
+The exact tool, compatibility, Partition, failure, and installation boundaries
+are defined in [the local read-only MCP contract](docs/mcp-readonly-contract.md)
+and [ADR-0001](docs/adr/0001-add-local-read-only-mcp.md). A separate
+`purposebus_codex_controller` package is policy-only and non-runnable; Codex
+lifecycle control remains a later, separately authorized phase.
+
+The exact non-editable package hashes, test results, exclusions, and owner
+acceptance receipt are recorded in
+[the beta candidate evidence](docs/beta-readonly-mcp-acceptance-2026-09-08.md).
+
+## Local RC hardening
+
+The locally verified RC candidate freezes the accepted package, public JSON,
+MCP, and Skill-only Plugin boundaries in `release/rc-contract.json`. Its verifier
+creates a normalized source snapshot, reproducible wheels, isolated core and
+Plugin upgrade/rollback evidence, bounded-load results, and fail-closed
+corruption recovery evidence without changing an active profile:
+
+```sh
+make verify-rc
+```
+
+See [the RC hardening runbook](docs/rc-hardening.md) and
+[ADR-0002](docs/adr/0002-freeze-rc-compatibility-and-provenance.md). Receipt
+`RCPT_V0_9_RC_OWNER_20260908` records owner acceptance of the local RC contract;
+it does not authorize installation, publication, release, or deployment.
+
 ## Development checks
 
 ```sh
 make check
+```
+
+Optional integration checks require an isolated environment with the local
+integration packages and their declared dependencies installed:
+
+```sh
+make check-integrations PYTHON=/path/to/ephemeral-venv/bin/python
 ```
 
 The acceptance suite uses isolated temporary Partitions and state roots; it

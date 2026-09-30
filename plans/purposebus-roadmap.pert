@@ -4,7 +4,8 @@ project PURPOSEBUS_ROADMAP:
   title "PurposeBus MVP to 1.0.0 roadmap"
   description "Current and future roadmap from the executable local prototype through the PurposeBus 1.0.0 release, including Codex Plugin integration. The MVP phase is detailed from verified implementation gaps. Post-MVP version numbers, scope, and estimates are provisional and must be replanned from real multi-agent trial evidence. The Codex Plugin begins as a repo-distributed, skill-first adapter over the public PurposeBus CLI; an MCP server or broader surface support requires measured evidence and a later accepted decision. This PERT is planning evidence only and does not authorize commits, pushes, Issues, plugin installation, marketplace changes, submissions, tags, releases, deployments, or other external writes."
   as_of 2026-08-31
-  duration_unit day
+  duration_unit point
+  velocity 1p/1d
   finish V1_0_0_RELEASED
   goal_owner user
   dag_owner user
@@ -90,9 +91,9 @@ task T_MVP_FREEZE_CONTRACT LOCAL_PROTOTYPE -> MVP_CONTRACT_FROZEN:
   title "Freeze the remaining MVP behavior contracts"
   description "Resolve the verified gaps before code changes: which mutations require acting Agent or Instance identity; whether Request correlation is a delivery constraint; whether Agent-owned mailbox acknowledgement is direct or Instance-mediated; where artifact digests are valid; and whether global options are accepted before and after subcommands. Update normative requirements only when the decision changes the existing contract."
   estimate:
-    optimistic 0.5d
-    most_likely 1d
-    pessimistic 2d
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
   status done
   priority 100
   requires:
@@ -104,9 +105,9 @@ task T_MVP_EXPLICIT_CONTEXT MVP_CONTRACT_FROZEN -> MVP_CONTEXT_FIXED:
   title "Implement explicit mutation context and ownership checks"
   description "Require and expose the accepted acting Agent or Instance on mutable Subscription, Offer, Request, and Delivery workflows. Bind ownership checks and event actor identity consistently, preserve bootstrap exceptions explicitly, and add denial tests for missing, ambiguous, stopped, and non-owner actors."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 4d
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
   status done
   priority 95
   requires:
@@ -117,9 +118,9 @@ task T_MVP_REQUEST_ROUTING MVP_CONTEXT_FIXED -> MVP_REQUEST_ROUTING_FIXED:
   title "Implement accepted Request correlation and payload metadata rules"
   description "Apply the frozen Request correlation rule to retained and ordinary delivery creation, response_available, polling, and acknowledgement. Reject invalid artifact-digest combinations and preserve idempotency digests. Add negative tests for absent and mismatched correlation, wrong schema, retained responses, expiry, and changed retries."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 4d
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
   status done
   priority 90
   requires:
@@ -130,9 +131,9 @@ task T_MVP_NAVIGATION MVP_REQUEST_ROUTING_FIXED -> MVP_NAVIGATION_FIXED:
   title "Make match and next sufficient for relevance decisions"
   description "Return requester and provider identity, both purposes, topic and schema facts, expiry, Offer availability, live-instance evidence, and exact mismatch classification without payload exposure. Make the documented purposebus next --format json form work and keep repeated navigation logically read-only."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 3d
+    optimistic 1p
+    most_likely 2p
+    pessimistic 3p
   status done
   priority 85
   requires:
@@ -143,9 +144,9 @@ task T_MVP_ACCEPTANCE MVP_NAVIGATION_FIXED -> MVP_ACCEPTANCE_READY:
   title "Build the complete 0.1.0 MVP acceptance candidate"
   description "Map tests to all twelve normative acceptance conditions and add the missing negative probes. Verify clean-install CLI behavior, corrupt and unsupported state failures, deterministic JSON, private state sidecars, payload and event bounds, restart recovery, concurrency, read-only navigation, and Git diff checks. Correct implementation-status claims to match evidence and prepare a versioned, resumable candidate without publishing it."
   estimate:
-    optimistic 1d
-    most_likely 3d
-    pessimistic 5d
+    optimistic 1p
+    most_likely 3p
+    pessimistic 5p
   status done
   priority 80
   requires:
@@ -160,9 +161,9 @@ task T_LOCAL_MULTI_AGENT_TRIALS CODEX_PLUGIN_LOCAL_READY -> TRIAL_FEEDBACK_FROZE
   title "Run real local multi-agent trials and freeze findings"
   description "Exercise at least two AI agents and one human participant across provider discovery, request response, durable fan-out, failure recovery, and offline mailbox flows. Run both raw CLI and Codex Plugin paths so the Plugin is compared against the agent-neutral baseline. Record plugin discovery and fresh-session behavior, actor identity clarity, approval and permission behavior, poll latency, writer contention, heartbeat accuracy, usefulness of purpose text, operator comprehension, and whether skill-only local integration and broadcast-only delivery are sufficient. Convert findings into an explicit post-MVP scope decision."
   estimate:
-    optimistic 2d
-    most_likely 5d
-    pessimistic 10d
+    optimistic 2p
+    most_likely 5p
+    pessimistic 10p
   status done
   priority 70
   requires:
@@ -174,9 +175,9 @@ task T_ALPHA_HARDENING CODEX_PLUGIN_SURFACE_FROZEN -> V0_2_ALPHA_ACCEPTED:
   title "Prepare and accept the provisional 0.2.0 alpha"
   description "Provisional: address the bounded trial findings; stabilize core installation, state migration, and operator diagnostics; implement only the accepted Codex Plugin surface; add manifest, marketplace, fresh-session, permission-boundary, and compatibility checks; and verify isolated alpha packages. Publication and plugin installation outside the test scope remain separately authorized actions."
   estimate:
-    optimistic 2d
-    most_likely 4d
-    pessimistic 8d
+    optimistic 2p
+    most_likely 4p
+    pessimistic 8p
   status done
   priority 60
   requires:
@@ -186,37 +187,40 @@ task T_ALPHA_HARDENING CODEX_PLUGIN_SURFACE_FROZEN -> V0_2_ALPHA_ACCEPTED:
 
 task T_BETA_REPLAN V0_2_ALPHA_ACCEPTED -> V0_5_SCOPE_FROZEN:
   title "Replan the beta scope from measured evidence"
-  description "Provisional: decide whether direct SQLite remains adequate or a same-user broker is justified; select only measured reliability, performance, operability, portability, and compatibility work for beta. Replace the coarse downstream estimates when this milestone is reached."
+  description "Select a bounded 0.5.0 beta scope from the measured alpha and the 2026-09-08 cross-client requirement. Keep the direct SQLite core and Skill-only Plugin unchanged; add an optional same-host stdio read-only MCP adapter over the public CLI plus a non-runnable Codex controller policy skeleton. Defer client-profile installation, Codex lifecycle control, PurposeBus writes, Connector use, subagents, network transport, and publication to separately accepted work."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 4d
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
+  status done
   priority 50
   requires:
     CODEX 1
     REVIEW 1
-  source "V0_2_ALPHA_ACCEPTED; provisional decision point"
+  source "docs/adr/0001-add-local-read-only-mcp.md; docs/mcp-readonly-contract.md; 2026-09-08 isolated core and integration evidence"
 
 task T_BETA_BUILD V0_5_SCOPE_FROZEN -> V0_5_BETA_ACCEPTED:
-  title "Implement and accept the provisional 0.5.0 beta scope"
-  description "Provisional coarse work package for the frozen beta scope, broader soak and upgrade tests, compatibility enforcement, operator recovery evidence, and Codex Plugin install, update, disable, uninstall, and fresh-session interoperability. Preserve the agent-neutral CLI as the fallback and do not infer remote federation, competing consumers, automatic delegation, or MCP from Plugin availability without a new accepted requirement."
+  title "Build and accept the bounded 0.5.0 read-only MCP beta"
+  description "Bring the Phase 0 through Phase 2 candidate to owner acceptance: accept the 0.2.0a1 public response contract; verify clean installation of the optional local stdio MCP package; verify its six read-only tools, explicit Partition bindings, version and schema fail-closed behavior, and core and Plugin compatibility; and preserve the agent-neutral CLI fallback. Do not include Plugin or profile installation, Codex lifecycle control, PurposeBus mutations, Connector use, subagents, network transport, or publication."
   estimate:
-    optimistic 5d
-    most_likely 10d
-    pessimistic 20d
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
+  status done
   priority 40
   requires:
     CODEX 1
     REVIEW 1
-  source "V0_5_SCOPE_FROZEN; provisional"
+  source "V0_5_SCOPE_FROZEN; docs/adr/0001-add-local-read-only-mcp.md; docs/mcp-readonly-contract.md"
 
 task T_RC_HARDENING V0_5_BETA_ACCEPTED -> V0_9_RC_READY:
   title "Harden the provisional 0.9.0 release candidate"
   description "Provisional: freeze public JSON, CLI, and Codex Plugin compatibility; validate core and Plugin upgrade and rollback, bounded load, corruption recovery, package provenance, supported Codex and Linux environments, permissions, documentation, and release automation on immutable candidates. Treat public Plugin Directory submission and other marketplace writes as separately authorized release targets."
   estimate:
-    optimistic 3d
-    most_likely 7d
-    pessimistic 14d
+    optimistic 3p
+    most_likely 7p
+    pessimistic 14p
+  status done
   priority 30
   requires:
     CODEX 1
@@ -230,25 +234,26 @@ task T_V1_RELEASE_PREP V1_PLUGIN_PACKAGE_READY -> V1_RELEASE_READY:
   title "Prepare the PurposeBus 1.0.0 release package"
   description "Provisional: freeze the 1.0.0 core source, public contracts, and compatible Codex Plugin candidate; run the final clean-room acceptance matrix; confirm migration, rollback, supported surfaces, installation, and uninstall documentation; assemble changelog and release artifacts; and record exact core and Plugin revisions without publishing them."
   estimate:
-    optimistic 2d
-    most_likely 4d
-    pessimistic 8d
+    optimistic 2p
+    most_likely 4p
+    pessimistic 8p
+  status done
   priority 20
   requires:
     CODEX 1
     REVIEW 1
   source "V1_PLUGIN_PACKAGE_READY; provisional"
 
-gate G_V1_RELEASE_AUTHORIZATION V1_RELEASE_READY -> V1_RELEASE_AUTHORIZED:
+gate G_V1_RELEASE_AUTHORIZATION V1_REVALIDATED_20260930 -> V1_RELEASE_AUTHORIZED:
   reason "The owner explicitly authorizes the exact 1.0.0 core and Codex Plugin candidates, destinations, refs, artifacts, marketplace or directory targets, and maximum external writes."
 
 task T_PUBLISH_V1_0_0 V1_RELEASE_AUTHORIZED -> V1_0_0_RELEASED:
   title "Publish and independently verify PurposeBus 1.0.0"
   description "Publish exactly the authorized immutable core and Codex Plugin candidates to only the named destinations, then independently read back repository refs, release and Plugin metadata, package identities, checksums, marketplace or directory entries when included, and clean-install smoke results from a fresh session. A public Plugin Directory submission, workspace publication, mutable-channel promotion, or deployment occurs only when separately included in the frozen authorization."
   estimate:
-    optimistic 0.5d
-    most_likely 1d
-    pessimistic 2d
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
   priority 10
   requires:
     CODEX 1
@@ -275,9 +280,9 @@ task T_CODEX_PLUGIN_CONTRACT MVP_0_1_ACCEPTED -> CODEX_PLUGIN_CONTRACT_FROZEN:
   title "Freeze the PurposeBus Codex Plugin contract"
   description "Define a local-first integration for Codex CLI and Codex in the ChatGPT desktop app when a local environment is available. Record IDE, web, mobile, and remote limitations unless an MCP-backed design later proves them. Bind every workflow to the public deterministic PurposeBus CLI and explicit Agent or Instance identity, require a new session after installation, preserve host sandbox and approval policy, and state that a match or next recommendation never authorizes action. Exclude direct SQLite access, embedded secrets, ambient credential capture, and implicit mutation."
   estimate:
-    optimistic 0.5d
-    most_likely 1d
-    pessimistic 2d
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
   status done
   priority 75
   requires:
@@ -289,9 +294,9 @@ task T_CODEX_PLUGIN_PROTOTYPE CODEX_PLUGIN_CONTRACT_FROZEN -> CODEX_PLUGIN_LOCAL
   title "Build and verify the local PurposeBus Codex Plugin prototype"
   description "Create a minimal .codex-plugin/plugin.json, a purposebus Skill, and a repo marketplace entry. The Skill discovers the resolved Partition, uses deterministic JSON CLI output, requires explicit actor identity for mutations, exposes read-only status, match, and next guidance, and requests mutation only from an explicit user objective. Validate the manifest and marketplace, install from the repo source, start a fresh Codex session, run provider discovery and request-response-acknowledgement acceptance, verify disable and uninstall fallback, and confirm that the ordinary PurposeBus CLI remains independently usable."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 4d
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
   status done
   priority 72
   requires:
@@ -303,9 +308,9 @@ task T_CODEX_PLUGIN_SURFACE_DECISION TRIAL_FEEDBACK_FROZEN -> CODEX_PLUGIN_SURFA
   title "Select the post-trial Codex Plugin surface"
   description "Compare the local CLI-backed Skill with an optional MCP-backed integration for supported surfaces, authentication, shared or remote state, typed tool schemas, latency, approvals, and failure containment. Retain the simpler skill-only integration unless measured trial evidence establishes a material need for MCP. Record unsupported surfaces and separate any public-directory or workspace distribution proposal from implementation and publication authority."
   estimate:
-    optimistic 0.5d
-    most_likely 1d
-    pessimistic 3d
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 3p
   status done
   priority 65
   requires:
@@ -317,22 +322,35 @@ task T_V1_PLUGIN_PACKAGE V0_9_RC_ACCEPTED -> V1_PLUGIN_PACKAGE_READY:
   title "Prepare the PurposeBus Codex Plugin 1.0 package"
   description "Freeze an exact Plugin version and compatible PurposeBus core range; validate the manifest, Skill, repo marketplace metadata, supported-surface copy, sandbox and approval behavior, absence of embedded credentials, installation into a fresh session, end-to-end request response, and disable or uninstall fallback. Prepare review or submission material without installing outside the accepted test scope or publishing to a workspace, marketplace, or public Plugin Directory."
   estimate:
-    optimistic 1d
-    most_likely 2d
-    pessimistic 4d
-  status planned
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
+  status done
   priority 25
   requires:
     CODEX 1
     REVIEW 1
   source "V0_9_RC_ACCEPTED; OpenAI Plugin packaging and testing guidance; provisional"
 
+task T_V1_REVALIDATE_20260930 V1_RELEASE_READY -> V1_REVALIDATED_20260930:
+  title "Re-review and revalidate the 1.0.0 release candidate"
+  description "Correct FR-001 inherited Git context and CLI-004 overflowing duration errors; add isolated public CLI regressions; independent review; rebuild exact candidate and verify installed artifacts; freeze Japanese release scope and evidence. Measure actual active effort."
+  estimate:
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
+  status done
+  requires:
+    CODEX 1
+    REVIEW 1
+  source "owner goal 2026-09-30; docs/release-replan-2026-09-30.think"
+
 work_event WE-d3c8e46d64b8e9e2ab6a7b26ced595c5bfb5dc94d2ad2e3384d2f2f4fa339f7f:
   model 1
   task T_MVP_FREEZE_CONTRACT
   kind start
   occurred_at 2026-08-31T18:02:35+09:00
-  planned_value 13/12d
+  planned_value 13/12p
 
 work_event WE-f767d7e3d112488e6bf3f7d84b4d2edbc2301d8cc3134cc021de6a286babe10c:
   model 1
@@ -345,7 +363,7 @@ work_event WE-433e1d24b1c75b88a895150bd3c3255c86d83f00a0becdecd461be69df159606:
   task T_MVP_EXPLICIT_CONTEXT
   kind start
   occurred_at 2026-08-31T18:28:00+09:00
-  planned_value 13/6d
+  planned_value 13/6p
 
 work_event WE-3f91dc5fcfc9c1d558761b978a7ae9ee4da52b57cf08817ff8bcf0e87a19f1f9:
   model 1
@@ -358,7 +376,7 @@ work_event WE-88610e5f4dcafe102dc759b46d3d738606a9045a68400c790abeff3ef1249096:
   task T_MVP_REQUEST_ROUTING
   kind start
   occurred_at 2026-08-31T18:30:00+09:00
-  planned_value 13/6d
+  planned_value 13/6p
 
 work_event WE-f843874be21e34c0a78729f80ad9978cb582541ee57f8359ae81b174744b3937:
   model 1
@@ -371,7 +389,7 @@ work_event WE-c22687b519349855cb7171c78aae885c0672b9f25d236589dd9a3a6bb6fc934d:
   task T_MVP_NAVIGATION
   kind start
   occurred_at 2026-08-31T18:32:00+09:00
-  planned_value 2d
+  planned_value 2p
 
 work_event WE-fe2fc0fa2752514c35ddb5bb6c434ffe912cb15f7594f8449f1c5bc9b7af7c82:
   model 1
@@ -384,7 +402,7 @@ work_event WE-9b69ccf9b872f834ff3293ecc9234e7a9f4eb00cf960186084b1fd202106e9f2:
   task T_MVP_ACCEPTANCE
   kind start
   occurred_at 2026-08-31T18:34:00+09:00
-  planned_value 3d
+  planned_value 3p
 
 work_event WE-ad5189ac355e517463ac2945a3327bcdcf1afbf3f148c3e258ebafcde0e208f9:
   model 1
@@ -422,3 +440,97 @@ milestone_acceptance_receipt RCPT_MVP_0_1_OWNER_20260831:
   evidence_revision 09cdd3e491587380484ab1d2a9a36b1bfacea5f9
   verifier user
   occurred_at 2026-08-31T10:56:42Z
+
+milestone_criterion_set BETA_OWNER_ACCEPTANCE:
+  milestone V0_5_BETA_ACCEPTED
+  revision R1
+  commitment sha256:3684fcac289a3e577aa7084d86f755695d9679c070bf4cf80df4596abf552c92
+  criterion OWNER_ACCEPTANCE required owner "Owner accepts the bounded 0.5.0 read-only MCP beta contract and evidence"
+
+milestone_acceptance_receipt RCPT_V0_5_BETA_OWNER_20260908:
+  model 1
+  set BETA_OWNER_ACCEPTANCE
+  set_commitment sha256:3684fcac289a3e577aa7084d86f755695d9679c070bf4cf80df4596abf552c92
+  criterion OWNER_ACCEPTANCE
+  criterion_commitment sha256:3c4dff9874b52bb617f7d6af2101e4836773c368776238d5cf266bcf0fb99a07
+  action verify
+  evidence_kind owner
+  evidence_reference "owner-message:2026-09-08:purposebus-beta-source-set-003556204b04"
+  evidence_revision 003556204b04a5a24876ad568bdececa7ac9e80dc31e4d9bf61e946b66c30b1b
+  verifier user
+  occurred_at 2026-09-08T06:36:19Z
+
+work_event WE-3146e307290c8e7f582e418931bc786dd57880b1cf9ead006b55861e64aadf51:
+  model 1
+  task T_BETA_BUILD
+  kind finish
+  occurred_at 2026-09-08T15:36:19+09:00
+
+work_event WE-14e7ad1863737ad2930ddc3ef1118686f05826600ef7d685fface65bcdea16ac:
+  model 1
+  task T_RC_HARDENING
+  kind start
+  occurred_at 2026-09-08T15:58:03+09:00
+  planned_value 7.5p
+
+work_event WE-7fd3dd5fa2fab6afbe7d2df8fa79d505af77f1bd37e08528b50abbfd66dae403:
+  model 1
+  task T_RC_HARDENING
+  kind finish
+  occurred_at 2026-09-08T16:51:41+09:00
+
+milestone_acceptance_receipt RCPT_V0_9_RC_OWNER_20260908:
+  model 1
+  set RC_OWNER_ACCEPTANCE
+  set_commitment sha256:404c5bd7c1005c4637752cfebebd85c94f099270cf49c5626b0f5481aa02edc6
+  criterion OWNER_ACCEPTANCE
+  criterion_commitment sha256:c50d22c5e4b8662354a2818fa708f6c7dfe3c3ea83f8bed5be3f364e7ba35857
+  action verify
+  evidence_kind owner
+  evidence_reference "owner-message:2026-09-08:purposebus-rc-source-ab3af220-evidence-b0141b8d"
+  evidence_revision ab3af220b964f55d7272d765ffdece1bf9f32f96b7abf67c047103fe3fda346d
+  verifier user
+  occurred_at 2026-09-08T09:03:16Z
+
+work_event WE-5f496e1fb17521b30794a1fa7900ac1cde6a5c1c74dd685638c5ba4b8c022c70:
+  model 1
+  task T_V1_PLUGIN_PACKAGE
+  kind start
+  occurred_at 2026-09-08T18:19:52+09:00
+  planned_value 13/6p
+
+work_event WE-4a11e1659cd812dcb13df1618ccd1d29abb01bcb2a004b0843fdd425de295d95:
+  model 1
+  task T_V1_PLUGIN_PACKAGE
+  kind finish
+  occurred_at 2026-09-08T19:13:41+09:00
+
+work_event WE-21128bc44a907b12787e3d267ee6ae1cc9064ce7bb7c555339a981614d6c9f73:
+  model 1
+  task T_V1_RELEASE_PREP
+  kind start
+  occurred_at 2026-09-08T19:31:31+09:00
+  planned_value 13/3p
+
+work_event WE-e4a556216a57c9f24725f8f9d2cbdd349f99bece74bd61d18bbd6923d87ac68e:
+  model 1
+  task T_V1_RELEASE_PREP
+  kind finish
+  occurred_at 2026-09-08T20:34:30+09:00
+
+milestone V1_REVALIDATED_20260930:
+  title "Release review corrections and current artifact evidence complete"
+
+work_event WE-51fd48781b5a5f48887534a8c39eba837ff2ceebc4a1a549fa1f28964388c443:
+  model 1
+  task T_V1_REVALIDATE_20260930
+  kind start
+  occurred_at 2026-09-30T02:18:58+00:00
+  planned_value 13/12p
+
+work_event WE-7daaa5a1f109bdddc39e496d2874a95d4d7a44eafde619d856e17078bf44caba:
+  model 1
+  task T_V1_REVALIDATE_20260930
+  kind finish
+  occurred_at 2026-09-30T02:49:59+00:00
+  active_time 1861/3600h

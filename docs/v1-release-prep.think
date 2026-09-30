@@ -1,0 +1,153 @@
+framework PurposeBusV1ReleasePreparation:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain PurposeBus:
+  description "Local-first coordination queue and Skill-only Codex Plugin"
+
+problem P1:
+  |
+    What exact local source, compatibility freeze, clean-room evidence, and
+    rollback package satisfy T_V1_RELEASE_PREP without publishing, installing
+    into an active profile, or starting T_PUBLISH_V1_0_0?
+
+premise PR1:
+  |
+    The owner instructed the next PERT task to proceed. T_V1_RELEASE_PREP
+    explicitly requires a 1.0.0 core source, a compatible Codex Plugin
+    candidate, final clean-room acceptance, migration and rollback evidence,
+    supported-surface and install or uninstall documentation, a changelog,
+    release artifacts, and exact revisions without publication.
+
+premise PR2:
+  |
+    Proceeding with release preparation does not authorize commit, push,
+    publication, release, deployment, public Plugin Directory submission,
+    active-profile installation, Connector use, or live PurposeBus mutation.
+
+premise PR3:
+  |
+    The accepted RC and Plugin package are immutable predecessor evidence.
+    Release preparation must reference their exact digests and artifacts rather
+    than rewrite their contracts or report their old versions as the new source.
+
+evidence EV1:
+  |
+    PERT digest 99cd699472ca835c73a698e4b04a59235c468c47a9bdcaf2d1d20293482cb545
+    reports only T_V1_RELEASE_PREP as ready and recommended. The following
+    publication task remains gated on a separate explicit authorization.
+
+evidence EV2:
+  |
+    Local HEAD and the independently read GitHub feature/local-mvp ref both
+    equal 2a2b3a68c8f44a4107268e4fd51949106a37d486. Existing accepted beta, RC,
+    and Plugin work is uncommitted in the current mixed worktree and must be
+    preserved.
+
+evidence EV3:
+  |
+    Current core package metadata and purposebus.__version__ both report
+    0.2.0a1. The current Plugin package is
+    1.0.0+codex.20260908092104 but its Skill and machine contract require core
+    ==0.2.0a1. The read-only MCP adapter also rejects every core version other
+    than 0.2.0a1.
+
+evidence EV4:
+  |
+    The accepted RC source archive, core 0.2.0a1 wheel, evidence manifest, and
+    the accepted Plugin 1.0 package archive exist under content-addressed local
+    build paths with the digests recorded by their predecessor contracts and
+    owner-facing evidence.
+
+evidence EV5:
+  |
+    State schema remains 1 and current tests prove supported state reopens
+    without migration or mutation. The RC verifier already exercises isolated
+    core upgrade, rollback and re-upgrade, corrupt-state fail-closed recovery,
+    bounded load, reproducible wheels, and temporary-profile Plugin transition.
+
+evidence EV6:
+  |
+    Current official OpenAI Plugin documentation requires plugin.json, permits
+    a Skill-only Plugin, separates local marketplace testing from public
+    publication, and requires testing the complete changed Plugin in a new
+    conversation with direct, indirect, follow-up, negative, and boundary
+    prompts. The plugin-creator workflow requires a new cachebuster whenever
+    existing Plugin source changes.
+
+premise IN1:
+  |
+    Inference: the phrase 1.0.0 core source is a material release identity, not
+    a label for the already accepted 0.2.0a1 RC. A Plugin-only bundle would not
+    meet the explicit completion contract. Therefore both project metadata
+    version sources must become 1.0.0 and every exact compatible consumer must
+    be tested and pinned to that version.
+
+premise IN2:
+  |
+    Inference: no storage migration implementation is required because the new
+    core preserves state schema 1 and behavior. The required migration result
+    is an observed no-migration transition from the accepted 0.2.0a1 state to
+    1.0.0, followed by rollback and re-upgrade against the same isolated state.
+
+premise ALT1:
+  |
+    Alternative: leave core at 0.2.0a1 and call the Plugin 1.0 archive the
+    release package. This is rejected because it omits the requested 1.0.0 core
+    and leaves release metadata contradictory.
+
+premise ALT2:
+  |
+    Alternative: widen Plugin or MCP compatibility to a range. This is rejected
+    because only one exact replacement core will be tested by this preparation;
+    a wider range would claim unobserved compatibility.
+
+premise ALT3:
+  |
+    Alternative: replace historical RC and Plugin contracts with current
+    hashes. This is rejected because it destroys predecessor provenance and
+    makes rollback evidence circular.
+
+pending PD1:
+  |
+    Windows or Desktop GUI behavior, other operating systems or architectures,
+    public directory review, signing, destination permissions, server-side
+    revisions, and clean installation from a public index remain unverified and
+    outside local release preparation.
+
+pending PD2:
+  |
+    A local source snapshot is not a Git revision. Until a separately authorized
+    commit exists, the release contract can record the current base HEAD plus
+    immutable content digests, but it must not claim a candidate commit SHA or a
+    server-side release ref.
+
+decision D1 based_on P1, PR1, PR2, PR3, EV1, EV2, EV3, EV4, EV5, EV6, IN1, IN2, ALT1, ALT2, ALT3, PD1, PD2:
+  |
+    Start T_V1_RELEASE_PREP in the existing worktree. Change the core package
+    and runtime version to exactly 1.0.0. Update the Skill-only Plugin and the
+    read-only MCP adapter to require exactly core 1.0.0, then use the
+    plugin-creator cachebuster helper once so the changed Plugin has a new exact
+    local identity. Preserve the accepted RC and Plugin contracts as historical
+    predecessors. Add an additive machine-readable v1 release contract, a
+    changelog, a release-preparation runbook, contract tests, and a one-command
+    clean-room verifier. Bind critical source hashes, public schemas, state
+    schema, package identities, predecessor artifact digests, supported and
+    unsupported surfaces, destinations still requiring authorization, and
+    excluded authority. Build the core, MCP, and controller wheels twice from a
+    normalized source snapshot; assemble deterministic core and Plugin release
+    artifacts; verify 0.2.0a1 to 1.0.0 state reopen without migration, rollback,
+    re-upgrade, corruption behavior, bounded load, isolated Plugin install,
+    upgrade, rollback, uninstall, and raw CLI fallback. Re-run the changed exact
+    Plugin in isolated fresh Codex sessions for direct, indirect, follow-up,
+    negative, and cross-host boundary behavior, and retain exact limitations.
+    Run all repository and integration checks. If a material clean-room or
+    fresh-session check cannot be completed, leave the task in progress and
+    report the blocker. Otherwise record content digests and base HEAD, finish
+    T_V1_RELEASE_PREP, and stop before the separate authorization gate. Do not
+    commit, push, publish, release, deploy, mutate an active profile, add Plugin
+    MCP or app components, use a Connector, or start T_PUBLISH_V1_0_0.
+
+query Q1:
+  .document.steps[].statement | select(.role == "decision" and len(.based_on) > 0)

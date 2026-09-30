@@ -1,0 +1,97 @@
+{
+  "schema": "purposebus.rc-contract.v1",
+  "roadmap_task": "T_RC_HARDENING",
+  "target_milestone": "V0_9_RC_READY",
+  "accepted_beta_source_set_sha256": "003556204b04a5a24876ad568bdececa7ac9e80dc31e4d9bf61e946b66c30b1b",
+  "source_snapshot_excludes": [
+    "docs/rc-candidate-evidence-2026-09-08.md"
+  ],
+  "baseline": {
+    "git_revision": "f089f0ed8cdad29f49d3ba593060728989783740",
+    "core_version": "0.2.0a0",
+    "plugin_version": "0.2.0+codex.20260904024157"
+  },
+  "candidate": {
+    "core_version": "0.2.0a1",
+    "mcp_version": "0.1.0a0",
+    "controller_version": "0.0.0a0",
+    "plugin_version": "0.2.0+codex.20260904090953",
+    "state_schema": "1",
+    "error_schema": "purposebus.error.v1",
+    "public_success_schemas": [
+      "purposebus.ack.v2",
+      "purposebus.agent-list.v2",
+      "purposebus.agent-register.v2",
+      "purposebus.agent-show.v2",
+      "purposebus.delivery-list.v2",
+      "purposebus.events.v2",
+      "purposebus.help.v2",
+      "purposebus.init.v2",
+      "purposebus.instance-heartbeat.v2",
+      "purposebus.instance-list.v2",
+      "purposebus.instance-show.v2",
+      "purposebus.instance-start.v2",
+      "purposebus.instance-stop.v2",
+      "purposebus.match.v2",
+      "purposebus.message-list.v2",
+      "purposebus.message-show.v2",
+      "purposebus.next.v2",
+      "purposebus.offer-add.v2",
+      "purposebus.offer-list.v2",
+      "purposebus.offer-show.v2",
+      "purposebus.poll.v2",
+      "purposebus.publish.v2",
+      "purposebus.request-cancel.v2",
+      "purposebus.request-create.v2",
+      "purposebus.request-list.v2",
+      "purposebus.request-show.v2",
+      "purposebus.status.v2",
+      "purposebus.subscription-add.v2",
+      "purposebus.subscription-list.v2",
+      "purposebus.subscription-show.v2"
+    ],
+    "mcp_tools": [
+      "purposebus_status",
+      "purposebus_list_agents",
+      "purposebus_list_instances",
+      "purposebus_match",
+      "purposebus_next",
+      "purposebus_get_request"
+    ],
+    "plugin_components": ["skills"],
+    "critical_file_sha256": {
+      ".agents/plugins/marketplace.json": "7848dfdcbc088e3d1339aa6ea3096c1afd138a30e991d5307da1cbaf3334dfb5",
+      "integrations/purposebus_mcp/pyproject.toml": "de72f1904702065695b8453c127f6b5c625610e5b80df0fa4f18c23c292ec0f5",
+      "integrations/purposebus_mcp/src/purposebus_mcp/cli_adapter.py": "63847fe4215e7e72e445da465ba8e1a794e0662523f38ffc1614b4846339f47d",
+      "integrations/purposebus_mcp/src/purposebus_mcp/server.py": "0f4a7a4f036319089985ae1a77d4cae52b984240c19b11e653d767037d86edd0",
+      "plugins/purposebus/.codex-plugin/plugin.json": "7592284c42cf39c52197734274523ec5e713cf84d24c0bbd26df6acd52bcd740",
+      "plugins/purposebus/skills/purposebus/SKILL.md": "ea1aed311df0def59f246b4e78a83eb909b2e3874fe374148f4f3f8c2fa868c2",
+      "pyproject.toml": "2b083f26f7dbd1da610431369f8aa6f745a55f3666edc7ff0aad5b82e0d50a3f",
+      "src/purposebus/cli.py": "eb3444be6e861c9469eebfdf062e25df734e2dd120e3c82dccd3d611c7df5b2a",
+      "src/purposebus/public.py": "13cdf34077d77e3ad911dad07a04c9d9fb9dd12311c8becdd680ba834c6af001"
+    }
+  },
+  "bounds": {
+    "load_processes": 20,
+    "load_workers": 4,
+    "per_process_timeout_seconds": 10
+  },
+  "recovery": {
+    "corrupt_state": "fail_closed_without_modification",
+    "operator_path": "initialize_a_separate_state_root_and_preserve_the_corrupt_root"
+  },
+  "excluded_authority": [
+    "active_profile_installation",
+    "agent_launch",
+    "codex_lifecycle_control",
+    "commit",
+    "connector_use",
+    "deployment",
+    "plugin_directory_submission",
+    "publication",
+    "purposebus_mutation_outside_isolated_tests",
+    "push",
+    "release",
+    "subagent_launch"
+  ]
+}

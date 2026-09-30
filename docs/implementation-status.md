@@ -1,8 +1,8 @@
-# PurposeBus 0.2 alpha implementation status
+# PurposeBus 1.0.0 implementation status
 
-Status: 0.2.0a0 accepted; 0.2.0a1 response-contract update under development
+Status: local 1.0.0 release package verified; publication authorization pending
 
-Date: 2026-09-04
+Date: 2026-09-08
 
 ## Implemented vertical slice
 
@@ -73,7 +73,7 @@ core/Plugin compatibility assertions, isolated package evidence, and new-session
 Plugin permission checks. Its exact candidate hashes and results are in
 [the alpha acceptance record](alpha-acceptance-2026-09-04.md).
 
-The unaccepted 0.2.0a1 development candidate addresses GitHub Issue #1 and its
+The owner-accepted 0.2.0a1 beta candidate addresses GitHub Issue #1 and its
 public-surface audit. It separates public serializers from persistence records,
 removes storage paths, command digests, and raw process observations from
 ordinary output, introduces bounded command-specific collections, removes the
@@ -95,9 +95,10 @@ accepted post-MVP scope are recorded in
 The bounded results retain the direct-database approach and Skill-only Plugin,
 keep correlated Requests and explicit acknowledgement alongside durable
 broadcast, and select ownership diagnostics and regression coverage for alpha
-hardening. They do not justify a broker daemon or MCP server. A broader broker
-candidate remains contingent on later evidence of a material problem that cannot
-be addressed while preserving the direct model's simpler lifecycle.
+hardening. They did not by themselves justify a broker daemon or MCP server. A
+broader broker candidate remains contingent on later evidence of a material
+problem that cannot be addressed while preserving the direct model's simpler
+lifecycle.
 
 The post-trial Plugin surface comparison is complete. It retains the public-CLI
 Skill for the verified local Codex CLI and configured Desktop-to-WSL paths,
@@ -108,10 +109,58 @@ alpha scope. See
 
 The accepted local alpha and the response-contract candidate retain durable
 state schema version `1` and the direct SQLite design. They do not require a
-state migration, broker daemon, or MCP server.
-`T_BETA_REPLAN` is now the next planning task: it must select later work from
-measured alpha evidence rather than treating the provisional beta package as
-already accepted scope.
+state migration or broker daemon.
+
+The 2026-09-08 beta replan selects an additive, local stdio, read-only MCP
+adapter as the first new slice for the cross-client coordination requirement.
+The adapter is isolated under `integrations/purposebus_mcp`, pins its MCP 2.x
+and schema dependencies only there, and calls the public CLI for six observation
+and guidance operations. It does not change the core dependency set, state
+schema, direct SQLite implementation, or Skill-only Plugin manifest. Its exact
+boundary is [the MCP contract](mcp-readonly-contract.md) and
+[ADR-0001](adr/0001-add-local-read-only-mcp.md).
+
+The sibling `integrations/purposebus_codex_controller` package is a non-runnable
+policy skeleton. It records a future first-proof ceiling of one Codex session,
+read-only filesystem, no network, no subagents, and no experimental App Server
+API. No Codex lifecycle method, PurposeBus write, Connector invocation, client
+profile installation, or agent launch is implemented or claimed by this slice.
+
+`T_BETA_REPLAN` freezes this bounded Phase 0 through Phase 2 scope. The beta
+build evidence is complete and recorded in
+[the 2026-09-08 beta candidate record](beta-readonly-mcp-acceptance-2026-09-08.md).
+`T_BETA_BUILD` is complete and `V0_5_BETA_ACCEPTED` is reached and accepted.
+The accepted scope preserves separate acceptance gates for Codex lifecycle
+control, PurposeBus mutations, Plugin or profile installation, remote transport,
+and publication.
+
+`T_RC_HARDENING` is complete, and owner receipt
+`RCPT_V0_9_RC_OWNER_20260908` accepts the local RC contract at
+`V0_9_RC_ACCEPTED`. Its machine-readable compatibility boundary, reproducible
+artifact procedure, isolated core and Plugin transition checks, bounded-load
+probe, and corrupt-state recovery procedure are documented in
+[the RC hardening runbook](rc-hardening.md) and
+[ADR-0002](adr/0002-freeze-rc-compatibility-and-provenance.md). Publication and
+release authorization remain separate states.
+
+`T_V1_PLUGIN_PACKAGE` is locally complete. Plugin
+`1.0.0+codex.20260908092104` remains Skill-only, declares exact core
+compatibility `==0.2.0a1`, and passes deterministic packaging, isolated
+install/remove, raw CLI fallback, and new Codex CLI session evaluations for
+direct, indirect, follow-up, negative, cross-host boundary, and full correlated
+request-response behavior. See [the Plugin 1.0 package contract](plugin-v1-package.md)
+and [candidate evidence](plugin-v1-candidate-evidence-2026-09-08.md). The active
+Plugin profile remains at its prior installed version; no Desktop GUI run,
+publication, commit, push, release, deployment, MCP addition, or Connector use
+is claimed.
+
+`T_V1_RELEASE_PREP` freezes core `1.0.0`, release Plugin
+`1.0.0+codex.20260908103255`, the optional MCP adapter's exact core check,
+public v2 and state-schema 1 compatibility, reproducible package artifacts,
+predecessor rollback material, and a repeated exact fresh-session matrix. See
+[the release preparation runbook](v1-release-prep.md). The candidate has no
+commit, tag, or server-side revision yet; all publication destinations and
+writes remain behind `G_V1_RELEASE_AUTHORIZATION`.
 
 Remote transport, federation, competing consumers, exactly-once delivery,
 automatic delegation, secret resolution, and cross-user authorization remain

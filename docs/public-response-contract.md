@@ -1,6 +1,6 @@
 # PurposeBus public response contract
 
-Status: 0.2.0a1 development candidate; not yet locally accepted
+Status: accepted for the bounded 0.5.0 beta scope in `T_BETA_BUILD`
 
 Date: 2026-09-04
 
@@ -117,6 +117,11 @@ The SQLite state schema remains version `1`. Existing supported state is opened
 without migration or mutation. This is an output-contract transition, not a
 storage migration. Integrations, including the PurposeBus Codex Plugin, must
 check the core version and v2 schema before using the new shapes.
+
+PurposeBus `1.0.0` freezes the same public v2 success family, v1 error contract,
+and durable state schema `1`. The release transition from accepted RC
+`0.2.0a1` to `1.0.0` is therefore a package-identity change with a verified
+no-migration state reopen, not another public or storage schema change.
 
 ## Receive guidance
 

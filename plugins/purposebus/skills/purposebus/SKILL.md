@@ -25,15 +25,18 @@ Do not substitute a local probe for the unsupported requested outcome.
 
 ## Establish context
 
-1. Confirm `purposebus --version` reports the compatible alpha
-   `purposebus 0.2.0a1`. If it is absent or incompatible, stop and report the
-   missing prerequisite; do not locate or open its SQLite database as a
-   fallback.
+1. Confirm `purposebus --version` reports exactly `purposebus 1.0.0`. The
+   Plugin release candidate declares the evidence-backed core specifier
+   `==1.0.0`; do not infer compatibility with an untested future core. If the
+   executable is absent or incompatible, stop and report the missing
+   prerequisite; do not locate or open its SQLite database as a fallback.
 2. Resolve the intended Partition from the user's explicit path or the canonical
    Git worktree containing the current task. Keep that path explicit with
    `--partition PATH` on every command. Do not silently switch Partitions.
-3. Use `--format json` and accept only documented `purposebus.*.v2` results.
-   Treat an unknown schema or nonzero exit as a stopped operation.
+3. Use `--format json` and accept only documented successful
+   `purposebus.*.v2` results. A documented failure uses
+   `purposebus.error.v1`; treat any unknown schema or nonzero exit as a stopped
+   operation.
 4. Leave `--state-dir` unset for ordinary use. Set it only when the user asks for
    an isolated test state, and keep that state separate from their live queue.
 

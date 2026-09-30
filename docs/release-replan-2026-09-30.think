@@ -1,0 +1,89 @@
+framework ReleaseReplan:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+problem P1:
+  |
+    Review the current PurposeBus candidate again, replan the canonical roadmap,
+    execute the resulting plan, and finish a verified release.
+
+premise PR1:
+  |
+    The current owner instruction explicitly requests review, replanning,
+    implementation of the plan, and release. It authorizes necessary local work.
+    Exact external destinations, refs, visibility, and maximum writes must still
+    be disclosed and bound before an external release transition.
+
+evidence E1:
+  |
+    On 2026-09-30 local HEAD and refreshed origin/feature/local-mvp are
+    2a2b3a68c8f44a4107268e4fd51949106a37d486. origin/main is
+    01e36f5f411e8b464a90eabfdd37fe35acbeb200. GitHub reports a public
+    mako10k/purposebus repository, no PRs and no releases, and open Issue #1.
+
+evidence E2:
+  |
+    Current core 65 tests, MCP 14 tests and controller policy 2 tests passed.
+    All critical file hashes in release/v1-contract.json match current bytes.
+    Beta, RC and v1 preparation are present as uncommitted local work.
+    Controller policy is non-runnable, as explicitly documented.
+
+evidence E3:
+  |
+    The canonical roadmap passes document check. Its remaining publication
+    task depends on an owner authorization criterion with no receipt.
+    observe-velocity reports incomplete history and no usable selected actuals.
+    The current 1p/day declaration is not measured throughput.
+
+premise I1:
+  |
+    Inference: passing tests and hashes justify retaining the exact candidate
+    as a review input, but do not prove release readiness or public install.
+    Independent review, immutable artifact readback, isolated installed-package
+    verification and exact external authorization are still required.
+
+evidence E4:
+  |
+    Independent read-only review reproduced implicit Partition resolution to
+    /tmp from this repository when GIT_WORK_TREE=/tmp, contradicting FR-001.
+    It reproduced parse_duration of 400 digits followed by s returning infinity
+    and add_seconds raising an uncaught OverflowError, violating CLI-004.
+
+premise I2:
+  |
+    The current implementation must resolve the worktree from the actual cwd
+    independent of inherited Git context and classify unrepresentable duration
+    or timestamps as InvalidInput. These fixes enforce existing requirements;
+    they do not alter accepted public schema or state compatibility.
+
+premise A1:
+  |
+    Alternative: publish the existing dirty tree immediately. Rejected because
+    no immutable Git candidate or exact external payload has been frozen.
+
+premise A2:
+  |
+    Alternative: extend the release with runnable controller lifecycle or remote
+    transport. Rejected as a scope change absent an owner requirement revision.
+
+pending U1:
+  |
+    Independent review findings, reproducible verification in today's tooling,
+    public clean installation, and exact GitHub release authorization are open.
+    Package registry publication and public Plugin Directory submission have
+    no selected destination and cannot be inferred.
+
+decision D1 based_on P1, PR1, E1, E2, E3, E4, I1, I2, A1, A2, U1:
+  |
+    Keep the current feature/local-mvp worktree, preserve all existing work,
+    review against requirements and accepted additive contracts, and add a
+    measured release revalidation task before publication in the canonical PERT.
+    Gather independent review, verify immutable artifacts and installed-package
+    behavior, correct justified current-contract defects if found, and record
+    evidence with measured active time. Prepare a concrete GitHub release
+    candidate, refs, assets, Japanese review scope and maximum-write proposal.
+    Bind owner authorization before the one-executor external transition,
+    independently read back refs and downloaded asset hashes, and run an
+    isolated clean-install smoke from the actual public release before claiming
+    completion. Do not silently widen scope or accept unknown criteria.

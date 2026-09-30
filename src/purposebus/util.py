@@ -1,7 +1,10 @@
+"""R: Validate and normalize PurposeBus values and local process observations."""
+
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import socket
@@ -31,7 +34,10 @@ def parse_time(value: str | None) -> datetime:
         raise InvalidInput(f"invalid ISO 8601 time: {value}") from exc
     if parsed.tzinfo is None:
         raise InvalidInput("--at requires an explicit timezone")
-    return parsed.astimezone(UTC)
+    try:
+        return parsed.astimezone(UTC)
+    except (OverflowError, ValueError) as exc:
+        raise InvalidInput("time is outside the supported UTC range") from exc
 
 
 def iso(value: datetime) -> str:
@@ -39,12 +45,18 @@ def iso(value: datetime) -> str:
 
 
 def add_seconds(value: datetime, seconds: float) -> datetime:
-    return value + timedelta(seconds=seconds)
+    try:
+        return value + timedelta(seconds=seconds)
+    except (OverflowError, ValueError) as exc:
+        raise InvalidInput("duration exceeds the supported timestamp range") from exc
 
 
 def parse_duration(value: str | int | float) -> float:
     if isinstance(value, (int, float)):
-        seconds = float(value)
+        try:
+            seconds = float(value)
+        except OverflowError as exc:
+            raise InvalidInput("duration must be finite") from exc
     else:
         match = _DURATION_RE.fullmatch(value.strip())
         if not match:
@@ -52,6 +64,8 @@ def parse_duration(value: str | int | float) -> float:
         amount = float(match.group("value"))
         unit = match.group("unit") or "s"
         seconds = amount * {"ms": 0.001, "s": 1, "m": 60, "h": 3600}[unit]
+    if not math.isfinite(seconds):
+        raise InvalidInput("duration must be finite")
     if seconds < 0:
         raise InvalidInput("duration must not be negative")
     return seconds

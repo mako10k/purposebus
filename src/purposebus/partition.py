@@ -1,3 +1,5 @@
+"""R: Resolve the local coordination Partition and its private state paths."""
+
 from __future__ import annotations
 
 import hashlib
@@ -18,7 +20,9 @@ class Partition:
 
 
 def _git_root(cwd: Path) -> Path | None:
-    environment = dict(os.environ)
+    # Repository-selection variables inherited from a Git hook or caller must
+    # not redirect discovery away from the physical current directory.
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
     environment["GIT_OPTIONAL_LOCKS"] = "0"
     result = subprocess.run(
         ["git", "-C", str(cwd), "rev-parse", "--show-toplevel"],
@@ -30,7 +34,8 @@ def _git_root(cwd: Path) -> Path | None:
     )
     if result.returncode != 0:
         return None
-    return Path(result.stdout.strip()).resolve()
+    root = Path(result.stdout.strip()).resolve()
+    return root if cwd == root or root in cwd.parents else None
 
 
 def _state_root(override: str | None) -> Path:

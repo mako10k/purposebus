@@ -1,0 +1,92 @@
+{
+  "schema": "purposebus.plugin-fresh-session-evidence.v1",
+  "status": "passed",
+  "candidate": {
+    "core_version": "1.0.0",
+    "plugin_version": "1.0.0+codex.20260908103255",
+    "components": [
+      "skills"
+    ]
+  },
+  "isolation": {
+    "home": "temporary",
+    "codex_home": "temporary",
+    "marketplace": "temporary_copy",
+    "partition": "temporary",
+    "state_root": "temporary",
+    "active_profile_unchanged": true,
+    "candidate_uninstall_readback": true,
+    "raw_cli_after_uninstall": "purposebus 1.0.0"
+  },
+  "evaluations": {
+    "direct_request_response": {
+      "thread_id": "01a080a5-6998-7ed3-b7f8-31ca6df2748c",
+      "status": "passed",
+      "mutation_count": 10,
+      "request_id": "release-request-1",
+      "correlation_id": "corr-release-20260908",
+      "message_id": "msg_4a4f057bc8534ca8a03173a7bd0b67b6",
+      "delivery_id": "del_02339e27d6e3422f9098d3cf131bc6d5",
+      "request_state": "fulfilled",
+      "llmthink_audit": {
+        "fatal": 0,
+        "error": 0,
+        "warning": 0
+      },
+      "jsonl_sha256": "7e9d39d84eda33e6e7560ebd145234a0a5137841472e094c00f3a560cdd538f5",
+      "final_sha256": "b24074c22eb7b87e35093e84b0a44420c9b234f43e489985188a2f06fd8843a0"
+    },
+    "follow_up": {
+      "thread_id": "01a080a5-6998-7ed3-b7f8-31ca6df2748c",
+      "status": "passed",
+      "mutation_count": 0,
+      "context_preserved": true,
+      "jsonl_sha256": "f1205fc536a121e3c9d39568edfe846935d2ab64e5de532e6601cc823cf44aed",
+      "final_sha256": "134b5ca111fba64d1b9758ce733cc35dbebb38d32ecca9964521854502bbf6bb"
+    },
+    "indirect": {
+      "thread_id": "01a080a8-b495-7012-b406-0ae01139baf7",
+      "status": "passed",
+      "mutation_count": 0,
+      "skill_activated_without_name": true,
+      "jsonl_sha256": "2c631696f3898cd1c055eb6a1530e90e98f7024b5f601819d97cf1743292e8fa",
+      "final_sha256": "0b147745ac86c665df90dc520478e65afaa6f5431b4c30b0c3903005372da956"
+    },
+    "negative": {
+      "thread_id": "01a080a9-eaf9-7670-804a-da63887c62de",
+      "status": "passed",
+      "result": "323",
+      "purposebus_cli_calls": 0,
+      "jsonl_sha256": "db8c9b304242959d096a7d20feb82e6e051e7927f79e5de18226bdfa2d55c424",
+      "final_sha256": "3949ac1596ec77106a709a618bf5adcb19b77537ce8bcbdf54ff830169cdd084"
+    },
+    "cross_host_boundary": {
+      "thread_id": "01a080aa-55c3-7a41-9c16-4f3df74e3f2e",
+      "status": "passed",
+      "purposebus_cli_calls": 0,
+      "partition_inspections": 0,
+      "network_calls": 0,
+      "jsonl_sha256": "f58dc935df53f330be33821a16d54cdf886764ad34160022957b697dfe1e43ee",
+      "final_sha256": "4f1eb71fdfab1b29283f6367d8d08a07d3a1eef2f98174e3862a41211733c358"
+    }
+  },
+  "active_profile_readback": {
+    "config_sha256": "1223e3ea96d6199f237c0e987ba692b6588df3e8eb3ffd83d92dc480861dea23",
+    "installed_plugin_version": "0.2.0+codex.20260904090953",
+    "manifest_sha256": "7592284c42cf39c52197734274523ec5e713cf84d24c0bbd26df6acd52bcd740",
+    "skill_sha256": "ea1aed311df0def59f246b4e78a83eb909b2e3874fe374148f4f3f8c2fa868c2"
+  },
+  "excluded_attempt": {
+    "thread_id": "01a080a1-8067-7282-b8a7-cb1bfcdc886f",
+    "reason": "The isolated HOME did not route worktimectl to the shared state root, and the session continued after that prerequisite failed.",
+    "purposebus_result_not_used": true,
+    "jsonl_sha256": "f4e505975ee8f2e908dc2bc143f2e68569a931a6f1a932f2baa6fb700708e40c",
+    "final_sha256": "13d6252178c8d3e8b5706b90a28f4bc157bfa0bb86579621d89da10d15ad0468"
+  },
+  "credential_pattern_scan": "passed",
+  "limitations": [
+    "No native Desktop GUI window was automated or visually observed.",
+    "No active profile, public directory, workspace, repository remote, or live PurposeBus state was changed.",
+    "The ignored detailed logs remain local and are identified by SHA-256 rather than included in the source package."
+  ]
+}
