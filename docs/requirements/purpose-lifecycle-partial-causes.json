@@ -1,0 +1,862 @@
+{
+  "date": "2026-09-30",
+  "full_file_heads_preserved": {
+    "intent/purpose-lifecycle": "d29ddf587fa9d110fb69e1411b3fdb92430cb91922ace92915c8fb69b6d6be80",
+    "requirements/purpose-lifecycle-r2": "84bfb02b2415d930b4997cadcd248b399304e3aaee1dbc9d6447f07cd0ff5a94",
+    "evidence/purpose-lifecycle-tabletop-r2": "3bdfe64ebc7fd9ffafc0fcf804671905837967673902e839d74767d9bb5524d9",
+    "acceptance/purpose-lifecycle-r2": "5115763c7e077939532f38e473098dedd0c174e6114ae922f6034085ef7861f7"
+  },
+  "records": [
+    {
+      "ref": "intent/purpose-lifecycle/roles",
+      "seal": "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27",
+      "cause_seals": [],
+      "sha256": "15758a5c7c419b2ea0d2faa1f331b93e0e9d1361d05ffbe7000e8fdda46fbca2",
+      "origin_map": "fcd69dd968a82cfeb4f549db7cc3a10bb4e0f2b433520d8e221a748f86749bdd"
+    },
+    {
+      "ref": "intent/purpose-lifecycle/environments",
+      "seal": "fb4594966eaa8029571edc265fe4adf98b6f482dd539c4dce201f4222c2798f3",
+      "cause_seals": [],
+      "sha256": "3dd53629850241a0873108a6e7bfbf8937921e8e0d6161b80033a61a29a043e9",
+      "origin_map": "ef562380bf3335b4054ee4f37c45fe6b5c15871e76c795aba9846d39be561d8f"
+    },
+    {
+      "ref": "intent/purpose-lifecycle/dialogue",
+      "seal": "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1",
+      "cause_seals": [],
+      "sha256": "c7aacddf2da866f4eb232103a1f6ed684fadd43245167afe1b6371613004fb6d",
+      "origin_map": "d71293e7419400bbf86fbf80522dc6b3ec16ffffb0a8fa94dd8d1bd2c23af905"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/accepted-scope",
+      "seal": "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+      "cause_seals": [],
+      "sha256": "2f8d2e037282ff11f8a4c699c82dfb28e0e421da0f63a21d1b0997abc857c33f",
+      "origin_map": "33647c396e12e8cd08f690e820a7aa31cff22688431ba8222b1169bd647dda7b"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-1",
+      "seal": "260ec5def21175b2a3a724e811ac8dfff57cf3b6c5b8855e96265da057449db8",
+      "cause_seals": [],
+      "sha256": "098b169689012bf08d55af465491bc8b1996cfeb611e3509a80adbe016d341e9",
+      "origin_map": "bc0b68760a3d7bb1753ea39fb1b6d594ae9c5cf18184c1cdbdd03738f9902d40"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-2",
+      "seal": "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+      "cause_seals": [],
+      "sha256": "dada070be3546f56df6c8f20d1655c2324ff520bbc7d367bfb7ecec46018b1ff",
+      "origin_map": "efcc55f3881ea2b1920d4bdcb874c087c77ec2d5d73edb380ca8b87e834d45c8"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-3",
+      "seal": "6bdf61e562b07269568178dccafcd0b3a4911e6cfbbf9c82127a78c60188906c",
+      "cause_seals": [],
+      "sha256": "fb017b5c1ba8ec635de584e5980f0583e27a2424e5073830c4a4e4d95b323102",
+      "origin_map": "69da44d37614db0cebf076057aab088464de7a4e4f951bb84d0e598ade3cde77"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-4",
+      "seal": "69c3ac52a90bafc1e06fc7bfd6a545d7703e637b59774a24fc8fe60793cb4d67",
+      "cause_seals": [],
+      "sha256": "1c346a8c5431041f27a401c102bd3290248f1b1447ed773c27713cdd327c00f9",
+      "origin_map": "00b949e5cf4420784aabafb83e06d78d5ab95a7bd10bd80653bd8e9b8e75775f"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-5",
+      "seal": "dcac619ab8cb5ba1643505afce0d050c3194773757e77a8fc12cf19c67f25943",
+      "cause_seals": [],
+      "sha256": "a012315f0b764b5223b473a4b5797f3c43fc588220bd34cfdc6f578b8c87e7b2",
+      "origin_map": "fd420955820f4af0ed5e37f7cdc29332121e811debdbfd2d0909080b01e94563"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-6",
+      "seal": "b6caf8169afc131567f886b8df876bff1f5a502fdcf459951147cddc4a166ffc",
+      "cause_seals": [],
+      "sha256": "faf2f79b4ffc29724fa3dd261eeb0356d638811ac757e2567516c4a67451ac30",
+      "origin_map": "af5e471bb5bba2668c8d39a520f6f98b35b963a0bb60c4da84b79c61bf5b7c16"
+    },
+    {
+      "ref": "authority/purpose-lifecycle-r2/decision-7",
+      "seal": "57f98ee80b32460870d9b0e29ab264ca2ef039162834002b1b6d18bf73772c75",
+      "cause_seals": [],
+      "sha256": "199487c38541507718f4fbfdfc024618a3f9246099d372f4e01dec973f7441f0",
+      "origin_map": "9c9a98ac394bbdfa674e3be98782497e5d18df62b5f74398dd77af500b62cd75"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-01",
+      "previous_seal": "caf272daf42ae00346252454ebee5539f59f79eb80d0a45b18d84788a3ca8846",
+      "seal": "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "260ec5def21175b2a3a724e811ac8dfff57cf3b6c5b8855e96265da057449db8",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "4284535240d4c277006e856d80521f96528a4484631f86cc40ccc642a48ba932",
+      "sha256": "12f4e8c5dfb827bf3582164f92a2f60d00448ea3c8a034201b89cb6d6c9e9e12"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-02",
+      "previous_seal": "2eb7c4f2d22084c6aecb4476ddb5f43758291e142ae85b26c07c58f7fc94230b",
+      "seal": "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "260ec5def21175b2a3a724e811ac8dfff57cf3b6c5b8855e96265da057449db8",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "a4f9b1d0475867275823e4b2d8a5c20b1b4d6c3a8802d5ee16ca3f864720be0b",
+      "sha256": "23deefa234c4cdd37ed11643b8126c9a7f1494423f46551537f805d7e817c675"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-03",
+      "previous_seal": "ab77b8256aa83d719e97460a7f989e25a7085a8818ce0c2fb16bc1f2f8bd5818",
+      "seal": "6f6294b6377e9440a9b7bdebc5f6dac553b7a1a6e6b4f08e4ccd2395bade28d5",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "260ec5def21175b2a3a724e811ac8dfff57cf3b6c5b8855e96265da057449db8",
+        "57f98ee80b32460870d9b0e29ab264ca2ef039162834002b1b6d18bf73772c75",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "80ed8ebbbeed088acfb664952b8991b14e0ad97dc3ba779cc161e64de7c6cb26",
+      "sha256": "2c4cea5237f811ee33c02e9a7b69002f8ea80d027389ae78d0da548efc2ba8d6"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-04",
+      "previous_seal": "c8493b9b80a2259e674364fd4c1b600fa0b81cad11bd24207229d7a158beb110",
+      "seal": "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "e916c961bf4adcd45f0407a119118e8f1175811d2cfa6ac3c24478d72c007d2f",
+      "sha256": "a122cf6513f57be09e467457f04c2e48498b7dfa746f49ebba7c26fcdf3279aa"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-05",
+      "previous_seal": "876f6084f170d098faba9432e3246f8d1248a871db709e6946605482f6c33bf7",
+      "seal": "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "e457ab7d26102255977e0c3858eb1109b029cb93e2e49cd1aa1cb90d4482c17f",
+      "sha256": "74ae0235fde8ec3336335323f99981587ab6500848e4788853a1e1c3a2b8ebe4"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-06",
+      "previous_seal": "7e471b9ab1187a3a261dcdc356645fbf2ff637fb7706764fa597b2608480d857",
+      "seal": "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "69c3ac52a90bafc1e06fc7bfd6a545d7703e637b59774a24fc8fe60793cb4d67",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "86ff3ef0c0986573b0ec3cf6fd85ae82fa772a5bad7111d0c6db7fe62c14a961",
+      "sha256": "bac8e295615f08405235c191dfadce38fc63da515f593efeadc4f828ee49a064"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-07",
+      "previous_seal": "819abca8583d2999e92d6b37c3a6152c9ac639b0340675ce518130ceb2c3bf5f",
+      "seal": "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "6bdf61e562b07269568178dccafcd0b3a4911e6cfbbf9c82127a78c60188906c",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "bf55a455a561862cab9a462a49dc6356369da5251435532b9860ece7ccae2a5c",
+      "sha256": "dc25d182d088b345726d2fb03aedfdc9bd683eff4b9ac1e71209a95491e94dd5"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-08",
+      "previous_seal": "f657f8d67b8f3390c0b5f7248e0b5426c6acd55d049ad48c9095497282b37208",
+      "seal": "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "6bdf61e562b07269568178dccafcd0b3a4911e6cfbbf9c82127a78c60188906c",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "7baf29b62387257b45831622e380b1887eff2247b900ae78e7a4b81ee78b90d8",
+      "sha256": "6787ab1e0e34928e4c74502f51c4d2917c8ff4cc15109344f814104146a89dd3"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-09",
+      "previous_seal": "b2542e71f32a6a4a03a3b3e26259b4800d2210cd9e7a9bbd2b5816322af98467",
+      "seal": "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "dcac619ab8cb5ba1643505afce0d050c3194773757e77a8fc12cf19c67f25943",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "169b149a29440c6ba5627eed0b05512239ffca229dd2fee4e2c607d1ec57b280",
+      "sha256": "8e61eb7eb8c08ee0644e778b42759d7c116d8ee19c965135b35695e499f97823"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-10",
+      "previous_seal": "08e5c510acefd62fcaa4cf7cdc0bac412660f82c940caf0019e9eb16b5b34631",
+      "seal": "f051ce7bd5075a1ccca9efe3573891fc218f0ba93b56be719721a4df1e24f669",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "dcac619ab8cb5ba1643505afce0d050c3194773757e77a8fc12cf19c67f25943",
+        "b6caf8169afc131567f886b8df876bff1f5a502fdcf459951147cddc4a166ffc",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "6c8bf0eda7ba62e05a4338ab50d5f945be78e3e9bfb9db27a615e88fab0b6c2f",
+      "sha256": "c0ceb45d8633390ab537996e6f661e129ea1943af9f3097aa5c50fba07e5da7b"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-11",
+      "previous_seal": "f080e80b1efc11413a6bccf9e2d91b4ce345dd5745ddc83ce3eacf480b5714b2",
+      "seal": "9a1e5a662bad7bb5a15ce2bb700b79b68d216bb62359aa8b89a29b280ec931be",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "260ec5def21175b2a3a724e811ac8dfff57cf3b6c5b8855e96265da057449db8",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "fad313630b5d7f9d6dac3c408a60aad22c9664fcfc128a1fb830393087595c1d",
+      "sha256": "9e562cccea284bb7f8c4e7988cf8aced65ae91dc26cf22d40a3d8e42bb8c8eef"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-12",
+      "previous_seal": "8f8324910ce9193917787bd8586d23ada3726e2693a2e24ba9caaed8f75cbffc",
+      "seal": "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "69c3ac52a90bafc1e06fc7bfd6a545d7703e637b59774a24fc8fe60793cb4d67",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "74de3551d3aa757e3fbc4afeb8ca4f4f18f9a7ed5fbe0ba1d4d6889715352fb2",
+      "sha256": "289d1a78edaab06d38f1a3462bd2f8acaaacd6c045f89360757869b0727005b9"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-13",
+      "previous_seal": "323d322cf417841ebe4b04e4e44a151c15a61623d2f6cbc246abebbb15675d86",
+      "seal": "9b395876df495ce04646f96522cce611d04f387a239ad189146970cfa1d1c231",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "57f98ee80b32460870d9b0e29ab264ca2ef039162834002b1b6d18bf73772c75",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "1aebafdb899afd88b2626f3f4645a7a5b234c86919dd07e3b9425ad3a8f9cd89",
+      "sha256": "59770c508779a2c7189185f42eb943ef8b4a6711035331af8fe2e902ab051c5d"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-14",
+      "previous_seal": "f2fa0f539510d5d6994c093e1bffcaa81aa0f9fbdc8d21019a78fdf6f0477735",
+      "seal": "b81582b1720ec63fb6a3204ccece264226c7af0f35fe1659b2d9c6aa56fd4714",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "57f98ee80b32460870d9b0e29ab264ca2ef039162834002b1b6d18bf73772c75",
+        "866269aabb10de799b1ff694cc650db7eb7b91b44b2e5cc16500216554330c27"
+      ],
+      "origin_map": "207f2a3ffe3464a8af1202fbf39b0a71a9aa0cd596d877581a7d57f63fb86326",
+      "sha256": "c90b21b1c119e952d4784f2b135df389fcbfc048eabf40b3eae14630e26f984e"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-15",
+      "previous_seal": "f86864c35f90d3450a694156b2cd92caf2af78c5e20022c14df771a1b3e89b75",
+      "seal": "06a1f6973a1f85607acba2536dd1faae676387dc926b96e59fcba2c4be1d912a",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "fb4594966eaa8029571edc265fe4adf98b6f482dd539c4dce201f4222c2798f3"
+      ],
+      "origin_map": "3c43a51ae6f1954a53071a5d3c108c8aed3ea010c889f7b807f8275e9e772cb9",
+      "sha256": "23c9dfb65678c91ca30f9241365233cecf8b852cb3c487570176ac7dd366dd5a"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-16",
+      "previous_seal": "8b3749509b9550161fbe81dd14ec8cbdae7ff669567d4483c8acd960dc5d9f35",
+      "seal": "3c83d010b6551dac5298bf7e99b00bfebf41cc71f2becf21a9295844f5471380",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "a3266a7be74c852c23bacdf5f8070e50a94c8dbb909a573cac5a1de791b7214f",
+      "sha256": "3fc02e74640523e0fd583a733b0e29aaefea442f2d37644ae623c8987f85e4fc"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-17",
+      "previous_seal": "f169e5d16334f1c4ebe63d27c25e2a88510a96c2099f7827320877c09e4c8fc8",
+      "seal": "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "5ed42d74be562a5bc744de3d324df00f4375339f14e504730b8519dfb64ba4d9",
+      "sha256": "812291687da24fc2b22dfe15fb2575859973b9d458d69f0b1fe5a6c42c23fa3e"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-18",
+      "previous_seal": "2736d966c7bfea703784ee2c5b258f1f56b8727beed5086aed15f61dea6930ae",
+      "seal": "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "f6a4346e0464ccae8e23d51caf11a1222bdbbe07b05a4cc9f6f2ed566602ea66",
+      "sha256": "bd234ce24bc591d9d74e1a66842ca5f8f46cead9a246bc608f0655e08eea7c2d"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-19",
+      "previous_seal": "68583b7fee20dfcd2cbd4d2c245ba240fb8367d058fae91d5dec477d77fc189b",
+      "seal": "055280e34032d2fc2505cf3408eef8c05a0745e75b6cd770e69d5833dc848955",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "69c3ac52a90bafc1e06fc7bfd6a545d7703e637b59774a24fc8fe60793cb4d67",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "440e508f603bfe19766a3b4aa460011e316ea677c51afbd0b15605620202b259",
+      "sha256": "4bdc3452b7eca06e8732b33b4c76e16265d8ab281b4aab6aa0f9eedb32cbc888"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-20",
+      "previous_seal": "8a08b31aca649ed0cefe8d911ab07f66679fca637b9eac158ac7ca8cee9cc429",
+      "seal": "d94a5757246214b266911f16a10d096e1c0722bae0a8f7df61f05f1cbe9aa7ce",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "7cc41ef174ead156e6dd954abc68ba750af9fcab0de5b58ef66ae639f868b6a7",
+      "sha256": "aa3e9f0759fc2f56aa699ec22126a20bdec7b424695337c3f95e6913be9f29c7"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-21",
+      "previous_seal": "64bf5b2cd3a87b3857007f66ac34cc8bb7672bc6fb706b1d47ce32f0c87b10ca",
+      "seal": "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "8dfb7d61d4947250b88aab447e50939274bd92cd9165c7277bd045dc0819a00b",
+      "sha256": "0978c9f0087c6354162c3bf74190979db188c5bacfd90f217918c32d8f4068e0"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-22",
+      "previous_seal": "1dca5867530abea640ab7d9d1cd97f6773dd378940104416ed3d1174c0dbf0bf",
+      "seal": "0042daa0330163f6028305a347bc37678266f1ed31913d827665f3279b22f05b",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "1092bd2981368df7332a78dc95bfaf785db36990ea25b5c4cd186c7548cd33f6",
+        "57f98ee80b32460870d9b0e29ab264ca2ef039162834002b1b6d18bf73772c75",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "1099b24bd8ffa9f70fdeb40e78bef3f6495292e6fbf5453a4ed12fdbf9f0f464",
+      "sha256": "be9e1f7394a668b38d8389ddfb465ef808a7435c34c40b3f5e3c9240bf58a92a"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-23",
+      "previous_seal": "b88be902df4b6e42526e8780c79408b955388ea02cf73b9c33da239e19afc839",
+      "seal": "4283650969ed888db01d9216480ca5955ebd9e0e8bee08542b4693d80afe39a0",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "dcac619ab8cb5ba1643505afce0d050c3194773757e77a8fc12cf19c67f25943",
+        "b6caf8169afc131567f886b8df876bff1f5a502fdcf459951147cddc4a166ffc",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "31aeac9d37d1ecee4b284920f244fbbf2b01d003b9af29f0f23e2e22716b2863",
+      "sha256": "dc53f3fbc8e4b7a8c122e32bd5942d852cc36e24fe36cd2b9e63d0d6abbb96b1"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/PL-24",
+      "previous_seal": "d01072d4e2f79424eb3114319faf63d0234c83a8e14c9bb5937f2c9d9cd3e359",
+      "seal": "d98dd7ea67c11304607b89a94f7b135f72da0febf0ceafb2bc967d9ee0247114",
+      "cause_seals": [
+        "21ce6bd0dd769d7fa273e27fef4e465991d648536a6ca8a1863c04f52eef0b40",
+        "69c3ac52a90bafc1e06fc7bfd6a545d7703e637b59774a24fc8fe60793cb4d67",
+        "8efe9c1dd7caded2c931235e184a83c3582941935df139b2d36552afd08cfae1"
+      ],
+      "origin_map": "37c6b0ca2adc1fdb94a82cd5aab08256d7b4476b20bc13bb653510206cd00465",
+      "sha256": "63f59bce4aee5316d557d0eaa1fdf4d9136c9c2b8b5ae5f881cd942c14019ab5"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-01",
+      "seal": "e120399babf44126d7e66852ba94ab76a3c81733e85cd35b52766303fa0650fb",
+      "PL": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8,
+        16
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "3c83d010b6551dac5298bf7e99b00bfebf41cc71f2becf21a9295844f5471380"
+      ],
+      "origin_map": "9e54086d7e3577750f5ec7c8855f50f32e351205fdcf86160739a20a2f40fec8",
+      "sha256": "bb5e865047a2f850de14d022994f0e16e89c6ec2a93ab1057c9bd9c179e29b98"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-02",
+      "seal": "a144a704c015a0c59c096ba24545a605d9b4bc83f32afa622c88e30a3f8a9f5a",
+      "PL": [
+        1,
+        4,
+        5,
+        9,
+        21
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+        "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+        "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd"
+      ],
+      "origin_map": "7b9e1f20bb1e6b710f1c64a4a640e603af6f7f2bca7217e3434e780f8a322470",
+      "sha256": "474bf26fc1e466782abbd3de00a17af4fbc245948a7a24f64f0e6eb7efd326bc"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-03",
+      "seal": "2e5cc571d61d4091c2fa4ec9801e1e0742990e29e68b0e77586b55ba928bb68f",
+      "PL": [
+        2,
+        3,
+        7,
+        8
+      ],
+      "cause_seals": [
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "6f6294b6377e9440a9b7bdebc5f6dac553b7a1a6e6b4f08e4ccd2395bade28d5",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e"
+      ],
+      "origin_map": "e60efb0e5b2138d263a30dcf9cbec0e5e52c1b98af8a8e64aa3a6e078f9ea4d8",
+      "sha256": "0871fa0ffe93fe1b0811fc32293a8b00e0bfdcff938fd3325f1ac1a67d9137c5"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-04",
+      "seal": "90f4589b2ebf9ac34f0f7fb6c8a771697aeef90282ff5bd2d0cd54c5dab7421d",
+      "PL": [
+        2,
+        4,
+        12
+      ],
+      "cause_seals": [
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906"
+      ],
+      "origin_map": "fba09e1cb2978de03fb18a17f8a14eff269b3dcacd8d68001b3496aae84cf3c8",
+      "sha256": "39e173cf442c14342845b06bf0b7d94f9f7888c6ca4b33d1aa79783103de8bf3"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-05",
+      "seal": "bf8ed8350bed2209962f888be1c4220e9227f61871a497ba772080550e97d455",
+      "PL": [
+        1,
+        4,
+        5,
+        6,
+        19,
+        20
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "055280e34032d2fc2505cf3408eef8c05a0745e75b6cd770e69d5833dc848955",
+        "d94a5757246214b266911f16a10d096e1c0722bae0a8f7df61f05f1cbe9aa7ce"
+      ],
+      "origin_map": "2ccf2cc1b78d09ee286252532e34508801d43e7c01f32a46f5482fb64649d798",
+      "sha256": "d63ff514ddcbb17eff120d2128d7e8f5b2ae418ce85c63aa677979f4321f85bc"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-06",
+      "seal": "ae24a0a65a132a296429f6fdb8d452cf2945bef67e83b9566055c678d085d607",
+      "PL": [
+        3,
+        6,
+        7,
+        12,
+        18
+      ],
+      "cause_seals": [
+        "6f6294b6377e9440a9b7bdebc5f6dac553b7a1a6e6b4f08e4ccd2395bade28d5",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7"
+      ],
+      "origin_map": "d2aa1a8e4fccd3ec2fb5ecc1faba090f267fbfbac37d21054670df970da44dd9",
+      "sha256": "58b54d51444787172cee9558a80447a31fe5eeb21f9aa5be7e467c9a57e622cd"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-07",
+      "seal": "b58e1c9c8bb431fd9755b64fad2e0f9ec1c316891a376fb8e0762939ac36dfad",
+      "PL": [
+        7,
+        8,
+        9,
+        10,
+        22
+      ],
+      "cause_seals": [
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+        "f051ce7bd5075a1ccca9efe3573891fc218f0ba93b56be719721a4df1e24f669",
+        "0042daa0330163f6028305a347bc37678266f1ed31913d827665f3279b22f05b"
+      ],
+      "origin_map": "3880d94ab1c927200858a400e1bd3bbd834a6056a08b64873930fcd8960083c9",
+      "sha256": "16dbdef2247d4fea443e4be953357578735b4e6cba047b593d7d4dadfb14837f"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-08",
+      "seal": "4cd7cad56b1db91dd07dad46e72a0d35a13d68a1ef48e542333a18aa1bd045e9",
+      "PL": [
+        3,
+        9,
+        12,
+        15,
+        23
+      ],
+      "cause_seals": [
+        "6f6294b6377e9440a9b7bdebc5f6dac553b7a1a6e6b4f08e4ccd2395bade28d5",
+        "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+        "06a1f6973a1f85607acba2536dd1faae676387dc926b96e59fcba2c4be1d912a",
+        "4283650969ed888db01d9216480ca5955ebd9e0e8bee08542b4693d80afe39a0"
+      ],
+      "origin_map": "26c1e887af74fa4be496312441e4204e59d531e3dbac77a8d686f4657f9400a2",
+      "sha256": "07d4d45ff4ddd8b153c75de8a8761a46f8ede554aec8b9a4c86e842b106f4aa2"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-09",
+      "seal": "19c56162678052b3e9021679ac9fe25af9dd61e7381133f71f5bf7fa6338be56",
+      "PL": [
+        6,
+        7,
+        8,
+        11
+      ],
+      "cause_seals": [
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "9a1e5a662bad7bb5a15ce2bb700b79b68d216bb62359aa8b89a29b280ec931be"
+      ],
+      "origin_map": "522205ce592fa32453bb8c499243881c512dd98bb35a73050344c1171ecd4a9e",
+      "sha256": "f34eb1ad317b6f6972f726b3516f95c121ed48030daa98bc366b3f216b4bc864"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-10",
+      "seal": "0ca512e2fca50b3abe5c81d9d1c439cb0c776a97b51ef1b89ac0c399310efcac",
+      "PL": [
+        11,
+        12,
+        13,
+        22,
+        24
+      ],
+      "cause_seals": [
+        "9a1e5a662bad7bb5a15ce2bb700b79b68d216bb62359aa8b89a29b280ec931be",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+        "9b395876df495ce04646f96522cce611d04f387a239ad189146970cfa1d1c231",
+        "0042daa0330163f6028305a347bc37678266f1ed31913d827665f3279b22f05b",
+        "d98dd7ea67c11304607b89a94f7b135f72da0febf0ceafb2bc967d9ee0247114"
+      ],
+      "origin_map": "ef67e2461e9f59305f0b3e064445ac03ac03ad003813d43667687303dce23e7e",
+      "sha256": "23663871e5c0b7f77b93858e303f04e41ad56c5691fcb7c876bdd9ab5a382f7a"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-11",
+      "seal": "497df627f500a6d4f75186305800ec7e2094d91bad4ce3a8a5b2fa2b6c759577",
+      "PL": [
+        10,
+        18,
+        23
+      ],
+      "cause_seals": [
+        "f051ce7bd5075a1ccca9efe3573891fc218f0ba93b56be719721a4df1e24f669",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7",
+        "4283650969ed888db01d9216480ca5955ebd9e0e8bee08542b4693d80afe39a0"
+      ],
+      "origin_map": "0ba9496dbb63245c34012961fefbb83fc1b2828dd2c59caa3f5f709fced24074",
+      "sha256": "bc1482df7c72089e3270d36b50a0980ae673f3c468f2690332eaf94c747a03c1"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-12",
+      "seal": "29a3e4860747fae73c30484399d282a13232a02a761450866af42df02b6bbb5a",
+      "PL": [
+        1,
+        9,
+        13,
+        15,
+        16
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+        "9b395876df495ce04646f96522cce611d04f387a239ad189146970cfa1d1c231",
+        "06a1f6973a1f85607acba2536dd1faae676387dc926b96e59fcba2c4be1d912a",
+        "3c83d010b6551dac5298bf7e99b00bfebf41cc71f2becf21a9295844f5471380"
+      ],
+      "origin_map": "87ab6f1403f6e24e9d650cab82bbaa00ec82a983f45f23992b01b414a7936089",
+      "sha256": "de5315ddbb3eb61ba8680d6d88767dfda86788e07ca0094673dfdfc10e9d36ff"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-13",
+      "seal": "efc6df5251b7d250e198eeeb635f0af7ee6861f1c3f3581ad5fc832cb50945b8",
+      "PL": [
+        1,
+        2,
+        7,
+        8,
+        16,
+        17,
+        18
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "3c83d010b6551dac5298bf7e99b00bfebf41cc71f2becf21a9295844f5471380",
+        "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7"
+      ],
+      "origin_map": "448e9083bf68b4528d79d0abf4e62e039dc2edb64872bab5f7e8128f0b2f33ed",
+      "sha256": "9f7781e23b71fc847457c2c4489ef51b91c9ebe65b5b45d740e77d4ecd4f7049"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-14",
+      "seal": "87bb031f6d762a89d5dec50a9675e96edb35339b1fb57dd559260f809643d63a",
+      "PL": [
+        5,
+        17,
+        19,
+        20
+      ],
+      "cause_seals": [
+        "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+        "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+        "055280e34032d2fc2505cf3408eef8c05a0745e75b6cd770e69d5833dc848955",
+        "d94a5757246214b266911f16a10d096e1c0722bae0a8f7df61f05f1cbe9aa7ce"
+      ],
+      "origin_map": "b56f1aee6aaf1278b34b011a91c928aad130355bc5126245146feafd21676141",
+      "sha256": "f2f29154a9a854ba6c80b8af34d513ea17b9f661b65e04ef6fbaaae480d2e6e1"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-15",
+      "seal": "8c6525049e5b045877ffeaee2285f287b0edd32acbe14fc020870c606d73ce0c",
+      "PL": [
+        1,
+        6,
+        18,
+        19
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7",
+        "055280e34032d2fc2505cf3408eef8c05a0745e75b6cd770e69d5833dc848955"
+      ],
+      "origin_map": "e8123708f24a1004deeb248cd2182565e380dc6010eb6e86add02f94a234b034",
+      "sha256": "ec853bf1c589035babec112282c7b790d12fe5b99fc9c6ded08146cd33faf96d"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-16",
+      "seal": "fe71a5b83b074211e830f1f26ab9010f0858f318a9dd3227d4462b5489093896",
+      "PL": [
+        1,
+        4,
+        18,
+        21
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7",
+        "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd"
+      ],
+      "origin_map": "701d8926e98fa60dbc23885e0b6f77bf46002cd23aea990f814ecd875fcbffda",
+      "sha256": "afe22e9a1b45c789272430220f949cd28d708d2710c803c4ef29eec23f44e93b"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-17",
+      "seal": "0c3dc566492f345cc4ba924ecf5ce9ac4a1427d5201b0e1732a5b0ed0a6a6b2d",
+      "PL": [
+        7,
+        8,
+        17,
+        22
+      ],
+      "cause_seals": [
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+        "0042daa0330163f6028305a347bc37678266f1ed31913d827665f3279b22f05b"
+      ],
+      "origin_map": "09c0c1359f12273c2cffd24ebb5ce39456c06169bed5a0cfb11271b2ee056240",
+      "sha256": "8afc3eb52b3b037c92969633162d590e16837d0da0fe0eafe42729465bddafb1"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-18",
+      "seal": "37f686ef318583d18210aa0e2d8b83cbe81d8f122c914f69f69423828e359ef1",
+      "PL": [
+        4,
+        5,
+        20,
+        21
+      ],
+      "cause_seals": [
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+        "d94a5757246214b266911f16a10d096e1c0722bae0a8f7df61f05f1cbe9aa7ce",
+        "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd"
+      ],
+      "origin_map": "f93a5d476a431dfb36e954a792609178f255dd7c4fcba0cb514c5a24554149d6",
+      "sha256": "5d5568483011b843e47164e60b45ddde349049ccda8bb6283f19b949c63bddcb"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-19",
+      "seal": "fff2a55526ae8ad52db36e703fbe44f6e5e08b7773818f075e08dc29ba2e0b6d",
+      "PL": [
+        7,
+        10,
+        17,
+        23
+      ],
+      "cause_seals": [
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "f051ce7bd5075a1ccca9efe3573891fc218f0ba93b56be719721a4df1e24f669",
+        "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+        "4283650969ed888db01d9216480ca5955ebd9e0e8bee08542b4693d80afe39a0"
+      ],
+      "origin_map": "e80bdaf1dc1200b8e425a39f694ad456e0f5df03aff4e898c803707e8da794fb",
+      "sha256": "fe773fffd7f7fb7d665577dc9d64233572be1529f3e1be3908751606825211ad"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-20",
+      "seal": "9c727a76a9ba110b2487ad2d6a2727ed9432a057321286d7ffc37771c3c01704",
+      "PL": [
+        6,
+        12,
+        24
+      ],
+      "cause_seals": [
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+        "d98dd7ea67c11304607b89a94f7b135f72da0febf0ceafb2bc967d9ee0247114"
+      ],
+      "origin_map": "53cd984238cdbedba430036f12bf32830d6f256d0c88db2ccd03bc3e76956390",
+      "sha256": "23bf58db6b26a3d56c369dd9aba58e039cb950f11996b4a6feabbc45c67279f8"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-21",
+      "seal": "7db88c460d8ff3caf661db17676c71b0c7e8359365f365934d9ee0cead5d110b",
+      "PL": [
+        4,
+        6,
+        12,
+        21
+      ],
+      "cause_seals": [
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906",
+        "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd"
+      ],
+      "origin_map": "f34b4c8b64a2192c5692e68cc6b37f321e7089fb8924f04665fe792737819da6",
+      "sha256": "670dac922046d7f50552ab3e6246a367ee8e85655a15e99c5d939004ab5dfeac"
+    },
+    {
+      "ref": "evidence/purpose-lifecycle-tabletop-r2/UC-22",
+      "seal": "8c8bc1af04a243d98d7dfbb1ca1d15a08a36825f94fb8d369e7535827d42f472",
+      "PL": [
+        6,
+        18,
+        24
+      ],
+      "cause_seals": [
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "625db94ad20d8ed70ed3ce31a4aa0bceaad739b1ab15390f32a9481a6242dda7",
+        "d98dd7ea67c11304607b89a94f7b135f72da0febf0ceafb2bc967d9ee0247114"
+      ],
+      "origin_map": "8b098b4e49054fc8fea4f957a5b4f0bd29118842811f6619c58a008c6d43ad63",
+      "sha256": "5614816c48ad5fdd3a71fb288ac2f863bcfc3cdaf94f88fb273e205b7d8cc869"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/section-states",
+      "seal": "80d6d5ad0293daa9feb37be277ff3200937c7cde3ae4c50c1a9faf1d3e9c80bf",
+      "previous_seal": "04ab4f0c1a6c00fb83dafb1d18ba8f43072bf2661d3310b6a21556ae541d5e28",
+      "PL": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        11,
+        12
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "6f6294b6377e9440a9b7bdebc5f6dac553b7a1a6e6b4f08e4ccd2395bade28d5",
+        "cd1e21809a70a5a45535634ae8c437cdf78e7b0a88ab2613cab7167d14115701",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "e7194657da2375aa621270de13b1155322dcd09c9850ad2aca1a9c7fddbed08b",
+        "9a1e5a662bad7bb5a15ce2bb700b79b68d216bb62359aa8b89a29b280ec931be",
+        "0f8e89fa3bd66cfbc7d76b6c50138508408689cd1040bd0db28fbf2db0a7f906"
+      ],
+      "origin_map": "df7fe20ad5f6ec29dc71d8a6b8c81fe428faaaef69d6f73af728f6a110937210",
+      "sha256": "4fd81d13c3a3c0bfbaa111e7a6001d069045135d0c7880193d6402f2ea76f165"
+    },
+    {
+      "ref": "requirements/purpose-lifecycle-r2/section-interactions",
+      "seal": "8888b94341b3672245ad2e81141b79e29e1f915fdad59420fe033f9cd79ca221",
+      "previous_seal": "7a9dcacf50e329d8ffefba96b82d089b15bca049aad62e1499b351227d297491",
+      "PL": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8,
+        16,
+        17,
+        21
+      ],
+      "cause_seals": [
+        "7298834d722fdcaa9b6916a075d4ae34e568cc85db3fddbb05bd55ac23bc04d1",
+        "2fbd0fb84dded1fcdff199f15f8b3739a060ad1eb1dad23cd0b195b08809e18c",
+        "e1653f47a340db449ebf81e2c0982ceb367b58a1fcfcd4a77db62a5206e77047",
+        "c026235480b199cc97bfb00648d447d1b02430cc82efddf3eda760ea611a5473",
+        "50c76f2ab946c5fa0769f156e2c7fdcd4d3479520cd13fcb4c946a729e0141e6",
+        "ec06e5b1372b2be474588ee18bc42dcf4044cb2fd1f119d067b29b1cf00d786e",
+        "3c83d010b6551dac5298bf7e99b00bfebf41cc71f2becf21a9295844f5471380",
+        "16dfcda11abd9c9bf9f376fe3c5c9790ffcd0bbde17fe60decd5c63e9e3f2b80",
+        "ba0686277cd7bfb8875e8db7c68025dc79d21c7474a55ba84eb03113670ea8cd"
+      ],
+      "origin_map": "c46684f8da9284f526bc2f73e03cfa20b29e28d6b647be8995a6c2b6adc6f665",
+      "sha256": "f43a054027d28caa3f3f6663efcbac9885f7b022f4efb6c474ed1ffef16ff854"
+    }
+  ],
+  "verification": {
+    "fsck": "ok",
+    "stale": 0,
+    "original_requirements_and_tabletop_bytes": "unchanged",
+    "UC14_origin_presence": "PRESENT"
+  }
+}

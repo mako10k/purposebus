@@ -1,0 +1,47 @@
+[
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "review/purposebus-mvp",
+    "path": "docs/reviews/requirements-baseline-review-2026-08-31.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "design/purposebus-local-mvp",
+    "path": "docs/architecture.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "design/purposebus-codex-plugin",
+    "path": "docs/codex-plugin.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "evidence/purposebus-local-mvp",
+    "path": "docs/implementation-status.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "evidence/purposebus-mvp-acceptance",
+    "path": "docs/mvp-acceptance.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "usecases/purposebus-mvp",
+    "path": "docs/use-cases.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "requirements/purposebus-mvp",
+    "path": "docs/requirements.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "intent/purposebus-mvp",
+    "path": "docs/intent.md"
+  },
+  {
+    "schema": "sealgraph/source-binding/v1",
+    "ref": "reasoning/purposebus-mvp",
+    "path": "docs/requirements.think"
+  }
+]

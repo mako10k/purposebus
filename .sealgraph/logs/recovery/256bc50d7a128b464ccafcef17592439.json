@@ -1,0 +1,1 @@
+{"schema":"sealgraph/recovery/v1","operation_id":"256bc50d7a128b464ccafcef17592439","state":"COMMITTED","kind":"seal","transitions":[{"ref":"evidence/purpose-lifecycle-tabletop-r2/UC-21","before":null,"after":"eyJzY2hlbWEiOiJzZWFsZ3JhcGgvcmVmL3YxIiwiaGVhZCI6IjdkYjg4YzQ2MGQ4ZmYzY2FmNjYxZGIxNzY3NmM3MWIwYzdlODM1OTM2NWYzNjU5MzRkOWVlMGNlYWQ1ZDExMGIiLCJ0YWdzIjpbXX0="}]}

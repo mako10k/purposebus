@@ -1,0 +1,1 @@
+{"schema":"sealgraph/recovery/v1","operation_id":"9fd6e05ff99c435a2f1042ba7b3fef0a","state":"COMMITTED","kind":"seal","transitions":[{"ref":"intent/purpose-lifecycle","before":null,"after":"eyJzY2hlbWEiOiJzZWFsZ3JhcGgvcmVmL3YxIiwiaGVhZCI6ImQyOWRkZjU4N2ZhOWQxMTBmYjY5ZTE0MTFiM2ZkYjkyNDMwY2I5MTkyMmFjZTkyOTE1YzhmYjY5YjZkNmJlODAiLCJ0YWdzIjpbXX0="}]}
